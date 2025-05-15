@@ -1,6 +1,9 @@
 package com.framework.config;
 import org.aeonbits.owner.Config;
 
+/**
+ * Свойства из конфига с помощью библиотеки Owner.
+ */
 @Config.Sources({
         "classpath:config.properties",
         "system:properties"

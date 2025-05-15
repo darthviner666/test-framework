@@ -6,15 +6,15 @@ import java.util.Map;
 /**
  * Класс для работы с заголовками.
  */
-public class Headers {
+public class HeadersBuilder {
     private final Map<String, String> headers = new HashMap<>();
 
     /**
      * Стандартные заголовки.
      * @return - Стандартные заголовки.
      */
-    public static Headers defaultHeaders() {
-        return new Headers()
+    public static HeadersBuilder defaultHeaders() {
+        return new HeadersBuilder()
                 .withContentTypeJson()
                 .withAcceptJson();
     }
@@ -23,7 +23,7 @@ public class Headers {
      * Заголовок "Content-Type".
      * @return - application/json.
      */
-    public Headers withContentTypeJson() {
+    public HeadersBuilder withContentTypeJson() {
         headers.put("Content-Type", "application/json");
         return this;
     }
@@ -33,7 +33,7 @@ public class Headers {
      * Заголовок "Accept".
      * @return - application/json.
      */
-    public Headers withAcceptJson() {
+    public HeadersBuilder withAcceptJson() {
         headers.put("Accept", "application/json");
         return this;
     }
@@ -42,7 +42,7 @@ public class Headers {
      * Заголовок "Authorization".
      * @return - token.
      */
-    public Headers withAuthorization(String token) {
+    public HeadersBuilder withAuthorization(String token) {
         headers.put("Authorization", "Bearer " + token);
         return this;
     }
@@ -53,7 +53,7 @@ public class Headers {
      * @param value - значение заголовка.
      * @return - заголовок со значением.
      */
-    public Headers withHeader(String name, String value) {
+    public HeadersBuilder withHeader(String name, String value) {
         headers.put(name, value);
         return this;
     }
