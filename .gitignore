@@ -1,0 +1,22 @@
+target/
+*.jar
+*.war
+*.ear
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.classpath
+.project
+.settings/
+bin/
+
+# System
+.DS_Store
+Thumbs.db
+
+# Allure
+allure-report/
+allure-results/
