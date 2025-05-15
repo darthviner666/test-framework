@@ -18,5 +18,6 @@ bin/
 Thumbs.db
 
 # Allure
+.allure
 allure-report/
 allure-results/
