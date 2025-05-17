@@ -38,7 +38,8 @@ public class GetListUsersTest extends TestBase {
                         res -> res
                                 .then()
                                 .statusCode(200)
-                                .extract().response(), req -> req
+                                .extract().response(),
+                        req -> req
                                 .headers(headers)
                                 .queryParams(queryParams)
                 );
