@@ -3,13 +3,12 @@ package com;
 import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.logevents.SelenideLogger;
 import com.framework.api.ApiSpecs;
-import com.framework.api.CustomAllureFilter;
 import com.framework.config.ConfigReader;
 import com.framework.config.ProjectConfig;
 import io.qameta.allure.selenide.AllureSelenide;
 import io.restassured.RestAssured;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeSuite;
 
 /**
  * Класс для базовой настройки автотестов.
@@ -20,7 +19,7 @@ public class TestBase {
     /**
      * Настройка.
      */
-    @BeforeAll
+    @BeforeSuite
     static void setup() {
         // Selenide configuration
         Configuration.browser = config.browser();
@@ -43,7 +42,7 @@ public class TestBase {
     /**
      * Выход из теста.
      */
-    @AfterEach
+    @AfterMethod
     void tearDown() {
         //BrowserFactory.clearCookies();
         RestAssured.reset();

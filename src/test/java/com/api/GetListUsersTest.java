@@ -1,35 +1,32 @@
 package com.api;
 
 import com.TestBase;
+import com.asserts.AssertionsWithAllureLog;
 import com.framework.api.ApiRequests;
 import com.framework.api.Endpoints;
 import com.framework.api.HeadersBuilder;
-import com.framework.utils.Asserts;
+import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
 import io.restassured.http.Method;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.testng.annotations.Test;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static io.restassured.RestAssured.given;
-
-//TODO разобраться с аллюром
-@Feature("Get Users List")
+@Epic("API Тесты")
+@Feature("Работа с пользователями")
 public class GetListUsersTest extends TestBase {
-    @Test
-    @DisplayName("Get Users List Test OK")
+    @Test(description = "Получить пользователей")
     @Story("Положительный сценарий")
     public void getUsersListOkTest() {
 
-        Map<String,String> queryParams = new HashMap<>() {{
-            put("page","2");
+        Map<String, String> queryParams = new HashMap<>() {{
+            put("page", "2");
         }};
 
-        Map<String,String> headers = HeadersBuilder
+        Map<String, String> headers = HeadersBuilder
                 .defaultHeaders()
                 .build();
 
@@ -52,8 +49,8 @@ public class GetListUsersTest extends TestBase {
 //                "получить пользователей",
 //                Endpoints.GET_USERS);
 
-        //response.statusCode();
+        response.statusCode();
 
-        //Asserts.assertEquals(200,response.getStatusCode(),"статус код");
+        AssertionsWithAllureLog.assertEquals(200,response.getStatusCode(),"статус код");
     }
 }
