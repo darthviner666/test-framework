@@ -4,9 +4,11 @@ import com.TestBase;
 import com.framework.api.ApiRequests;
 import com.framework.api.Endpoints;
 import com.framework.api.HeadersBuilder;
+import com.framework.utils.Asserts;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
 import io.restassured.http.Method;
+import io.restassured.response.Response;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -33,15 +35,25 @@ public class GetListUsersTest extends TestBase {
 
         ApiRequests
                 .sendRequest("получить пользователей",
-                        Method.GET,
                         Endpoints.GET_USERS,
+                        Method.GET,
+                        req -> req
+                                .headers(headers)
+                                .queryParams(queryParams),
                         res -> res
                                 .then()
                                 .statusCode(200)
-                                .extract().response(),
-                        req -> req
-                                .headers(headers)
-                                .queryParams(queryParams)
+                                .extract().response()
                 );
+        Response response = ApiRequests.sendRequest("получить пользователей",
+                Endpoints.GET_USERS,
+                Method.GET);
+//        Response response = ApiRequests.sendGetRequest(
+//                "получить пользователей",
+//                Endpoints.GET_USERS);
+
+        //response.statusCode();
+
+        //Asserts.assertEquals(200,response.getStatusCode(),"статус код");
     }
 }

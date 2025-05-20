@@ -5,46 +5,50 @@ import io.qameta.allure.Step;
 import io.restassured.http.Method;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import lombok.experimental.UtilityClass;
 
 import java.util.function.Function;
 
 import static io.restassured.RestAssured.given;
-
+@UtilityClass
 public class ApiRequests {
-
-    @Step("API: {method} {endpoint} {requestDescription}")
-    public static Response sendRequest(
+    public Response sendRequest(
             String requestDescription,
-            Method method,
             String endpoint,
-            Function<Response, Response> responseValidator,
-            Function<RequestSpecification, RequestSpecification> requestBuilder) {
+            Method httpMethod,
+            Function<RequestSpecification, RequestSpecification> requestBuilder,
+            Function<Response, Response> responseValidator) {
 
         return Allure.step(requestDescription, () -> {
-            // 1. Строим запрос
             RequestSpecification requestSpec = requestBuilder.apply(given());
-
-            // 2. Отправляем запрос
-            Response response = requestSpec.when().request(method,endpoint);
-
-            // 3. Валидируем ответ (если валидатор предоставлен)
-            if (responseValidator != null) {
-                return responseValidator.apply(response);
-            }
-
-            return response;
+            Response response = requestSpec.request(httpMethod);
+            return responseValidator != null ? responseValidator.apply(response) : response;
         });
     }
 
-    // Перегруженный метод без валидации
-    public static Response sendRequest(
+    public Response sendRequest(
             String requestDescription,
-            Method method,
-            Function<RequestSpecification, RequestSpecification> requestBuilder,
-            String endpoint) {
-
-        return sendRequest(requestDescription, method, endpoint, null, requestBuilder);
+            String endpoint,
+            Method httpMethod,
+            Function<RequestSpecification, RequestSpecification> requestBuilder
+    ) {
+        return sendRequest(
+                requestDescription,
+                endpoint,
+                httpMethod,
+                requestBuilder,
+                null);
     }
 
+    public Response sendRequest(
+            String requestDescription,
+            String endpoint,
+            Method httpMethod){
+        return sendRequest(requestDescription,
+                endpoint,
+                httpMethod,
+                req -> req,
+                null);
+    }
 }
 
