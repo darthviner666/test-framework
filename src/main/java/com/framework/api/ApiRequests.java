@@ -40,7 +40,8 @@ public class ApiRequests {
     public static Response sendRequest(
             String requestDescription,
             Method method,
-            Function<RequestSpecification, RequestSpecification> requestBuilder, String endpoint) {
+            Function<RequestSpecification, RequestSpecification> requestBuilder,
+            String endpoint) {
 
         return sendRequest(requestDescription, method, endpoint, null, requestBuilder);
     }
