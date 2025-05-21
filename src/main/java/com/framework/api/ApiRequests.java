@@ -1,48 +1,85 @@
 package com.framework.api;
 
+import com.framework.config.ConfigReader;
 import io.qameta.allure.Allure;
 import io.qameta.allure.Step;
 import io.restassured.http.Method;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import lombok.experimental.UtilityClass;
 
 import java.util.function.Function;
 
 import static io.restassured.RestAssured.given;
 
+/**
+ * Класс для отправки API запросов.
+ */
+@UtilityClass
 public class ApiRequests {
 
-    @Step("API: {method} {endpoint} {requestDescription}")
-    public static Response sendRequest(
+    /**
+     * Отправка API запроса.
+     * @param requestDescription - описание запроса.
+     * @param endpoint - эндпоинт.
+     * @param httpMethod - HTTP метод.
+     * @param requestBuilder - параметры запроса.
+     * @return - ответ.
+     */
+    @Step("API: {httpMethod} {endpoint} : {requestDescription}")
+    public Response sendRequest(
             String requestDescription,
-            Method method,
             String endpoint,
-            Function<Response, Response> responseValidator,
+            Method httpMethod,
             Function<RequestSpecification, RequestSpecification> requestBuilder) {
 
-        return Allure.step(requestDescription, () -> {
-            // 1. Строим запрос
-            RequestSpecification requestSpec = requestBuilder.apply(given());
-
-            // 2. Отправляем запрос
-            Response response = requestSpec.when().request(method,endpoint);
-
-            // 3. Валидируем ответ (если валидатор предоставлен)
-            if (responseValidator != null) {
-                return responseValidator.apply(response);
-            }
-
-            return response;
-        });
+        RequestSpecification requestSpec = requestBuilder.apply(given());
+        requestSpec
+                .log().all()
+                .baseUri(ConfigReader.Instance().apiBaseUrl())
+                .filter(new CustomAllureFilter());
+        return requestSpec.request(httpMethod, endpoint)
+                .then().log().all()
+                .extract().response();
     }
 
-    // Перегруженный метод без валидации
-    public static Response sendRequest(
+    /**
+     * Отправить дефолтный запрос без тела с дефолтными хэдерами.
+     * @param requestDescription - описание запроса.
+     * @param endpoint - эндпоинт.
+     * @param httpMethod - HTTP метод.
+     * @return - ответ.
+     */
+    public Response sendRequest(
             String requestDescription,
-            Method method,
-            Function<RequestSpecification, RequestSpecification> requestBuilder, String endpoint) {
-
-        return sendRequest(requestDescription, method, endpoint, null, requestBuilder);
+            String endpoint,
+            Method httpMethod) {
+        return sendRequest(
+                requestDescription,
+                endpoint,
+                httpMethod,
+                req -> req
+                        .headers(HeadersBuilder.defaultHeaders().build()));
+    }
+    /**
+     * Отправить дефолтный запрос c телом с дефолтными хэдерами.
+     * @param requestDescription - описание запроса.
+     * @param endpoint - эндпоинт.
+     * @param httpMethod - HTTP метод.
+     * @param body - тело запроса.
+     * @return - ответ.
+     */
+    public Response sendRequest(
+            String requestDescription,
+            String endpoint,
+            Method httpMethod,
+            Object body) {
+        return sendRequest(requestDescription,
+                endpoint,
+                httpMethod,
+                req -> req
+                        .body(body)
+                        .headers(HeadersBuilder.defaultHeaders().build()));
     }
 
 }
