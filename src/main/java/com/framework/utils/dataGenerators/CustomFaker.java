@@ -1,4 +1,4 @@
-package com.framework.api.dataGenerators;
+package com.framework.utils.dataGenerators;
 
 import com.github.javafaker.Faker;
 

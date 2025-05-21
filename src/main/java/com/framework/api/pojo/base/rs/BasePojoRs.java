@@ -1,4 +1,7 @@
 package com.framework.api.pojo.base.rs;
 
-public class BasePojoRs {
+/**
+ * Базовый класс POJO для ответов.
+ */
+public abstract class BasePojoRs {
 }

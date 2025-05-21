@@ -1,4 +1,4 @@
-package com.framework.api.serialize;
+package com.framework.utils.serialize;
 
 import io.qameta.allure.Allure;
 import io.qameta.allure.internal.shadowed.jackson.annotation.JsonInclude;

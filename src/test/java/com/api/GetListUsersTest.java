@@ -1,18 +1,12 @@
 package com.api;
 
 import com.TestBase;
-import com.asserts.AssertionsWithAllureLog;
-import com.framework.api.ApiRequests;
-import com.framework.api.Endpoints;
-import com.framework.api.HeadersBuilder;
+import com.framework.api.helpers.UserHelper;
+import com.framework.api.pojo.users.get.rs.GetUserPojoRs;
+import com.framework.asserts.AssertionsWithAllureLog;
 import io.qameta.allure.*;
-import io.restassured.http.Method;
-import io.restassured.response.Response;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Epic("API Тесты")
 @Feature("Работа с пользователями")
@@ -20,40 +14,29 @@ import java.util.Map;
 public class GetListUsersTest extends TestBase {
     @DataProvider(name = "data")
     public Integer[][] provideData() {
-        return new Integer[][] {
+        return new Integer[][]{
                 {1},
                 {2}
         };
     }
 
-    @Test(description = "Проверка получения пользователей на странице {page}",testName = "Получить пользователей", dataProvider = "data", threadPoolSize = 2)
+    @Test(description = "Проверка получения пользователей на странице", testName = "Получить пользователей", dataProvider = "data", threadPoolSize = 2)
     @Story("Положительный сценарий")
     @Severity(SeverityLevel.BLOCKER)
     public void getUsersListOkTest(Integer page) {
 
-        Map<String, String> queryParams = new HashMap<>() {{
-            put("page", page.toString());
-        }};
+        String testName = String.format("Аутентификация пользователей на странице: %s", page.toString());
+        Allure.getLifecycle().updateTestCase(test -> test.setName(testName));
 
-        Map<String, String> headers = HeadersBuilder
-                .defaultHeaders()
-                .withAcceptJson()
-                .withContentTypeJson()
-                .withHeader("x-api-key","reqres-free-v1")
-                .build();
+        UserHelper helper = new UserHelper();
 
-        Response response = ApiRequests
-                .sendRequest("получить пользователей",
-                        Endpoints.GET_USERS,
-                        Method.GET,
-                        req -> req
-                                .headers(headers)
-                                .queryParams(queryParams)
-                );
+        GetUserPojoRs[] users = helper.getUsers(page);
 
-        AssertionsWithAllureLog
-                .assertEquals(200,
-                        response.getStatusCode(),
-                        "статус код");
+        for (GetUserPojoRs user : users) {
+            AssertionsWithAllureLog.assertNotEquals(user.firstName, "", "Имя не пустое");
+            AssertionsWithAllureLog.assertNotEquals(user.lastName, "", "Фамилия не пустая");
+            String email = user.firstName.toLowerCase() + "." + user.lastName.toLowerCase();
+            AssertionsWithAllureLog.assertTrue(user.email.startsWith(email), "Email");
+        }
     }
 }

@@ -1,13 +1,11 @@
 package com.framework.api.pojo.users.create.rq;
 
+import com.framework.api.pojo.base.rq.BasePojoRq;
+import lombok.Builder;
 import lombok.Data;
 
-@Data
-public class User {
-    public Long id;
-    public String email;
-    public String first_name;
-    public String last_name;
-    public String avatar;
-    
+@Builder
+public class CreateUserPojoRq extends BasePojoRq {
+    public String name;
+    public String job;
 }

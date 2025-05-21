@@ -1,4 +1,7 @@
 package com.framework.api.pojo.base.rq;
 
-public class BasePojoRq {
+/**
+ * Базовый класс POJO для запросов.
+ */
+public abstract class BasePojoRq {
 }

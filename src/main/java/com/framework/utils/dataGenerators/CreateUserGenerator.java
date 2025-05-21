@@ -1,7 +1,6 @@
-package com.framework.api.dataGenerators;
+package com.framework.utils.dataGenerators;
 
 import com.framework.api.pojo.users.create.rq.CreateUserPojoRq;
-import com.github.javafaker.Faker;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass

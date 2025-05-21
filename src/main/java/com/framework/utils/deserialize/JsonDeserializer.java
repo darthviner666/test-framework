@@ -1,4 +1,4 @@
-package com.framework.api.deserialize;
+package com.framework.utils.deserialize;
 
 import io.qameta.allure.Allure;
 import io.qameta.allure.internal.shadowed.jackson.databind.ObjectMapper;
