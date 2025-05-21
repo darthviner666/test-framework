@@ -32,7 +32,7 @@ public class ApiSpecs {
                 .setContentType(ContentType.JSON)
                 .addFilter(CUSTOM_ALLURE_FILTER)
                 .log(LogDetail.ALL)
-                .build();
+                .build().given();
     }
 
     /**

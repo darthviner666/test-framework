@@ -1,5 +1,6 @@
 package com.framework.api;
 
+import com.framework.config.ConfigReader;
 import io.qameta.allure.Allure;
 import io.qameta.allure.Step;
 import io.restassured.http.Method;
@@ -10,45 +11,76 @@ import lombok.experimental.UtilityClass;
 import java.util.function.Function;
 
 import static io.restassured.RestAssured.given;
+
+/**
+ * Класс для отправки API запросов.
+ */
 @UtilityClass
 public class ApiRequests {
+
+    /**
+     * Отправка API запроса.
+     * @param requestDescription - описание запроса.
+     * @param endpoint - эндпоинт.
+     * @param httpMethod - HTTP метод.
+     * @param requestBuilder - параметры запроса.
+     * @return - ответ.
+     */
+    @Step("API: {httpMethod} {endpoint} : {requestDescription}")
     public Response sendRequest(
             String requestDescription,
             String endpoint,
             Method httpMethod,
-            Function<RequestSpecification, RequestSpecification> requestBuilder,
-            Function<Response, Response> responseValidator) {
+            Function<RequestSpecification, RequestSpecification> requestBuilder) {
 
-        return Allure.step(requestDescription, () -> {
-            RequestSpecification requestSpec = requestBuilder.apply(given());
-            Response response = requestSpec.request(httpMethod);
-            return responseValidator != null ? responseValidator.apply(response) : response;
-        });
+        RequestSpecification requestSpec = requestBuilder.apply(given());
+        requestSpec
+                .log().all()
+                .baseUri(ConfigReader.Instance().apiBaseUrl())
+                .filter(new CustomAllureFilter());
+        return requestSpec.request(httpMethod, endpoint)
+                .then().log().all()
+                .extract().response();
     }
 
+    /**
+     * Отправить дефолтный запрос без тела с дефолтными хэдерами.
+     * @param requestDescription - описание запроса.
+     * @param endpoint - эндпоинт.
+     * @param httpMethod - HTTP метод.
+     * @return - ответ.
+     */
     public Response sendRequest(
             String requestDescription,
             String endpoint,
-            Method httpMethod,
-            Function<RequestSpecification, RequestSpecification> requestBuilder
-    ) {
+            Method httpMethod) {
         return sendRequest(
                 requestDescription,
                 endpoint,
                 httpMethod,
-                requestBuilder,
-                null);
+                req -> req
+                        .headers(HeadersBuilder.defaultHeaders().build()));
     }
-
+    /**
+     * Отправить дефолтный запрос c телом с дефолтными хэдерами.
+     * @param requestDescription - описание запроса.
+     * @param endpoint - эндпоинт.
+     * @param httpMethod - HTTP метод.
+     * @param body - тело запроса.
+     * @return - ответ.
+     */
     public Response sendRequest(
             String requestDescription,
             String endpoint,
-            Method httpMethod){
+            Method httpMethod,
+            Object body) {
         return sendRequest(requestDescription,
                 endpoint,
                 httpMethod,
-                req -> req,
-                null);
+                req -> req
+                        .body(body)
+                        .headers(HeadersBuilder.defaultHeaders().build()));
     }
+
 }
 
