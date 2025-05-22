@@ -8,10 +8,12 @@ import com.framework.api.pojo.users.create.rs.CreateUserPojoRs;
 import com.framework.api.pojo.users.get.rs.GetUserPojoRs;
 import com.framework.asserts.AssertionsWithAllureLog;
 import com.framework.utils.deserialize.JsonDeserializer;
+import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.Method;
 import io.restassured.response.Response;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**

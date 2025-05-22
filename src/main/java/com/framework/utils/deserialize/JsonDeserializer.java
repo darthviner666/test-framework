@@ -1,8 +1,8 @@
 package com.framework.utils.deserialize;
 
+import com.jayway.jsonpath.JsonPath;
 import io.qameta.allure.Allure;
 import io.qameta.allure.internal.shadowed.jackson.databind.ObjectMapper;
-import io.restassured.path.json.JsonPath;
 import lombok.experimental.UtilityClass;
 
 /**
@@ -21,7 +21,8 @@ public class JsonDeserializer {
      */
     public static  <T> T deserialize(String json, String path, Class<T> clazz) {
         try {
-           return JsonPath.from(json).getObject(path,clazz);
+            ObjectMapper mapper = new ObjectMapper();
+           return mapper.readValue(JsonPath.parse(json).read(path).toString(),clazz);
         } catch (Exception e) {
             Allure.addAttachment("FAIL","Failed to deserialize JSON to " + clazz.getSimpleName());
             throw new RuntimeException("Failed to deserialize JSON to " + clazz.getSimpleName(), e);
@@ -35,6 +36,12 @@ public class JsonDeserializer {
      * @param <T> - целевой тип.
      */
     public static <T> T deserialize(String json, Class<T> clazz) {
-       return deserialize(json,"",clazz);
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.readValue(json,clazz);
+        } catch (Exception e) {
+            Allure.addAttachment("FAIL","Failed to deserialize JSON to " + clazz.getSimpleName());
+            throw new RuntimeException("Failed to deserialize JSON to " + clazz.getSimpleName(), e);
+        }
     }
 }
