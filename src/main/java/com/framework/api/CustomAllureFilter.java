@@ -1,9 +1,11 @@
 package com.framework.api;
 
+import com.framework.utils.jsonPretify.JsonPretifier;
 import io.qameta.allure.Allure;
 import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.filter.FilterContext;
 import io.restassured.filter.OrderedFilter;
+import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import io.restassured.specification.FilterableRequestSpecification;
 import io.restassured.specification.FilterableResponseSpecification;
@@ -14,6 +16,7 @@ import java.util.Date;
  * Класс для настройки логирования API запросов в Allure.
  */
 //TODO добавить разделение на функции/классы
+    //TODO pretify json response body
 public class CustomAllureFilter implements OrderedFilter {
     private final AllureRestAssured allureFilter = new AllureRestAssured();
 
@@ -35,11 +38,10 @@ public class CustomAllureFilter implements OrderedFilter {
 
         // 3. Стандартная обработка AllureRestAssured
 
-
         // Логирование тела запроса
         if (requestSpec.getBody() != null) {
             String requestBody = requestSpec.getBody().toString();
-            Allure.addAttachment("Request Body", "application/json", requestBody);
+            Allure.addAttachment("Request Body", "application/json", JsonPretifier.pretifyJson(requestBody));
         }
         Response response = allureFilter.filter(requestSpec, responseSpec, ctx);
 
@@ -50,7 +52,7 @@ public class CustomAllureFilter implements OrderedFilter {
 
         // Логирование тела ответа
         if (response.getBody() != null) {
-            Allure.addAttachment("Response Body", "application/json", response.getBody().asString());
+            Allure.addAttachment("Response Body", "application/json", JsonPretifier.pretifyJson(response.getBody().asString()));
 
         }
         return response;

@@ -1,0 +1,21 @@
+package com.framework.utils.dataGenerators;
+
+import com.framework.api.pojo.users.create.rq.CreateUserPojoRq;
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
+public class CreateUserGenerator {
+    CustomFaker faker = new CustomFaker();
+
+    /**
+     * Сгенерировать пользователя для создания.
+     * @return - полльзователь.
+     */
+    public CreateUserPojoRq generateUser() {
+        return CreateUserPojoRq
+                .builder()
+                .job(faker.getJob())
+                .name(faker.name().firstName())
+                .build();
+    }
+}
