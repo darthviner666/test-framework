@@ -13,7 +13,7 @@
         <java.version>11</java.version>
         <lombok.version>1.18.30</lombok.version>
         <javafaker.version>1.0.2</javafaker.version>
-        <selenide.version>6.12.2</selenide.version>
+        <selenide.version>6.19.1</selenide.version>
         <rest-assured.version>5.3.0</rest-assured.version>
         <allure.version>2.21.0</allure.version>
         <owner.version>1.0.12</owner.version>
@@ -111,8 +111,15 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${maven-surefire-plugin.version}</version>
                 <configuration>
+                    <parallel>classes</parallel>
+                    <threadCount>3</threadCount>
+                    <perCoreThreadCount>true</perCoreThreadCount>
+                    <includes>
+                        <include>**/*Test.java</include>
+                    </includes>
                     <suiteXmlFiles>
-                        <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>
+                        <suiteXmlFile>src/test/resources/apiTests.xml</suiteXmlFile>
+                        <suiteXmlFile>src/test/resources/uiTests.xml</suiteXmlFile>
                     </suiteXmlFiles>
                     <argLine>
                         -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"
@@ -156,6 +163,32 @@
             <id>ci</id>
             <properties>
                 <selenide.headless>true</selenide.headless>
+            </properties>
+        </profile>
+        <profile>
+            <id>chrome</id>
+            <properties>
+                <browser.name>chrome</browser.name>
+            </properties>
+        </profile>
+        <profile>
+            <id>firefox</id>
+            <properties>
+                <browser.name>firefox</browser.name>
+            </properties>
+        </profile>
+        <profile>
+            <id>edge</id>
+            <properties>
+                <browser.name>edge</browser.name>
+            </properties>
+        </profile>
+        <profile>
+            <id>remote-chrome</id>
+            <properties>
+                <browser.name>chrome</browser.name>
+                <run.mode>remote</run.mode>
+                <enable.vnc>true</enable.vnc>
             </properties>
         </profile>
     </profiles>

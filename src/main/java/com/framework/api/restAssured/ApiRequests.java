@@ -1,7 +1,7 @@
-package com.framework.api;
+package com.framework.api.restAssured;
 
+import com.framework.api.allure.CustomAllureFilter;
 import com.framework.config.ConfigReader;
-import io.qameta.allure.Allure;
 import io.qameta.allure.Step;
 import io.restassured.http.Method;
 import io.restassured.response.Response;

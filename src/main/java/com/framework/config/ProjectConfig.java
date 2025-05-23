@@ -13,12 +13,6 @@ public interface ProjectConfig extends Config {
     @Config.Key("browser")
     String browser();
 
-    @Config.Key("browser.version")
-    String browserVersion();
-
-    @Config.Key("browser.size")
-    String browserSize();
-
     @Config.Key("base.url")
     String baseUrl();
 
@@ -30,5 +24,32 @@ public interface ProjectConfig extends Config {
 
     @Config.Key("timeout")
     long timeout();
+
+    @Key("browser.name")
+    @DefaultValue("chrome")
+    String browserName();
+
+    @Key("browser.version")
+    String browserVersion();
+
+    @Key("run.mode")
+    @DefaultValue("local")
+    String runMode(); // local / remote / grid
+
+    @Key("remote.url")
+    @DefaultValue("http://localhost:4444/wd/hub")
+    String remoteUrl();
+
+    @Key("browser.size")
+    @DefaultValue("1920x1080")
+    String browserSize();
+
+    @Key("enable.vnc")
+    @DefaultValue("false")
+    boolean enableVnc();
+
+    @Key("enable.video")
+    @DefaultValue("false")
+    boolean enableVideo();
 }
 

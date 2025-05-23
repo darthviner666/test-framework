@@ -1,19 +1,17 @@
 package com.framework.api.helpers;
 
-import com.framework.api.ApiRequests;
-import com.framework.api.Endpoints;
-import com.framework.api.HeadersBuilder;
+import com.framework.api.restAssured.ApiRequests;
+import com.framework.api.endpoints.Endpoints;
+import com.framework.api.restAssured.HeadersBuilder;
 import com.framework.api.pojo.users.create.rq.CreateUserPojoRq;
 import com.framework.api.pojo.users.create.rs.CreateUserPojoRs;
 import com.framework.api.pojo.users.get.rs.GetUserPojoRs;
 import com.framework.asserts.AssertionsWithAllureLog;
 import com.framework.utils.deserialize.JsonDeserializer;
-import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.Method;
 import io.restassured.response.Response;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
