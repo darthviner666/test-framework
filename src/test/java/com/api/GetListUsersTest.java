@@ -30,8 +30,10 @@ public class GetListUsersTest extends TestBase {
 
         UserHelper helper = new UserHelper();
 
+        step("Получить пользователей");
         GetUserPojoRs[] users = helper.getUsers(page);
 
+        step("Сравнить поля11111");
         for (GetUserPojoRs user : users) {
             AssertionsWithAllureLog.assertNotEquals(user.firstName, "", "Имя не пустое");
             AssertionsWithAllureLog.assertNotEquals(user.lastName, "", "Фамилия не пустая");
