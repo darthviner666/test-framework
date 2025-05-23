@@ -14,7 +14,7 @@ public class CreateUserGenerator {
     public CreateUserPojoRq generateUser() {
         return CreateUserPojoRq
                 .builder()
-                .job(faker.getJob())
+                .job(faker.job().title())
                 .name(faker.name().firstName())
                 .build();
     }

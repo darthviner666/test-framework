@@ -1,4 +1,4 @@
-package com.framework.api;
+package com.framework.api.endpoints;
 
 /**
  * Класс с эндпоинтами.

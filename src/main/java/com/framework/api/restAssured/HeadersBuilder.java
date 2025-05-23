@@ -1,4 +1,4 @@
-package com.framework.api;
+package com.framework.api.restAssured;
 
 import java.util.HashMap;
 import java.util.Map;

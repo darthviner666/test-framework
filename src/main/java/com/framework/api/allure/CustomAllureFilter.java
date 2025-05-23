@@ -1,11 +1,10 @@
-package com.framework.api;
+package com.framework.api.allure;
 
 import com.framework.utils.jsonPretify.JsonPretifier;
 import io.qameta.allure.Allure;
 import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.filter.FilterContext;
 import io.restassured.filter.OrderedFilter;
-import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import io.restassured.specification.FilterableRequestSpecification;
 import io.restassured.specification.FilterableResponseSpecification;

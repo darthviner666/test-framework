@@ -1,5 +1,6 @@
-package com.framework.api;
+package com.framework.api.restAssured;
 
+import com.framework.api.allure.CustomAllureFilter;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.filter.log.LogDetail;
