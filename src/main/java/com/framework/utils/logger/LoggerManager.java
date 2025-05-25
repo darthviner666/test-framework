@@ -1,9 +1,13 @@
 package com.framework.utils.logger;
 
+import io.qameta.allure.Allure;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Логгер сигнлтон.
@@ -24,28 +28,7 @@ public class LoggerManager {
     public static LoggerManager getInstance() {
         return instance.get();
     }
-
-    public void testStart(String testName) {
-        logger.info(TEST_START, "🚀 Starting test: {}", testName);
-    }
-
-    public void testEnd(String testName, String status) {
-        logger.info(TEST_END, "{} Test: {} {}",
-                status.equals("PASSED") ? "✅" : "❌",
-                testName,
-                status);
-    }
-
     public void step(String message) {
         logger.info(STEP, "▷ {}", message);
-    }
-
-    // Дополнительные методы
-    public void debug(String message) {
-        logger.debug(message);
-    }
-
-    public void error(String message, Throwable throwable) {
-        logger.error(message, throwable);
     }
 }

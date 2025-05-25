@@ -17,7 +17,7 @@ import org.testng.annotations.Test;
 @Severity(SeverityLevel.BLOCKER)
 public class CreateUserTest extends TestBase {
 
-    @DataProvider(name = "data")
+    @DataProvider(name = "data", parallel = true)
     public CreateUserPojoRq[][] provideData() {
         return new CreateUserPojoRq[][]{
                 {CreateUserGenerator.generateUser()},
@@ -25,7 +25,7 @@ public class CreateUserTest extends TestBase {
         };
     }
 
-    @Test(description = "Проверка создания пользователей", testName = "Получить пользователей", dataProvider = "data", threadPoolSize = 2)
+    @Test(description = "Проверка создания пользователей", testName = "Cоздание пользователей", dataProvider = "data", threadPoolSize = 2)
     @Story("Положительный сценарий")
     @Severity(SeverityLevel.BLOCKER)
     public void createUserTest(CreateUserPojoRq user) {
@@ -34,10 +34,8 @@ public class CreateUserTest extends TestBase {
 
         UserHelper helper = new UserHelper();
 
-        step("Создать пользователя");
         CreateUserPojoRs userRs = helper.createUser(user);
 
-        step("Сравнить поля");
         AssertionsWithAllureLog.assertEquals(userRs.job, user.job, "Поле job");
         AssertionsWithAllureLog.assertEquals(userRs.getName(), user.name, "Поле name");
     }

@@ -8,8 +8,10 @@ import com.framework.api.pojo.users.create.rs.CreateUserPojoRs;
 import com.framework.api.pojo.users.get.rs.GetUserPojoRs;
 import com.framework.asserts.AssertionsWithAllureLog;
 import com.framework.utils.deserialize.JsonDeserializer;
+import com.framework.utils.logger.TestLogger;
 import io.restassured.http.Method;
 import io.restassured.response.Response;
+import org.apache.logging.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,6 +21,7 @@ import java.util.Map;
  */
 public class UserHelper {
 
+    protected TestLogger logger;
     /**
      * Создать пользователя.
      * @param user - пользователь.

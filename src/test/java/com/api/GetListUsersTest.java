@@ -12,7 +12,7 @@ import org.testng.annotations.Test;
 @Feature("Работа с пользователями")
 @Severity(SeverityLevel.BLOCKER)
 public class GetListUsersTest extends TestBase {
-    @DataProvider(name = "data")
+    @DataProvider(name = "data", parallel = true)
     public Integer[][] provideData() {
         return new Integer[][]{
                 {1},
@@ -30,10 +30,10 @@ public class GetListUsersTest extends TestBase {
 
         UserHelper helper = new UserHelper();
 
-        step("Получить пользователей");
+        logStep("Получить пользователей");
         GetUserPojoRs[] users = helper.getUsers(page);
 
-        step("Сравнить поля11111");
+        logStep("Сравнить поля");
         for (GetUserPojoRs user : users) {
             AssertionsWithAllureLog.assertNotEquals(user.firstName, "", "Имя не пустое");
             AssertionsWithAllureLog.assertNotEquals(user.lastName, "", "Фамилия не пустая");

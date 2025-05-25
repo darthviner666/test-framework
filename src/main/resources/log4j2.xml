@@ -1,57 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="WARN" monitorInterval="30">
+    <Properties>
+        <Property name="LOG_DIR">target/logs</Property>
+        <Property name="LOG_PATTERN">%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level [%X{testName}] %msg%n</Property>
+        <Property name="ARCHIVE_PATTERN">${LOG_DIR}/archive/${date:yyyy-MM}/%d{yyyy-MM-dd}-%i.log</Property>
+    </Properties>
+
     <Appenders>
-        <!-- Консольный вывод с цветами -->
+        <!-- 1. Консольный аппендер с цветным выводом -->
         <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout pattern="%style{%d{HH:mm:ss.SSS}}{cyan} [%t] %highlight{%-5level} %style{%logger{36}}{magenta} - %msg%n"/>
+            <PatternLayout pattern="%style{%d{HH:mm:ss.SSS}}{cyan} %highlight{%-5level} %style{[%X{testName}]}{yellow} %msg%n"/>
         </Console>
 
-        <!-- Файловый лог с ротацией -->
-        <RollingFile name="File" fileName="logs/selenide.log"
-                     filePattern="logs/selenide-%d{yyyy-MM-dd}-%i.log">
-            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
-            <Policies>
-                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
-                <SizeBasedTriggeringPolicy size="10 MB"/>
-            </Policies>
-            <DefaultRolloverStrategy max="10"/>
-        </RollingFile>
-
-        <AllureLog4jAppender name="Allure"/>
-
-        <!-- Логи для Allure -->
-        <File name="AllureFile" fileName="target/allure-logs/test.log" append="false">
-            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level - %msg%n"/>
-        </File>
+        <!-- 2. Файловый аппендер для каждого теста -->
+        <Routing name="RoutingAppender">
+            <Routes pattern="$${ctx:testName}">
+                <Route>
+                    <RollingFile name="TestLog-${ctx:testName}"
+                                 fileName="${LOG_DIR}/${ctx:testName}.log"
+                                 filePattern="${ARCHIVE_PATTERN}">
+                        <PatternLayout pattern="${LOG_PATTERN}"/>
+                        <Policies>
+                            <SizeBasedTriggeringPolicy size="10 MB"/>
+                        </Policies>
+                        <DefaultRolloverStrategy max="20"/>
+                    </RollingFile>
+                </Route>
+            </Routes>
+        </Routing>
     </Appenders>
 
     <Loggers>
-        <!-- Основной логгер -->
         <Root level="INFO">
             <AppenderRef ref="Console"/>
-            <AppenderRef ref="File"/>
+            <AppenderRef ref="RoutingAppender"/>
         </Root>
-
-        <!-- Детальные логи для Selenide -->
-        <Logger name="com.codeborne.selenide" level="DEBUG" additivity="false">
-            <AppenderRef ref="Console"/>
-            <AppenderRef ref="File"/>
-        </Logger>
-
-        <!-- Логи для Allure -->
-        <Logger name="allure" level="INFO" additivity="false">
-            <AppenderRef ref="AllureFile"/>
-        </Logger>
-
-        <Root level="info">
-            <AppenderRef ref="Allure"/>
-        </Root>
-
-        <!-- Уменьшаем уровень логирования для шумных библиотек -->
-        <Logger name="org.openqa.selenium" level="WARN"/>
-        <Logger name="org.apache.http" level="WARN"/>
-        <Logger name="org.reflections" level="ERROR"/>
-        <Logger name="com.github.vedenin" level="ERROR"/>
-        <Logger name="io.netty" level="WARN"/>
     </Loggers>
 </Configuration>

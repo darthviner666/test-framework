@@ -5,72 +5,44 @@ import com.framework.api.restAssured.ApiSpecs;
 import com.framework.config.ConfigReader;
 import com.framework.config.ProjectConfig;
 import com.framework.utils.logger.LoggerManager;
+import com.framework.utils.logger.TestLogger;
 import io.qameta.allure.Allure;
 import io.qameta.allure.Step;
 import io.restassured.RestAssured;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.ThreadContext;
 import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 /**
  * Класс для базовой настройки автотестов.
  */
 public class TestBase {
-    private static final ProjectConfig config = ConfigReader.Instance();
-    protected final LoggerManager log = LoggerManager.getInstance();
-    /**
-     * Настройка.
-     */
-    @BeforeSuite
-    static void setup() {
-
-        // RestAssured configuration
-        //RestAssured.baseURI = config.apiBaseUrl();
-        RestAssured.requestSpecification = ApiSpecs.getDefaultRequestSpec();
-        RestAssured.responseSpecification = ApiSpecs.getDefaultResponseSpec();
-
-    }
+    protected TestLogger logger;
 
     @BeforeMethod
-    public void beforeMethod() {
-        log.testStart(getTestName());
+    public void beforeMethod(ITestResult result) {
+        this.logger = new TestLogger(this.getClass());
+        logger.initTest(result);
     }
+
     @AfterMethod
     public void afterMethod(ITestResult result) {
-        String status = result.isSuccess() ? "PASSED" : "FAILED";
-        log.testEnd(getTestName(), status);
-
-        // Прикрепляем логи к Allure
-        Allure.addAttachment("Test Logs",
-                "text/plain",
-                getTestLogs());
+        logger.finishTest(result);
     }
 
-    private String getTestLogs() {
-        // Здесь можно реализовать сбор логов из файла или буфера
-        return "Логи теста...";
+    protected void logStep(String message) {
+        logger.logStep(message);
     }
 
-    @Step("{0}")
-    protected void step(String message) {
-        log.step(message);
-    }
-
-    private String getTestName() {
-        return this.getClass().getSimpleName() + "." +
-                Thread.currentThread().getStackTrace()[3].getMethodName();
-    }
-
-    private String getTestStatus() {
-        return Selenide.webdriver().driver().hasWebDriverStarted() ? "PASSED" : "FAILED";
-    }
-
-    /**
-     * Выход из теста.
-     */
-    @AfterMethod
-    void tearDown() {
-        RestAssured.reset();
-    }
 }
