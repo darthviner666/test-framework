@@ -20,6 +20,7 @@ public class BrowserFactory {
      */
     public static void setupBrowser(@Optional String browser, String browserVersion) {
         ProjectConfig config = Instance();
+        Configuration.webdriverLogsEnabled = true;
 
         switch (config.runMode().toLowerCase()) {
             case "remote":

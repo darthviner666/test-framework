@@ -116,4 +116,24 @@ public class TestLogger {
         log.debug(message);
         Allure.addAttachment("API Request/Response", "text/plain", message);
     }
+
+    public void info(String message) {
+        log.info(message);
+    }
+
+    public void error(String message, String testName, Throwable throwable) {
+        log.error(message, testName, throwable);
+    }
+
+    public void debug(String s, String element, String subject) {
+        log.debug(s,element,subject);
+    }
+
+    public void info(String s, String element, String subject, long duration) {
+        log.info(s,element,subject,duration);
+    }
+
+    public void error(String s, String element, String subject, long duration) {
+        log.error(s,element,subject,duration);
+    }
 }

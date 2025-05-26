@@ -1,6 +1,7 @@
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
 <suite name="Selenoid Parallel Tests">
     <listeners>
+        <listener class-name="com.framework.listeners.TestExecutionListener"/>
         <listener class-name="io.qameta.allure.testng.AllureTestNg"/>
     </listeners>
     <!-- Chrome Test -->

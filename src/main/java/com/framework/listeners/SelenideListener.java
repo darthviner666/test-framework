@@ -2,11 +2,11 @@ package com.framework.listeners;
 
 import com.codeborne.selenide.logevents.LogEvent;
 import com.codeborne.selenide.logevents.LogEventListener;
-import org.slf4j.Logger;
+import com.framework.utils.logger.TestLogger;
 import org.slf4j.LoggerFactory;
 
 public class SelenideListener implements LogEventListener {
-    private static final Logger log = LoggerFactory.getLogger(SelenideListener.class);
+    private static final TestLogger log = new TestLogger(SelenideListener.class);
 
     @Override
     public void beforeEvent(LogEvent currentLog) {
