@@ -3,7 +3,7 @@
     <listeners>
         <listener class-name="io.qameta.allure.testng.AllureTestNg"/>
     </listeners>
-    <test name="API Tests" parallel="methods" thread-count="2">
+    <test name="API Tests" parallel="tests" thread-count="2">
         <classes>
             <class name="com.api.GetListUsersTest"/>
             <class name="com.api.CreateUserTest"/>

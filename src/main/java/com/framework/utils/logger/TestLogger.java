@@ -12,11 +12,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.UUID;
 
 public class TestLogger {
     private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
     private final Logger log;
     private long testStartTime;
+    private String uniqueid;
     private String testName;
     private String logFilePath;
 
@@ -27,9 +29,11 @@ public class TestLogger {
     public void initTest(ITestResult result) {
         this.testName = result.getMethod().getMethodName();
         this.testStartTime = System.currentTimeMillis();
-        this.logFilePath = String.format("target/logs/%s_%s.log",
+        this.uniqueid = UUID.randomUUID().toString().substring(0, 6);
+        this.logFilePath = String.format("target/logs/%s_%s_%s.log",
                 testName,
-                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")));
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")),
+                uniqueid);
 
         ThreadContext.put("testName", testName);
         ThreadContext.put("logFile", logFilePath);

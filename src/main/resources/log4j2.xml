@@ -3,28 +3,23 @@
     <Properties>
         <Property name="LOG_DIR">target/logs</Property>
         <Property name="LOG_PATTERN">%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level [%X{testName}] %msg%n</Property>
-        <Property name="ARCHIVE_PATTERN">${LOG_DIR}/archive/${date:yyyy-MM}/%d{yyyy-MM-dd}-%i.log</Property>
     </Properties>
 
     <Appenders>
-        <!-- 1. Консольный аппендер с цветным выводом -->
+        <!-- Консольный вывод -->
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout pattern="%style{%d{HH:mm:ss.SSS}}{cyan} %highlight{%-5level} %style{[%X{testName}]}{yellow} %msg%n"/>
         </Console>
 
-        <!-- 2. Файловый аппендер для каждого теста -->
+        <!-- Аппендер с динамическим именем файла -->
         <Routing name="RoutingAppender">
-            <Routes pattern="$${ctx:testName}">
+            <Routes pattern="$${ctx:logFile}">
                 <Route>
-                    <RollingFile name="TestLog-${ctx:testName}"
-                                 fileName="${LOG_DIR}/${ctx:testName}.log"
-                                 filePattern="${ARCHIVE_PATTERN}">
+                    <File name="TestLog-${ctx:logFile}"
+                          fileName="${ctx:logFile}.log"
+                          append="false">
                         <PatternLayout pattern="${LOG_PATTERN}"/>
-                        <Policies>
-                            <SizeBasedTriggeringPolicy size="10 MB"/>
-                        </Policies>
-                        <DefaultRolloverStrategy max="20"/>
-                    </RollingFile>
+                    </File>
                 </Route>
             </Routes>
         </Routing>
