@@ -16,7 +16,7 @@ import org.testng.annotations.Test;
 @Severity(SeverityLevel.BLOCKER)
 public class CreateUserTest extends TestBase {
 
-    @DataProvider(name = "data", parallel = true)
+    @DataProvider(name = "data")
     public CreateUserPojoRq[][] provideData() {
         return new CreateUserPojoRq[][]{
                 {CreateUserGenerator.generateUser()},
@@ -24,7 +24,7 @@ public class CreateUserTest extends TestBase {
         };
     }
 
-    @Test(description = "Проверка создания пользователей", testName = "Cоздание пользователей", dataProvider = "data", threadPoolSize = 2)
+    @Test(description = "Проверка создания пользователей", testName = "Cоздание пользователей", dataProvider = "data")
     @Story("Положительный сценарий")
     @Severity(SeverityLevel.BLOCKER)
     public void createUserTest(CreateUserPojoRq user) {

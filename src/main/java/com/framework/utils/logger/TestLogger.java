@@ -30,7 +30,7 @@ public class TestLogger {
         this.testName = result.getMethod().getMethodName();
         this.testStartTime = System.currentTimeMillis();
         this.uniqueid = UUID.randomUUID().toString().substring(0, 6);
-        this.logFilePath = String.format("target/logs/%s_%s_%s.log",
+        this.logFilePath = String.format("target/logs/%s_%s_%s",
                 testName,
                 LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")),
                 uniqueid);
@@ -56,7 +56,7 @@ public class TestLogger {
         String logMessage = String.format("[ШАГ] %s: %s", timestamp, message);
 
         log.info(logMessage); // Пишем в файл и консоль
-        Allure.step(logMessage); // Добавляем шаг в Allure
+        //Allure.step(logMessage); // Добавляем шаг в Allure
     }
 
     private void ensureLogDirectoryExists() {
@@ -71,7 +71,7 @@ public class TestLogger {
         String startMessage = formatTestMessage(
                 "═══════════════════════════════════════════",
                 "🚀 НАЧАЛО ТЕСТА: " + testName,
-                "📁 Логи будут сохранены в: " + logFilePath,
+                "📁 Логи будут сохранены в: " + logFilePath+".log",
                 "═══════════════════════════════════════════"
         );
 
@@ -92,9 +92,9 @@ public class TestLogger {
         Allure.addAttachment("Результат теста", "text/plain", endMessage);
     }
 
-    private void attachLogsToAllure() {
+     private void attachLogsToAllure() {
         try {
-            String logs = Files.readString(Path.of(logFilePath));
+            String logs = Files.readString(Paths.get(logFilePath+".log"));
             Allure.addAttachment("Полные логи теста", "text/plain", logs);
         } catch (IOException e) {
             log.error("Не удалось прочитать логи теста", e);
