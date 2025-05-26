@@ -1,6 +1,6 @@
 package com.api;
 
-import com.TestBase;
+import com.testBase.TestBase;
 import com.framework.api.helpers.UserHelper;
 import com.framework.api.pojo.users.create.rq.CreateUserPojoRq;
 import com.framework.api.pojo.users.create.rs.CreateUserPojoRs;

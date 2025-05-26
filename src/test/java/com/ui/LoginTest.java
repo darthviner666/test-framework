@@ -1,6 +1,6 @@
 package com.ui;
 
-import com.TestBase;
+import com.testBase.TestBase;
 
 
 import static com.codeborne.selenide.Condition.text;

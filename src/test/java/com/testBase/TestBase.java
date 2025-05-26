@@ -1,4 +1,4 @@
-package com;
+package com.testBase;
 
 import com.framework.utils.logger.TestLogger;
 import org.testng.ITestResult;
