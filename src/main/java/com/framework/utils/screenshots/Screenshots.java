@@ -5,6 +5,7 @@ import io.qameta.allure.Allure;
 import org.openqa.selenium.OutputType;
 
 import java.io.ByteArrayInputStream;
+import java.util.Objects;
 
 /**
  * Класс для скриншотов.
@@ -17,6 +18,6 @@ public class Screenshots {
     public static void takeScreenshot(String screenName) {
         // Делаем скриншот и явно прикрепляем
         Allure.addAttachment(screenName,
-                new ByteArrayInputStream(Selenide.screenshot(OutputType.BYTES)));
+                new ByteArrayInputStream(Objects.requireNonNull(Selenide.screenshot(OutputType.BYTES))));
     }
 }

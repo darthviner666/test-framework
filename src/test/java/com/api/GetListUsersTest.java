@@ -20,7 +20,7 @@ public class GetListUsersTest extends TestBase {
         };
     }
 
-    @Test(description = "Проверка получения пользователей на странице", testName = "Получить пользователей", dataProvider = "data", threadPoolSize = 2)
+    @Test(description = "Проверка получения пользователей на странице", testName = "Получить пользователей", dataProvider = "data")
     @Story("Положительный сценарий")
     @Severity(SeverityLevel.BLOCKER)
     public void getUsersListOkTest(Integer page) {
@@ -30,8 +30,10 @@ public class GetListUsersTest extends TestBase {
 
         UserHelper helper = new UserHelper();
 
+        logStep("Получить пользователей");
         GetUserPojoRs[] users = helper.getUsers(page);
 
+        logStep("Сравнить поля");
         for (GetUserPojoRs user : users) {
             AssertionsWithAllureLog.assertNotEquals(user.firstName, "", "Имя не пустое");
             AssertionsWithAllureLog.assertNotEquals(user.lastName, "", "Фамилия не пустая");

@@ -1,36 +1,29 @@
 package com;
 
-import com.framework.api.restAssured.ApiSpecs;
-import com.framework.config.ConfigReader;
-import com.framework.config.ProjectConfig;
-import io.restassured.RestAssured;
+import com.framework.utils.logger.TestLogger;
+import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.BeforeMethod;
 
 /**
  * Класс для базовой настройки автотестов.
  */
 public class TestBase {
-    private static final ProjectConfig config = ConfigReader.Instance();
+    protected TestLogger logger;
 
-    /**
-     * Настройка.
-     */
-    @BeforeSuite
-    static void setup() {
-
-        // RestAssured configuration
-        //RestAssured.baseURI = config.apiBaseUrl();
-        RestAssured.requestSpecification = ApiSpecs.getDefaultRequestSpec();
-        RestAssured.responseSpecification = ApiSpecs.getDefaultResponseSpec();
-
+    @BeforeMethod
+    public void beforeMethod(ITestResult result) {
+        this.logger = new TestLogger(this.getClass());
+        logger.initTest(result);
     }
 
-    /**
-     * Выход из теста.
-     */
     @AfterMethod
-    void tearDown() {
-        RestAssured.reset();
+    public void afterMethod(ITestResult result) {
+        logger.finishTest(result);
     }
+
+    protected void logStep(String message) {
+        logger.logStep(message);
+    }
+
 }
