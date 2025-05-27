@@ -136,4 +136,12 @@ public class TestLogger {
     public void error(String s, String element, String subject, long duration) {
         log.error(s,element,subject,duration);
     }
+
+    public void info(String s, String method, String uri) {
+        log.info(s, method, uri);
+    }
+
+    public <T> void debug(String s, T body) {
+        log.debug(s, body);
+    }
 }

@@ -8,6 +8,11 @@ import org.slf4j.LoggerFactory;
 public class SelenideListener implements LogEventListener {
     private static final TestLogger log = new TestLogger(SelenideListener.class);
 
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(SelenideListener.class);
+
+    public SelenideListener() {
+        log.info("Selenide listener initialized");
+    }
     @Override
     public void beforeEvent(LogEvent currentLog) {
         log.debug("Selenide START: {} | {}", currentLog.getElement(), currentLog.getSubject());
