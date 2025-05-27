@@ -2,12 +2,12 @@ package com.framework.ui.browserFactory;
 
 import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.WebDriverRunner;
-import com.framework.config.ProjectConfig;
+import com.framework.utils.config.ProjectConfig;
 import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.testng.annotations.Optional;
 
-import static com.framework.config.ConfigReader.Instance;
+import static com.framework.utils.config.ConfigReader.Instance;
 
 /**
  * Класс для настройки браузеров.

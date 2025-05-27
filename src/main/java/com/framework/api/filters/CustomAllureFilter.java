@@ -1,4 +1,4 @@
-package com.framework.api.allure;
+package com.framework.api.filters;
 
 import com.framework.utils.jsonPretify.JsonPretifier;
 import io.qameta.allure.Allure;

@@ -1,7 +1,8 @@
 package com.framework.api.restAssured;
 
-import com.framework.api.allure.CustomAllureFilter;
-import com.framework.config.ConfigReader;
+import com.framework.api.filters.CustomAllureFilter;
+import com.framework.api.filters.CustomRestAssuredFilter;
+import com.framework.utils.config.ConfigReader;
 import io.qameta.allure.Step;
 import io.restassured.http.Method;
 import io.restassured.response.Response;
@@ -35,11 +36,11 @@ public class ApiRequests {
 
         RequestSpecification requestSpec = requestBuilder.apply(given());
         requestSpec
-                .log().all()
                 .baseUri(ConfigReader.Instance().apiBaseUrl())
-                .filter(new CustomAllureFilter());
+                .filter(new CustomAllureFilter())
+                .filter(new CustomRestAssuredFilter());
         return requestSpec.request(httpMethod, endpoint)
-                .then().log().all()
+                .then()
                 .extract().response();
     }
 

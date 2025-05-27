@@ -4,7 +4,7 @@
 Используемые инструменты: Java 11, TestNG, RestAssured, Selenide, Selenoid, Log4j, Lombok, Owner, Allure, Faker, JsonPath, Maven
 Примеры лог файлов находтся в папке logs (генерируются в target/logs)
 Список задач:
-Дописать логирование,
+Дописать логирование (вывод статистики тестов после съюта),
 Добавить Listeners,
 Добавить восстановление кукис в веб драйвере,
 Добавить Cucumber,

@@ -20,23 +20,33 @@ public class TestLogger {
     private long testStartTime;
     private String uniqueid;
     private String testName;
-    private String logFilePath;
+    private String logTestFilePath;
+    private String logSuiteFilePath;
 
     public TestLogger(Class<?> testClass) {
         this.log = LogManager.getLogger(testClass);
+    }
+
+    public void initSuite(String suiteName) {
+        this.logSuiteFilePath = String.format("target/logs/suite_%s_%s.log",
+                suiteName,
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")));
+        ThreadContext.put("logFile", logSuiteFilePath);
+        ensureLogDirectoryExists();
+        log.info("Начало выполнения тестового набора: {}", suiteName);
     }
 
     public void initTest(ITestResult result) {
         this.testName = result.getMethod().getMethodName();
         this.testStartTime = System.currentTimeMillis();
         this.uniqueid = UUID.randomUUID().toString().substring(0, 6);
-        this.logFilePath = String.format("target/logs/%s_%s_%s",
+        this.logTestFilePath = String.format("target/logs/%s_%s_%s",
                 testName,
                 LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")),
                 uniqueid);
 
         ThreadContext.put("testName", testName);
-        ThreadContext.put("logFile", logFilePath);
+        ThreadContext.put("logFile", logTestFilePath);
 
         ensureLogDirectoryExists();
         logTestStart();
@@ -71,7 +81,7 @@ public class TestLogger {
         String startMessage = formatTestMessage(
                 "═══════════════════════════════════════════",
                 "🚀 НАЧАЛО ТЕСТА: " + testName,
-                "📁 Логи будут сохранены в: " + logFilePath+".log",
+                "📁 Логи будут сохранены в: " + logTestFilePath + ".log",
                 "═══════════════════════════════════════════"
         );
 
@@ -92,9 +102,9 @@ public class TestLogger {
         Allure.addAttachment("Результат теста", "text/plain", endMessage);
     }
 
-     private void attachLogsToAllure() {
+    private void attachLogsToAllure() {
         try {
-            String logs = Files.readString(Paths.get(logFilePath+".log"));
+            String logs = Files.readString(Paths.get(logTestFilePath + ".log"));
             Allure.addAttachment("Полные логи теста", "text/plain", logs);
         } catch (IOException e) {
             log.error("Не удалось прочитать логи теста", e);
@@ -126,15 +136,15 @@ public class TestLogger {
     }
 
     public void debug(String s, String element, String subject) {
-        log.debug(s,element,subject);
+        log.debug(s, element, subject);
     }
 
     public void info(String s, String element, String subject, long duration) {
-        log.info(s,element,subject,duration);
+        log.info(s, element, subject, duration);
     }
 
     public void error(String s, String element, String subject, long duration) {
-        log.error(s,element,subject,duration);
+        log.error(s, element, subject, duration);
     }
 
     public void info(String s, String method, String uri) {
@@ -143,5 +153,29 @@ public class TestLogger {
 
     public <T> void debug(String s, T body) {
         log.debug(s, body);
+    }
+
+    public void info(String s, String name) {
+        log.info(s, name);
+    }
+
+    public void createLogFilePath() {
+        logTestFilePath = "target/logs/test_" + System.currentTimeMillis() + "_" + UUID.randomUUID().toString().substring(0, 6);
+        ThreadContext.put("logFile", logTestFilePath);
+
+
+    }
+
+    public void finishSuite(String name) {
+        ThreadContext.put("logFile", logSuiteFilePath);
+        log.info("Завершение тестового набора: {}", name);
+        String endMessage = formatTestMessage(
+                "═══════════════════════════════════════════",
+                "✅ ТЕСТОВЫЙ НАБОР ЗАВЕРШЕН: " + name,
+                "═══════════════════════════════════════════"
+        );
+        log.info(endMessage);
+        Allure.addAttachment("Завершение тестового набора", "text/plain", endMessage);
+        ThreadContext.clearAll();
     }
 }
