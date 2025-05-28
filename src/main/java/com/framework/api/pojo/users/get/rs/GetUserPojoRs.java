@@ -8,7 +8,6 @@ import lombok.Data;
 /**
  * POJO класс для получения пользователей.
  */
-@Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GetUserPojoRs extends BasePojoRs {
     public Long id;

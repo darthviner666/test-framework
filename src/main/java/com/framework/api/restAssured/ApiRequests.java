@@ -3,6 +3,7 @@ package com.framework.api.restAssured;
 import com.framework.api.filters.CustomAllureFilter;
 import com.framework.api.filters.CustomRestAssuredFilter;
 import com.framework.utils.config.ConfigReader;
+import com.framework.utils.logger.TestLogger;
 import io.qameta.allure.Step;
 import io.restassured.http.Method;
 import io.restassured.response.Response;
@@ -18,6 +19,10 @@ import static io.restassured.RestAssured.given;
  */
 @UtilityClass
 public class ApiRequests {
+    /**
+     * Логгер для логирования событий.
+     */
+    private final static TestLogger log = new TestLogger(ApiRequests.class);
 
     /**
      * Отправка API запроса.
@@ -33,6 +38,7 @@ public class ApiRequests {
             String endpoint,
             Method httpMethod,
             Function<RequestSpecification, RequestSpecification> requestBuilder) {
+        log.logStep("Отправить API запрос");
 
         RequestSpecification requestSpec = requestBuilder.apply(given());
         requestSpec
@@ -55,6 +61,7 @@ public class ApiRequests {
             String requestDescription,
             String endpoint,
             Method httpMethod) {
+        log.logStep("Отправить API запрос");
         return sendRequest(
                 requestDescription,
                 endpoint,
@@ -75,6 +82,7 @@ public class ApiRequests {
             String endpoint,
             Method httpMethod,
             Object body) {
+        log.logStep("Отправить API запрос");
         return sendRequest(requestDescription,
                 endpoint,
                 httpMethod,

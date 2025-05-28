@@ -9,45 +9,38 @@ import com.framework.utils.dataGenerators.UiUserGenerator;
 import io.qameta.allure.*;
 import org.testng.annotations.Test;
 
+/**
+ * Класс для тестирования успешной регистрации пользователя через UI.
+ * Тест проверяет, что пользователь может успешно зарегистрироваться на сайте.
+ */
 @Epic("UI Тесты")
 @Feature("Регистрация")
 public class SuccessfulRegisterTest extends UiTestBase {
+
+    /**
+     * Тест для проверки успешной регистрации пользователя.
+     */
     @Test(description = "Успешная регистрация")
     @Story("Позитивный сценарий")
     @Severity(SeverityLevel.BLOCKER)
-    public void succesfulRegisterTest() {
+    public void successfulRegisterTest() {
         MainPage mainPage = new MainPage();
-        mainPage
-                .isLoaded();
-        mainPage
-                .cookieForm
-                .isLoaded();
-        mainPage
-                .cookieForm
-                .clickConfirm();
-        mainPage
-                .header
-                .clickRegister();
+        mainPage.isLoaded();
+        mainPage.getCookieForm().isLoaded();
+        mainPage.getCookieForm().clickConfirm();
+        mainPage.getHeader().clickRegister();
 
         RegisterPage registerPage = new RegisterPage();
-        registerPage
-                .isLoaded();
+        registerPage.isLoaded();
 
-        UserUiPojo user = UiUserGenerator
-                .generateUser();
+        UserUiPojo user = UiUserGenerator.generateUser();
 
-        registerPage
-                .registrationForm
-                .fillRegistrationForm(user);
+        registerPage.getRegistrationForm().fillRegistrationForm(user);
 
         SuccesfulRegisteredPopup popup = new SuccesfulRegisteredPopup();
-        popup
-                .isLoaded();
+        popup.isLoaded();
+        popup.clickConfirm();
 
-        popup
-                .clickConfirm();
-
-        mainPage
-                .isLoaded();
+        mainPage.isLoaded();
     }
 }

@@ -6,6 +6,11 @@ import org.testng.ITestListener;
 import org.testng.ITestResult;
 
 public class TestExecutionListener implements ITestListener {
+    /*
+     * Этот класс реализует интерфейс ITestListener для логирования событий выполнения тестов.
+     * Он используется для отслеживания начала, успеха, неудачи и пропуска тестов.
+     */
+    /*
     private static final TestLogger log = new TestLogger(TestExecutionListener.class);
 
     @Override
@@ -52,5 +57,7 @@ public class TestExecutionListener implements ITestListener {
     }
     @Override
     public void onFinish(ITestContext context) {
+        log.info("Test execution finished: {}", context.getName());
     }
+     */
 }

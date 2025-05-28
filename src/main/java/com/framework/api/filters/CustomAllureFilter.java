@@ -14,11 +14,38 @@ import java.util.Date;
 /**
  * Класс для настройки логирования API запросов в Allure.
  */
-//TODO добавить разделение на функции/классы
-    //TODO pretify json response body
 public class CustomAllureFilter implements OrderedFilter {
+    /**
+     * Логгер для логирования событий.
+     * Используется для записи информации о запросах и ответах.
+     */
     private final AllureRestAssured allureFilter = new AllureRestAssured();
 
+    /**
+     * Метод для форматирования тела запроса/ответа в читаемый вид.
+     * Если форматирование не удалось, возвращает исходное тело.
+     *
+     * @param body тело запроса или ответа
+     * @return отформатированное тело или исходное, если форматирование не удалось
+     */
+    private String prettifyOrRaw(String body) {
+        if (body == null || body.isEmpty()) return "";
+        try {
+            return JsonPretifier.pretifyJson(body);
+        } catch (Exception e) {
+            Allure.addAttachment("WARN: prettify failed", e.getMessage());
+            return body;
+        }
+    }
+
+    /**
+     * Метод фильтра, который выполняет логирование запросов и ответов в Allure.
+     *
+     * @param requestSpec  спецификация запроса
+     * @param responseSpec спецификация ответа
+     * @param ctx          контекст фильтрации
+     * @return ответ после выполнения запроса
+     */
     @Override
     public Response filter(FilterableRequestSpecification requestSpec,
                            FilterableResponseSpecification responseSpec,
@@ -40,7 +67,9 @@ public class CustomAllureFilter implements OrderedFilter {
         // Логирование тела запроса
         if (requestSpec.getBody() != null) {
             String requestBody = requestSpec.getBody().toString();
-            Allure.addAttachment("Request Body", "application/json", JsonPretifier.pretifyJson(requestBody));
+            String prettyBody = prettifyOrRaw(requestBody);
+            String contentType = requestSpec.getContentType() != null ? requestSpec.getContentType() : "text/plain";
+            Allure.addAttachment("Request Body", contentType, prettyBody);
         }
         Response response = allureFilter.filter(requestSpec, responseSpec, ctx);
 
@@ -51,14 +80,22 @@ public class CustomAllureFilter implements OrderedFilter {
 
         // Логирование тела ответа
         if (response.getBody() != null) {
-            Allure.addAttachment("Response Body", "application/json", JsonPretifier.pretifyJson(response.getBody().asString()));
-
+            String responseBody = response.getBody().asString();
+            String prettyBody = prettifyOrRaw(responseBody);
+            String contentType = response.getContentType() != null ? response.getContentType() : "text/plain";
+            Allure.addAttachment("Response Body", contentType, prettyBody);
         }
         return response;
     }
 
-        @Override
-        public int getOrder () {
-            return OrderedFilter.LOWEST_PRECEDENCE; // Фильтр выполняется последним
-        }
+    /**
+     * Возвращает порядок выполнения фильтра.
+     * Фильтр выполняется последним, чтобы другие фильтры могли добавить свои данные в Allure.
+     *
+     * @return порядок выполнения фильтра
+     */
+    @Override
+    public int getOrder() {
+        return OrderedFilter.LOWEST_PRECEDENCE; // Фильтр выполняется последним
     }
+}

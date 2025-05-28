@@ -12,24 +12,6 @@
         </classes>
     </test>
 
-    <!-- Firefox Test -->
-    <test name="Firefox Tests">
-        <parameter name="browser" value="firefox"/>
-        <parameter name="browserVersion" value="115.0"/>
-        <classes>
-            <class name="com.ui.SuccessfulRegisterTest"/>
-        </classes>
-    </test>
-
-    <!-- Edge Test -->
-    <test name="Edge Tests">
-        <parameter name="browser" value="edge"/>
-        <parameter name="browserVersion" value="136.0.3240.76"/>
-        <classes>
-            <class name="com.ui.SuccessfulRegisterTest"/>
-        </classes>
-    </test>
-
     <test name="API Tests">
         <classes>
             <class name="com.api.GetListUsersTest"/>

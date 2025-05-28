@@ -11,11 +11,18 @@ import io.qameta.allure.*;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+/**
+ * Класс для тестирования создания пользователей через API.
+ */
 @Epic("API Тесты")
 @Feature("Работа с пользователями")
 @Severity(SeverityLevel.BLOCKER)
 public class CreateUserTest extends TestBase {
 
+    /**
+     * Дата провайдер для генерации данных пользователей.
+     * @return массив сгенерированных пользователей.
+     */
     @DataProvider(name = "data")
     public CreateUserPojoRq[][] provideData() {
         return new CreateUserPojoRq[][]{
@@ -24,6 +31,10 @@ public class CreateUserTest extends TestBase {
         };
     }
 
+    /**
+     * Тест для проверки создания пользователей.
+     * @param user объект пользователя, который будет создан.
+     */
     @Test(description = "Проверка создания пользователей", testName = "Cоздание пользователей", dataProvider = "data")
     @Story("Положительный сценарий")
     @Severity(SeverityLevel.BLOCKER)
@@ -36,7 +47,7 @@ public class CreateUserTest extends TestBase {
         CreateUserPojoRs userRs = helper.createUser(user);
 
         AssertionsWithAllureLog.assertEquals(userRs.job, user.job, "Поле job");
-        AssertionsWithAllureLog.assertEquals(userRs.getName(), user.name, "Поле name");
+        AssertionsWithAllureLog.assertEquals(userRs.name, user.name, "Поле name");
     }
 
 }

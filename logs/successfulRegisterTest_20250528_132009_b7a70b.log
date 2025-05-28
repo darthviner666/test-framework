@@ -1,0 +1,96 @@
+2025-05-28 13:20:09.374 [main] INFO  ═══════════════════════════════════════════
+🚀 НАЧАЛО ТЕСТА: successfulRegisterTest
+📁 Логи будут сохранены в: target/logs/successfulRegisterTest_20250528_132009_b7a70b.log
+═══════════════════════════════════════════
+2025-05-28 13:20:09.517 [main] INFO  Установка локального браузера: chrome 120.0
+2025-05-28 13:20:09.519 [main] INFO  Локальный браузер настроен: chrome 120.0
+2025-05-28 13:20:09.521 [main] INFO  Настройки браузера установлены
+2025-05-28 13:20:09.581 [main] INFO  Selenide START: open | https://frutonyanya.ru/
+2025-05-28 13:20:09.596 [main] INFO  Selenide START: webdriver | create()
+2025-05-28 13:20:13.876 [main] INFO  Selenide PASS: webdriver | create() | 4279ms
+2025-05-28 13:20:20.788 [main] INFO  Selenide PASS: open | https://frutonyanya.ru/ | 11206ms
+2025-05-28 13:20:20.911 [main] INFO  [ШАГ] 2025-05-28 13:20:20.911: Проверка загрузки главной страницы
+2025-05-28 13:20:20.996 [main] INFO  Selenide START: .page__wrapper | should be(visible)
+2025-05-28 13:20:21.094 [main] INFO  Selenide PASS: .page__wrapper | should be(visible) | 97ms
+2025-05-28 13:20:21.094 [main] INFO  [ШАГ] 2025-05-28 13:20:21.094: Загрузка хэдэра
+2025-05-28 13:20:21.094 [main] INFO  Selenide START: .page__wrapper | should be(visible)
+2025-05-28 13:20:21.128 [main] INFO  Selenide PASS: .page__wrapper | should be(visible) | 33ms
+2025-05-28 13:20:21.129 [main] INFO  Selenide START: .page__wrapper/By.xpath: .//a[text()='Регистрация'] | should be(visible)
+2025-05-28 13:20:21.205 [main] INFO  Selenide PASS: .page__wrapper/By.xpath: .//a[text()='Регистрация'] | should be(visible) | 76ms
+2025-05-28 13:20:21.206 [main] INFO  Хэдер загружен
+2025-05-28 13:20:21.206 [main] INFO  Главная страница загружена успешно
+2025-05-28 13:20:21.207 [main] INFO  Selenide START: div.cookie__bg | should be(visible)
+2025-05-28 13:20:21.233 [main] INFO  Selenide PASS: div.cookie__bg | should be(visible) | 26ms
+2025-05-28 13:20:21.233 [main] INFO  Selenide START: div.cookie__bg/button[class='cookie__btn btn js-accept-cookies'] | should be(visible)
+2025-05-28 13:20:21.269 [main] INFO  Selenide PASS: div.cookie__bg/button[class='cookie__btn btn js-accept-cookies'] | should be(visible) | 35ms
+2025-05-28 13:20:21.269 [main] INFO  Selenide START: div.cookie__bg/button[class='cookie__btn btn js-accept-cookies'] | click()
+2025-05-28 13:20:21.378 [main] INFO  Selenide PASS: div.cookie__bg/button[class='cookie__btn btn js-accept-cookies'] | click() | 109ms
+2025-05-28 13:20:21.379 [main] INFO  Selenide START: div.cookie__bg | should be(be hidden)
+2025-05-28 13:20:21.402 [main] INFO  Selenide PASS: div.cookie__bg | should be(be hidden) | 23ms
+2025-05-28 13:20:21.403 [main] INFO  [ШАГ] 2025-05-28 13:20:21.403: Кликнуть по кнопке регистрация
+2025-05-28 13:20:21.403 [main] INFO  Selenide START: .page__wrapper/By.xpath: .//a[text()='Регистрация'] | click()
+2025-05-28 13:20:24.214 [main] INFO  Selenide PASS: .page__wrapper/By.xpath: .//a[text()='Регистрация'] | click() | 2810ms
+2025-05-28 13:20:24.216 [main] INFO  [ШАГ] 2025-05-28 13:20:24.216: Проверка загрузки страницы регистрации
+2025-05-28 13:20:24.217 [main] INFO  Selenide START: .page__wrapper | should be(visible)
+2025-05-28 13:20:24.249 [main] INFO  Selenide PASS: .page__wrapper | should be(visible) | 31ms
+2025-05-28 13:20:24.250 [main] INFO  [ШАГ] 2025-05-28 13:20:24.249: Проверка загрузки формы регистрации
+2025-05-28 13:20:24.250 [main] INFO  Selenide START: .page__wrapper | should be(visible)
+2025-05-28 13:20:24.285 [main] INFO  Selenide PASS: .page__wrapper | should be(visible) | 34ms
+2025-05-28 13:20:24.286 [main] INFO  Selenide START: .page__wrapper/.js-input-name | should be(visible)
+2025-05-28 13:20:24.353 [main] INFO  Selenide PASS: .page__wrapper/.js-input-name | should be(visible) | 67ms
+2025-05-28 13:20:24.353 [main] INFO  Selenide START: .page__wrapper/input[type='email'] | should be(visible)
+2025-05-28 13:20:24.398 [main] INFO  Selenide PASS: .page__wrapper/input[type='email'] | should be(visible) | 45ms
+2025-05-28 13:20:24.399 [main] INFO  Selenide START: .page__wrapper/input[type='password'][name='password1'] | should be(visible)
+2025-05-28 13:20:24.460 [main] INFO  Selenide PASS: .page__wrapper/input[type='password'][name='password1'] | should be(visible) | 60ms
+2025-05-28 13:20:24.460 [main] INFO  Selenide START: .page__wrapper/input[type='password'][name='password2'] | should be(visible)
+2025-05-28 13:20:24.503 [main] INFO  Selenide PASS: .page__wrapper/input[type='password'][name='password2'] | should be(visible) | 42ms
+2025-05-28 13:20:24.503 [main] INFO  Selenide START: .page__wrapper/By.xpath: .//i[text()='Есть дети'] | should be(visible)
+2025-05-28 13:20:24.544 [main] INFO  Selenide PASS: .page__wrapper/By.xpath: .//i[text()='Есть дети'] | should be(visible) | 40ms
+2025-05-28 13:20:24.544 [main] INFO  Selenide START: .page__wrapper/By.xpath: .//i[text()='Беременность'] | should be(visible)
+2025-05-28 13:20:24.582 [main] INFO  Selenide PASS: .page__wrapper/By.xpath: .//i[text()='Беременность'] | should be(visible) | 37ms
+2025-05-28 13:20:24.582 [main] INFO  Форма регистрации загружена
+2025-05-28 13:20:24.582 [main] INFO  Страница регистрации загружена успешно
+2025-05-28 13:20:24.882 [main] INFO  [ШАГ] 2025-05-28 13:20:24.881: Заполнение формы регистрации данными пользователя
+2025-05-28 13:20:24.882 [main] INFO  [ШАГ] 2025-05-28 13:20:24.882: Ввод имени: Kareem
+2025-05-28 13:20:24.883 [main] INFO  Selenide START: .page__wrapper/.js-input-name | send keys(Kareem)
+2025-05-28 13:20:25.034 [main] INFO  Selenide PASS: .page__wrapper/.js-input-name | send keys(Kareem) | 151ms
+2025-05-28 13:20:25.035 [main] INFO  [ШАГ] 2025-05-28 13:20:25.034: Ввод email: jonnie.reinger@email.com
+2025-05-28 13:20:25.035 [main] INFO  Selenide START: .page__wrapper/input[type='email'] | send keys(jonnie.reinger@email.com)
+2025-05-28 13:20:25.259 [main] INFO  Selenide PASS: .page__wrapper/input[type='email'] | send keys(jonnie.reinger@email.com) | 223ms
+2025-05-28 13:20:25.259 [main] INFO  [ШАГ] 2025-05-28 13:20:25.259: Ввод пароля
+2025-05-28 13:20:25.260 [main] INFO  Selenide START: .page__wrapper/input[type='password'][name='password1'] | send keys(61AUL6KEDI)
+2025-05-28 13:20:25.392 [main] INFO  Selenide PASS: .page__wrapper/input[type='password'][name='password1'] | send keys(61AUL6KEDI) | 132ms
+2025-05-28 13:20:25.393 [main] INFO  [ШАГ] 2025-05-28 13:20:25.393: Ввод подтверждения пароля
+2025-05-28 13:20:25.394 [main] INFO  Selenide START: .page__wrapper/input[type='password'][name='password2'] | send keys(61AUL6KEDI)
+2025-05-28 13:20:25.544 [main] INFO  Selenide PASS: .page__wrapper/input[type='password'][name='password2'] | send keys(61AUL6KEDI) | 150ms
+2025-05-28 13:20:25.545 [main] INFO  [ШАГ] 2025-05-28 13:20:25.545: Ввод телефона: 6356288445
+2025-05-28 13:20:25.546 [main] INFO  Selenide START: .page__wrapper/input[type='tel'] | send keys(6356288445)
+2025-05-28 13:20:25.736 [main] INFO  Selenide PASS: .page__wrapper/input[type='tel'] | send keys(6356288445) | 191ms
+2025-05-28 13:20:25.736 [main] INFO  [ШАГ] 2025-05-28 13:20:25.736: Клик по кнопке 'Зарегистрироваться'
+2025-05-28 13:20:25.737 [main] INFO  Selenide START: .page__wrapper/button[type='submit'] | click()
+2025-05-28 13:20:25.898 [main] INFO  Selenide PASS: .page__wrapper/button[type='submit'] | click() | 161ms
+2025-05-28 13:20:25.901 [main] INFO  Selenide START: .popup__content | should be(visible)
+2025-05-28 13:20:26.745 [main] INFO  Selenide PASS: .popup__content | should be(visible) | 844ms
+2025-05-28 13:20:26.745 [main] INFO  Selenide START: a[class='popup__close btn btn_small'] | should be(visible)
+2025-05-28 13:20:26.775 [main] INFO  Selenide PASS: a[class='popup__close btn btn_small'] | should be(visible) | 29ms
+2025-05-28 13:20:26.775 [main] INFO  Selenide START: a[class='popup__close btn btn_small'] | click()
+2025-05-28 13:20:29.937 [main] INFO  Selenide PASS: a[class='popup__close btn btn_small'] | click() | 3162ms
+2025-05-28 13:20:29.939 [main] INFO  [ШАГ] 2025-05-28 13:20:29.939: Проверка загрузки главной страницы
+2025-05-28 13:20:29.939 [main] INFO  Selenide START: .page__wrapper | should be(visible)
+2025-05-28 13:20:29.972 [main] INFO  Selenide PASS: .page__wrapper | should be(visible) | 31ms
+2025-05-28 13:20:29.972 [main] INFO  [ШАГ] 2025-05-28 13:20:29.972: Загрузка хэдэра
+2025-05-28 13:20:29.972 [main] INFO  Selenide START: .page__wrapper | should be(visible)
+2025-05-28 13:20:30.009 [main] INFO  Selenide PASS: .page__wrapper | should be(visible) | 37ms
+2025-05-28 13:20:30.009 [main] INFO  Selenide START: .page__wrapper/By.xpath: .//a[text()='Регистрация'] | should be(visible)
+2025-05-28 13:20:30.048 [main] INFO  Selenide PASS: .page__wrapper/By.xpath: .//a[text()='Регистрация'] | should be(visible) | 38ms
+2025-05-28 13:20:30.048 [main] INFO  Хэдер загружен
+2025-05-28 13:20:30.048 [main] INFO  Главная страница загружена успешно
+2025-05-28 13:20:30.466 [main] INFO  Сделан скриншот: Завершение теста
+2025-05-28 13:20:30.467 [main] INFO  Очистка куков
+2025-05-28 13:20:30.617 [main] INFO  Куки очищены
+2025-05-28 13:20:30.617 [main] INFO  Selenide START: webdriver | close()
+2025-05-28 13:20:31.046 [main] INFO  Selenide PASS: webdriver | close() | 427ms
+2025-05-28 13:20:31.052 [main] INFO  ═══════════════════════════════════════════
+✅ КОНЕЦ ТЕСТА: successfulRegisterTest
+⏱ Время выполнения: 21676 мс
+═══════════════════════════════════════════

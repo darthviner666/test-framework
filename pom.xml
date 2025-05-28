@@ -24,6 +24,7 @@
         <allure-maven.version>2.12.0</allure-maven.version>
         <json-path.version>2.8.0</json-path.version>
         <log4j2.version>2.20.0</log4j2.version>
+        <suiteXmlFile>src/test/resources/uiTests.xml</suiteXmlFile>
         <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
     </properties>
 
@@ -125,27 +126,18 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${maven-surefire-plugin.version}</version>
                 <configuration>
-                    <parallel>classes</parallel>
-                    <threadCount>3</threadCount>
-                    <perCoreThreadCount>true</perCoreThreadCount>
-                    <includes>
-                        <include>**/*Test.java</include>
-                    </includes>
+                    <systemPropertyVariables>
+                        <org.slf4j.simpleLogger.defaultLogLevel>info</org.slf4j.simpleLogger.defaultLogLevel>
+                        <selenide.logger.level>debug</selenide.logger.level>
+                        <org.slf4j.simpleLogger.log.io.qameta.allure>warn</org.slf4j.simpleLogger.log.io.qameta.allure>
+                    </systemPropertyVariables>
                     <suiteXmlFiles>
-                        <suiteXmlFile>src/test/resources/apiTests.xml</suiteXmlFile>
-                        <suiteXmlFile>src/test/resources/uiTests.xml</suiteXmlFile>
+                        <suiteXmlFile>${suiteXmlFile}</suiteXmlFile>
                     </suiteXmlFiles>
-                    <argLine>
-                        -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"
-                    </argLine>
+                    <useSystemClassLoader>false</useSystemClassLoader>
+                    <redirectTestOutputToFile>false</redirectTestOutputToFile>
+                    <printSummary>true</printSummary>
                 </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.aspectj</groupId>
-                        <artifactId>aspectjweaver</artifactId>
-                        <version>${aspectj.version}</version>
-                    </dependency>
-                </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

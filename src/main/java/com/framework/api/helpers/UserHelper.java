@@ -21,13 +21,17 @@ import java.util.Map;
  */
 public class UserHelper {
 
-    protected TestLogger logger;
+    /**
+     * Логгер для логирования действий.
+     */
+    protected TestLogger logger = new TestLogger(UserHelper.class);
     /**
      * Создать пользователя.
      * @param user - пользователь.
      * @return - созданый пользователь.
      */
     public CreateUserPojoRs createUser(CreateUserPojoRq user) {
+        logger.info("Создание пользователя: {}", user);
         Map<String, String> headers = HeadersBuilder
                 .defaultHeaders()
                 .withHeader("x-api-key","reqres-free-v1")
@@ -40,7 +44,7 @@ public class UserHelper {
                         req -> req.headers(headers).body(user));
 
         AssertionsWithAllureLog.assertEquals(response.getStatusCode(),201, "Статус код запроса");
-
+        logger.info("Пользователь успешно создан: {}");
         return JsonDeserializer.deserialize(response
                 .getBody().asString(), CreateUserPojoRs.class);
     }
@@ -51,6 +55,7 @@ public class UserHelper {
      * @return - массив пользователей.
      */
     public GetUserPojoRs[] getUsers(Integer page) {
+        logger.info("Получение пользователей, страница: {}", page);
         Map<String, String> queryParams = new HashMap<>() {{
             put("page", page.toString());
         }};
@@ -73,7 +78,7 @@ public class UserHelper {
                 .assertEquals(200,
                         response.getStatusCode(),
                         "статус код");
-//TODO доделать десериализацию через путь
+        logger.info("Пользователи успешно получены, количество: {}", response.jsonPath().getList("data").size());
         return JsonDeserializer.deserialize(response.getBody().asString(),"data", GetUserPojoRs[].class);
     }
 

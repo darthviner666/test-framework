@@ -28,7 +28,11 @@
 
 
     <Loggers>
-        <Logger name="com.codeborne.selenide" level="INFO" additivity="true">
+        <Logger name="com.codeborne.selenide" level="DEBUG" additivity="true">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="RoutingAppender"/>
+        </Logger>
+        <Logger name="io.qameta.allure" level="WARN" additivity="false">
             <AppenderRef ref="Console"/>
             <AppenderRef ref="RoutingAppender"/>
         </Logger>

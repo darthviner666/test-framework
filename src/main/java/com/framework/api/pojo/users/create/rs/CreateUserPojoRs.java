@@ -5,8 +5,9 @@ import io.qameta.allure.internal.shadowed.jackson.annotation.JsonIgnorePropertie
 import lombok.Data;
 
 import java.util.Date;
+/** * Класс для представления ответа на создание пользователя.
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Data
 public class CreateUserPojoRs extends BasePojoRs {
     public String name;
     public String job;
