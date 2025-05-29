@@ -1,5 +1,7 @@
 package com.testBase;
 
+import com.framework.listeners.RetryListener;
+import com.framework.listeners.TestListener;
 import com.framework.utils.logger.TestLogger;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
@@ -8,7 +10,7 @@ import org.testng.annotations.*;
 /**
  * Класс для базовой настройки автотестов.
  */
-@Listeners({com.framework.listeners.ExceptionLoggingListener.class})
+@Listeners({TestListener.class, RetryListener.class})
 public class TestBase {
 
     /**

@@ -4,9 +4,15 @@ import org.testng.ITestListener;
 import org.testng.ITestResult;
 import com.framework.utils.logger.TestLogger;
 
-public class ExceptionLoggingListener implements ITestListener {
-    private static final TestLogger log = new TestLogger(ExceptionLoggingListener.class);
+import java.util.Arrays;
 
+public class TestListener implements ITestListener {
+    private static final TestLogger log = new TestLogger(TestListener.class);
+
+    @Override
+    public void onTestStart(ITestResult result) {
+        log.info("Параметры: " + Arrays.toString(result.getParameters()));
+    }
     @Override
     public void onTestFailure(ITestResult result) {
         Throwable throwable = result.getThrowable();

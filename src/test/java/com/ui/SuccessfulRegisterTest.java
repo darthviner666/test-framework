@@ -20,7 +20,9 @@ public class SuccessfulRegisterTest extends UiTestBase {
     /**
      * Тест для проверки успешной регистрации пользователя.
      */
-    @Test(description = "Успешная регистрация")
+    @Test(description = "Успешная регистрация",
+            groups = "smoke",
+            priority = 2)
     @Story("Позитивный сценарий")
     @Severity(SeverityLevel.BLOCKER)
     public void successfulRegisterTest() {

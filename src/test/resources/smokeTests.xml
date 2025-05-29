@@ -1,5 +1,5 @@
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
-<suite name="Smoke Tests">
+<suite name="Smoke Tests" parallel="tests" thread-count="2">
     <listeners>
         <listener class-name="io.qameta.allure.testng.AllureTestNg"/>
     </listeners>
@@ -12,7 +12,7 @@
         </classes>
     </test>
 
-    <test name="API Tests">
+    <test name="API Tests" parallel="classes" thread-count="2">
         <classes>
             <class name="com.api.GetListUsersTest"/>
             <class name="com.api.CreateUserTest"/>

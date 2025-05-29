@@ -12,7 +12,7 @@ import org.testng.annotations.Test;
 @Feature("Работа с пользователями")
 @Severity(SeverityLevel.BLOCKER)
 public class GetListUsersTest extends TestBase {
-    @DataProvider(name = "data")
+    @DataProvider(name = "data", parallel = true)
     public Integer[][] provideData() {
         return new Integer[][]{
                 {1},
@@ -20,7 +20,11 @@ public class GetListUsersTest extends TestBase {
         };
     }
 
-    @Test(description = "Проверка получения пользователей на странице", testName = "Получить пользователей", dataProvider = "data")
+    @Test(description = "Проверка получения пользователей на странице",
+            testName = "Получить пользователей",
+            dataProvider = "data",
+            groups = "smoke",
+            priority = 1)
     @Story("Положительный сценарий")
     @Severity(SeverityLevel.BLOCKER)
     public void getUsersListOkTest(Integer page) {

@@ -23,7 +23,7 @@ public class CreateUserTest extends TestBase {
      * Дата провайдер для генерации данных пользователей.
      * @return массив сгенерированных пользователей.
      */
-    @DataProvider(name = "data")
+    @DataProvider(name = "data", parallel = true)
     public CreateUserPojoRq[][] provideData() {
         return new CreateUserPojoRq[][]{
                 {CreateUserGenerator.generateUser()},
@@ -35,7 +35,11 @@ public class CreateUserTest extends TestBase {
      * Тест для проверки создания пользователей.
      * @param user объект пользователя, который будет создан.
      */
-    @Test(description = "Проверка создания пользователей", testName = "Cоздание пользователей", dataProvider = "data")
+    @Test(description = "Проверка создания пользователей",
+            testName = "Cоздание пользователей",
+            dataProvider = "data",
+            groups = "smoke",
+            priority = 1)
     @Story("Положительный сценарий")
     @Severity(SeverityLevel.BLOCKER)
     public void createUserTest(CreateUserPojoRq user) {
