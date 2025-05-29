@@ -1,6 +1,6 @@
 package com.api;
 
-import com.TestBase;
+import com.testBase.TestBase;
 import com.framework.api.helpers.UserHelper;
 import com.framework.api.pojo.users.get.rs.GetUserPojoRs;
 import com.framework.asserts.AssertionsWithAllureLog;
@@ -12,7 +12,7 @@ import org.testng.annotations.Test;
 @Feature("Работа с пользователями")
 @Severity(SeverityLevel.BLOCKER)
 public class GetListUsersTest extends TestBase {
-    @DataProvider(name = "data")
+    @DataProvider(name = "data", parallel = true)
     public Integer[][] provideData() {
         return new Integer[][]{
                 {1},
@@ -20,7 +20,11 @@ public class GetListUsersTest extends TestBase {
         };
     }
 
-    @Test(description = "Проверка получения пользователей на странице", testName = "Получить пользователей", dataProvider = "data")
+    @Test(description = "Проверка получения пользователей на странице",
+            testName = "Получить пользователей",
+            dataProvider = "data",
+            groups = "smoke",
+            priority = 1)
     @Story("Положительный сценарий")
     @Severity(SeverityLevel.BLOCKER)
     public void getUsersListOkTest(Integer page) {
@@ -30,10 +34,8 @@ public class GetListUsersTest extends TestBase {
 
         UserHelper helper = new UserHelper();
 
-        logStep("Получить пользователей");
         GetUserPojoRs[] users = helper.getUsers(page);
 
-        logStep("Сравнить поля");
         for (GetUserPojoRs user : users) {
             AssertionsWithAllureLog.assertNotEquals(user.firstName, "", "Имя не пустое");
             AssertionsWithAllureLog.assertNotEquals(user.lastName, "", "Фамилия не пустая");

@@ -1,6 +1,6 @@
 package com.api;
 
-import com.TestBase;
+import com.testBase.TestBase;
 import com.framework.api.helpers.UserHelper;
 import com.framework.api.pojo.users.create.rq.CreateUserPojoRq;
 import com.framework.api.pojo.users.create.rs.CreateUserPojoRs;
@@ -11,12 +11,19 @@ import io.qameta.allure.*;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+/**
+ * Класс для тестирования создания пользователей через API.
+ */
 @Epic("API Тесты")
 @Feature("Работа с пользователями")
 @Severity(SeverityLevel.BLOCKER)
 public class CreateUserTest extends TestBase {
 
-    @DataProvider(name = "data")
+    /**
+     * Дата провайдер для генерации данных пользователей.
+     * @return массив сгенерированных пользователей.
+     */
+    @DataProvider(name = "data", parallel = true)
     public CreateUserPojoRq[][] provideData() {
         return new CreateUserPojoRq[][]{
                 {CreateUserGenerator.generateUser()},
@@ -24,7 +31,15 @@ public class CreateUserTest extends TestBase {
         };
     }
 
-    @Test(description = "Проверка создания пользователей", testName = "Cоздание пользователей", dataProvider = "data")
+    /**
+     * Тест для проверки создания пользователей.
+     * @param user объект пользователя, который будет создан.
+     */
+    @Test(description = "Проверка создания пользователей",
+            testName = "Cоздание пользователей",
+            dataProvider = "data",
+            groups = "smoke",
+            priority = 1)
     @Story("Положительный сценарий")
     @Severity(SeverityLevel.BLOCKER)
     public void createUserTest(CreateUserPojoRq user) {
@@ -36,7 +51,7 @@ public class CreateUserTest extends TestBase {
         CreateUserPojoRs userRs = helper.createUser(user);
 
         AssertionsWithAllureLog.assertEquals(userRs.job, user.job, "Поле job");
-        AssertionsWithAllureLog.assertEquals(userRs.getName(), user.name, "Поле name");
+        AssertionsWithAllureLog.assertEquals(userRs.name, user.name, "Поле name");
     }
 
 }

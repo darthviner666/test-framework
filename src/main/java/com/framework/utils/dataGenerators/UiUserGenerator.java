@@ -2,9 +2,14 @@ package com.framework.utils.dataGenerators;
 
 import com.framework.ui.pojo.UserUiPojo;
 import lombok.experimental.UtilityClass;
-
+/** * Класс для генерации пользователей для UI.
+ * Генерирует случайные данные для пользователя, такие как имя, email, пароль и т.д.
+ */
 @UtilityClass
 public class UiUserGenerator {
+    /** * Сгенерировать пользователя для UI.
+     * @return - пользователь со случайными данными.
+     */
     public UserUiPojo generateUser() {
         return UserUiPojo
                 .builder()

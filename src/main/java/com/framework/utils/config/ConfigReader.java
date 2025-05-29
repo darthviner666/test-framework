@@ -1,4 +1,4 @@
-package com.framework.config;
+package com.framework.utils.config;
 
 import org.aeonbits.owner.ConfigFactory;
 

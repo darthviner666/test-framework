@@ -1,6 +1,6 @@
 package com.framework.api.restAssured;
 
-import com.framework.api.allure.CustomAllureFilter;
+import com.framework.api.filters.CustomAllureFilter;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.filter.log.LogDetail;
@@ -10,7 +10,7 @@ import io.restassured.specification.ResponseSpecification;
 
 import java.util.Map;
 
-import static com.framework.config.ConfigReader.Instance;
+import static com.framework.utils.config.ConfigReader.Instance;
 import static org.hamcrest.Matchers.lessThan;
 
 /**
