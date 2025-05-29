@@ -29,9 +29,36 @@
         <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
     </properties>
 
+    <repositories>
+        <repository>
+            <id>central</id>
+            <name>Maven Central Repository</name>
+            <url>https://repo.maven.apache.org/maven2</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.cucumber</groupId>
+                <artifactId>messages</artifactId>
+                <version>22.0.0</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>gherkin</artifactId>
+            <version>24.0.0</version>
+        </dependency>
         <dependency>
             <groupId>org.aeonbits.owner</groupId>
             <artifactId>owner</artifactId>
@@ -118,44 +145,44 @@
             <artifactId>log4j-api</artifactId>
             <version>${log4j2.version}</version>
         </dependency>
-    </dependencies>
 
-    <dependency>
-        <groupId>io.cucumber</groupId>
-        <artifactId>cucumber-java</artifactId>
-        <version>${cucumber-java.version}</version>
-        <scope>test</scope>
-    </dependency>
-    <dependency>
-        <groupId>io.cucumber</groupId>
-        <artifactId>cucumber-testng</artifactId>
-        <version>${cucumber-java.version}</version>
-        <scope>test</scope>
-    </dependency>
-    <dependency>
-        <groupId>io.cucumber</groupId>
-        <artifactId>cucumber-core</artifactId>
-        <version>${cucumber-java.version}</version>
-        <scope>test</scope>
-    </dependency>
-    <dependency>
-        <groupId>io.cucumber</groupId>
-        <artifactId>cucumber-java8</artifactId>
-        <version>${cucumber-java.version}</version>
-        <scope>test</scope>
-    </dependency>
-    <dependency>
-        <groupId>io.cucumber</groupId>
-        <artifactId>cucumber-junit-platform-engine</artifactId>
-        <version>${cucumber-java.version}</version>
-        <scope>test</scope>
-    </dependency>
-    <dependency>
-        <groupId>io.qameta.allure</groupId>
-        <artifactId>allure-cucumber7-jvm</artifactId>
-        <version>${allure.version}</version>
-        <scope>test</scope>
-    </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-java</artifactId>
+            <version>${cucumber-java.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-testng</artifactId>
+            <version>${cucumber-java.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-core</artifactId>
+            <version>${cucumber-java.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-java8</artifactId>
+            <version>${cucumber-java.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-junit-platform-engine</artifactId>
+            <version>${cucumber-java.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-cucumber7-jvm</artifactId>
+            <version>${allure.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
     <build>
         <plugins>
