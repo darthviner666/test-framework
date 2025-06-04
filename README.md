@@ -1,12 +1,10 @@
 Автотестовый фреймворк для UI и API тестов.
-Команда для запуска: mvn clean test
+Команда для запуска: mvn clean test -D=suite_name
 Команда для отчёта: allure serve
-Используемые инструменты: Java 11, TestNG, RestAssured, Selenide, Selenoid, Log4j, Lombok, Owner, Allure, Faker, JsonPath, Maven
+Используемые инструменты: Java 11, TestNG, RestAssured, Selenide, Selenoid, Log4j, Lombok, Owner, Allure, Faker, JsonPath, Maven, Cucumber
 Примеры лог файлов находтся в папке logs (генерируются в target/logs)
 Список задач:
-Перенести настройку браузеров в тест (попробовать)
 Добавить восстановление кукис в веб драйвере,
-Добавить Cucumber,
 Добавить отдельные xml для CI,
 Настроить Selenoid на облаке,
 Добавить видеозапись,
