@@ -5,6 +5,7 @@ import com.codeborne.selenide.WebDriverRunner;
 import com.framework.utils.config.ProjectConfig;
 import com.framework.utils.logger.TestLogger;
 import org.openqa.selenium.MutableCapabilities;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.testng.annotations.Optional;
 
@@ -41,7 +42,8 @@ public class BrowserFactory {
         Configuration.browserSize = config.browserSize();
         Configuration.timeout = config.timeout();
         Configuration.baseUrl = config.baseUrl();
-        Configuration.headless = config.headless();
+        Configuration.pageLoadStrategy = "eager";
+        Configuration.pageLoadTimeout = 20000;
         log.info("Настройки браузера установлены");
 
     }
@@ -57,6 +59,14 @@ public class BrowserFactory {
         Configuration.browser = browser;
         Configuration.browserVersion = browserVersion;
         Configuration.headless = config.headless();
+       if (browser.equals("chrome")) {
+
+           Configuration.browserCapabilities = new ChromeOptions()
+                   .addArguments("--disable-gpu")
+                   .addArguments("--no-sandbox")
+                   .addArguments("--disable-dev-shm-usage");
+
+       }
         log.info("Локальный браузер настроен: {} {}", browser, browserVersion);
     }
 
