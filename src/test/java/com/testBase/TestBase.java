@@ -29,9 +29,14 @@ public class TestBase {
      */
     @BeforeSuite(alwaysRun = true)
     public void beforeSuite(ITestContext context) {
-        DatabaseConfig.initDatabase();
-        DatabaseActions.ensureUsersExist();
         log.initSuite(context.getSuite().getName());
+        try {
+            DatabaseConfig.initDatabase();
+            DatabaseConfig.ensureUsersExist();
+        } catch (Exception e) {
+            log.error("Error during setup", e);
+            throw e;
+        }
     }
 
     /**

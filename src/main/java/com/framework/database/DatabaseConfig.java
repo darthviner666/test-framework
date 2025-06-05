@@ -2,43 +2,64 @@ package com.framework.database;
 
 import com.framework.api.pojo.users.create.rq.CreateUserPojoRq;
 import com.framework.utils.config.ProjectConfig;
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
+import com.framework.utils.dataGenerators.CreateUserGenerator;
+import com.framework.utils.logger.TestLogger;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.boot.MetadataSources;
+import org.hibernate.Transaction;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.cfg.Environment;
 
+import java.util.List;
 import java.util.Properties;
 
 import static com.framework.utils.config.ConfigReader.Instance;
 
 public class DatabaseConfig {
-    private static HikariDataSource dataSource;
+    private static final TestLogger logger = new TestLogger(DatabaseConfig.class);
     private static SessionFactory sessionFactory;
+    private static StandardServiceRegistry registry;
 
     public static void initDatabase() {
-        HikariConfig config = getHikariConfig();
-
-        dataSource = new HikariDataSource(config);
-
-        Properties hibernateProps = new Properties();
-        hibernateProps.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
-        hibernateProps.setProperty("hibernate.hbm2ddl.auto", "update");
-        hibernateProps.setProperty("hibernate.show_sql", "true");
-        hibernateProps.setProperty("hibernate.format_sql", "true");
-
         try {
-            StandardServiceRegistry registry = new StandardServiceRegistryBuilder()
-                    .applySettings(hibernateProps)
-                    .applySetting("hibernate.connection.datasource", dataSource)
+            Configuration configuration = new Configuration();
+
+            ProjectConfig config = Instance();
+            // Базовые настройки Hibernate
+            Properties settings = new Properties();
+            settings.put(Environment.DRIVER, "org.postgresql.Driver");
+            settings.put(Environment.URL, config.databaseUrl());
+            settings.put(Environment.USER, config.databaseUser());
+            settings.put(Environment.PASS, config.databasePassword());
+            settings.put(Environment.DIALECT, "org.hibernate.dialect.PostgreSQLDialect");
+            settings.put(Environment.SHOW_SQL, "true");
+            settings.put(Environment.FORMAT_SQL, "true");
+            settings.put(Environment.CURRENT_SESSION_CONTEXT_CLASS, "thread");
+            settings.put(Environment.HBM2DDL_AUTO, "update");
+
+            // Настройки пула соединений
+            settings.put(Environment.CONNECTION_PROVIDER, "org.hibernate.hikaricp.internal.HikariCPConnectionProvider");
+            settings.put("hibernate.hikari.maximumPoolSize", "10");
+            settings.put("hibernate.hikari.minimumIdle", "5");
+            settings.put("hibernate.hikari.idleTimeout", "300000");
+            settings.put("hibernate.hikari.connectionTimeout", "20000");
+
+            configuration.setProperties(settings);
+            configuration.addAnnotatedClass(CreateUserPojoRq.class);
+
+            registry = new StandardServiceRegistryBuilder()
+                    .applySettings(configuration.getProperties())
                     .build();
 
-            sessionFactory = new MetadataSources(registry)
-                    .addAnnotatedClass(CreateUserPojoRq.class)
-                    .buildMetadata()
-                    .buildSessionFactory();
+            sessionFactory = configuration.buildSessionFactory(registry);
+
         } catch (Exception e) {
+            logger.error("Failed to create SessionFactory", e);
+            if (registry != null) {
+                StandardServiceRegistryBuilder.destroy(registry);
+            }
             throw new RuntimeException("Failed to create SessionFactory", e);
         }
     }
@@ -54,25 +75,36 @@ public class DatabaseConfig {
         if (sessionFactory != null) {
             sessionFactory.close();
         }
-        if (dataSource != null) {
-            dataSource.close();
+        if (registry != null) {
+            StandardServiceRegistryBuilder.destroy(registry);
         }
     }
 
-    private static HikariConfig getHikariConfig() {
-        ProjectConfig configReader = Instance();
-        HikariConfig config = new HikariConfig();
-        config.setJdbcUrl(configReader.databaseUrl());
-        config.setUsername(configReader.databaseUser());
-        config.setPassword(configReader.databasePassword());
+    public static void ensureUsersExist() {
+        try (Session session = getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            try {
+                Long userCount = session.createQuery("select count(*) from CreateUserPojoRq", Long.class)
+                        .getSingleResult();
 
-        // Дополнительные настройки HikariCP
-        config.setMaximumPoolSize(10);
-        config.setMinimumIdle(5);
-        config.setIdleTimeout(300000);
-        config.setConnectionTimeout(20000);
-        config.setMaxLifetime(1200000);
-        return config;
+                logger.info("Current users in database: {}", userCount);
+
+                if (userCount < DatabaseActions.REQUIRED_USERS_COUNT) {
+                    int usersToGenerate = DatabaseActions.REQUIRED_USERS_COUNT - userCount.intValue();
+                    logger.info("Generating {} new users", usersToGenerate);
+
+                    List<CreateUserPojoRq> users = CreateUserGenerator.generateUsers(usersToGenerate);
+                    for (CreateUserPojoRq user : users) {
+                        session.persist(user);
+                    }
+                }
+
+                transaction.commit();
+            } catch (Exception e) {
+                transaction.rollback();
+                throw e;
+            }
+        }
     }
 
 }

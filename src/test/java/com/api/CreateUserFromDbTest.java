@@ -17,10 +17,14 @@ import org.testng.annotations.Test;
 public class CreateUserFromDbTest extends TestBase {
 
     private CreateUserPojoRq testUser;
+
+    /**
+     * Подготовка тестовых данных из тестовой базы данных.
+     */
     @BeforeMethod
     void prepareTestUser() {
         try (Session session = DatabaseConfig.getSessionFactory().openSession()) {
-            testUser = session.createQuery("from User order by RANDOM() limit 1", CreateUserPojoRq.class)
+            testUser = session.createQuery("from CreateUserPojoRq order by RANDOM() limit 1", CreateUserPojoRq.class)
                     .getSingleResult();
             Transaction tx = session.beginTransaction();
             session.remove(testUser);
@@ -28,7 +32,7 @@ public class CreateUserFromDbTest extends TestBase {
         }
     }
     /**
-     * Тест для проверки создания пользователей.
+     * Тест для проверки создания пользователей, которых мы берём из тестовой базы.
      */
     @Test(description = "Проверка создания пользователей из базы",
             groups = "smoke",
