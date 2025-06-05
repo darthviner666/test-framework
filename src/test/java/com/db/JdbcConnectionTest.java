@@ -1,4 +1,4 @@
-package com.framework.database;
+package com.db;
 
 import org.testng.annotations.Test;
 
@@ -6,6 +6,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+/**
+ * Тест подключения к базе данных PostgreSQL.
+ */
 public class JdbcTestConnection {
     @Test
     public void connectionTest() {
