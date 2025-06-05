@@ -190,7 +190,7 @@
                         <org.slf4j.simpleLogger.log.io.qameta.allure>warn</org.slf4j.simpleLogger.log.io.qameta.allure>
                     </systemPropertyVariables>
                     <suiteXmlFiles>
-                        <suiteXmlFile>${suiteXmlFile}</suiteXmlFile>
+                        <suiteXmlFile>src/test/resources/suites/${suite}.xml</suiteXmlFile>
                     </suiteXmlFiles>
                     <useSystemClassLoader>false</useSystemClassLoader>
                     <redirectTestOutputToFile>false</redirectTestOutputToFile>
