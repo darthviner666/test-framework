@@ -79,32 +79,4 @@ public class DatabaseConfig {
             StandardServiceRegistryBuilder.destroy(registry);
         }
     }
-
-    public static void ensureUsersExist() {
-        try (Session session = getSessionFactory().openSession()) {
-            Transaction transaction = session.beginTransaction();
-            try {
-                Long userCount = session.createQuery("select count(*) from CreateUserPojoRq", Long.class)
-                        .getSingleResult();
-
-                logger.info("Current users in database: {}", userCount);
-
-                if (userCount < DatabaseActions.REQUIRED_USERS_COUNT) {
-                    int usersToGenerate = DatabaseActions.REQUIRED_USERS_COUNT - userCount.intValue();
-                    logger.info("Generating {} new users", usersToGenerate);
-
-                    List<CreateUserPojoRq> users = CreateUserGenerator.generateUsers(usersToGenerate);
-                    for (CreateUserPojoRq user : users) {
-                        session.persist(user);
-                    }
-                }
-
-                transaction.commit();
-            } catch (Exception e) {
-                transaction.rollback();
-                throw e;
-            }
-        }
-    }
-
 }

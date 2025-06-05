@@ -1,6 +1,6 @@
 package com.testBase;
 
-import com.framework.database.DatabaseActions;
+import com.framework.database.DatabaseHibernateActions;
 import com.framework.database.DatabaseConfig;
 import com.framework.listeners.RetryListener;
 import com.framework.listeners.TestListener;
@@ -32,7 +32,7 @@ public class TestBase {
         log.initSuite(context.getSuite().getName());
         try {
             DatabaseConfig.initDatabase();
-            DatabaseConfig.ensureUsersExist();
+            DatabaseHibernateActions.ensureUsersExist(20);
         } catch (Exception e) {
             log.error("Error during setup", e);
             throw e;
