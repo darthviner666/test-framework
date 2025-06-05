@@ -1,4 +1,5 @@
 package com.framework.utils.config;
+
 import org.aeonbits.owner.Config;
 
 /**
@@ -51,5 +52,15 @@ public interface ProjectConfig extends Config {
     @Key("enable.video")
     @DefaultValue("false")
     boolean enableVideo();
+
+    @Key("database.url")
+    String databaseUrl();
+
+    @Key("database.username")
+    String databaseUser();
+
+    @Key("database.password")
+    String databasePassword();
+
 }
 

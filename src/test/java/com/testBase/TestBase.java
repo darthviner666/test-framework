@@ -1,5 +1,7 @@
 package com.testBase;
 
+import com.framework.database.DatabaseActions;
+import com.framework.database.DatabaseConfig;
 import com.framework.listeners.RetryListener;
 import com.framework.listeners.TestListener;
 import com.framework.utils.logger.TestLogger;
@@ -27,6 +29,8 @@ public class TestBase {
      */
     @BeforeSuite(alwaysRun = true)
     public void beforeSuite(ITestContext context) {
+        DatabaseConfig.initDatabase();
+        DatabaseActions.ensureUsersExist();
         log.initSuite(context.getSuite().getName());
     }
 
@@ -39,6 +43,7 @@ public class TestBase {
     @AfterSuite(alwaysRun = true)
     public void afterSuite(ITestContext context) {
         log.finishSuite(context);
+        DatabaseConfig.shutdown();
     }
 
     /**

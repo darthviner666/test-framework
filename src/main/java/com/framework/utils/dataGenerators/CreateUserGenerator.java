@@ -2,6 +2,10 @@ package com.framework.utils.dataGenerators;
 
 import com.framework.api.pojo.users.create.rq.CreateUserPojoRq;
 import lombok.experimental.UtilityClass;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  *  * Класс для генерации пользователей для создания.
  */
@@ -19,5 +23,13 @@ public class CreateUserGenerator {
                 .job(faker.job().title())
                 .name(faker.name().firstName())
                 .build();
+    }
+
+    public List<CreateUserPojoRq> generateUsers(int count) {
+        List<CreateUserPojoRq> users = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            users.add(generateUser());
+        }
+        return users;
     }
 }
