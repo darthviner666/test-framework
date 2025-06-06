@@ -1,7 +1,6 @@
-package com.framework.utils.dataGenerators;
+package com.framework.utils.dataGenerators.faker;
 
 import com.github.javafaker.Faker;
-import com.github.javafaker.PhoneNumber;
 
 import java.util.Random;
 

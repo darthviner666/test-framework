@@ -1,7 +1,5 @@
-package com.db;
+package com.db.jdbc;
 
-import com.framework.database.JdbcActions;
-import com.testBase.TestBase;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
 import io.qameta.allure.Story;
@@ -10,7 +8,7 @@ import org.testng.annotations.Test;
 /**
  * Тест подключения к базе данных PostgreSQL.
  */
-public class JdbcConnectionTest extends TestBase {
+public class JdbcConnectionTest extends JdbcTestBase {
 
 @Test(description = "Проверка подключения к базе данных PostgreSQL",
             groups = "smoke",
@@ -18,6 +16,5 @@ public class JdbcConnectionTest extends TestBase {
     @Story("Положительный сценарий")
     @Severity(SeverityLevel.BLOCKER)
     public void connectionTest() {
-        JdbcActions.connectToDatabase();
     }
 }

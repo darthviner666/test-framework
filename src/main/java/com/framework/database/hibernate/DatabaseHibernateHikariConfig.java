@@ -1,4 +1,4 @@
-package com.framework.database;
+package com.framework.database.hibernate;
 
 import com.framework.api.pojo.users.create.rq.CreateUserPojoRq;
 import com.framework.utils.config.ProjectConfig;

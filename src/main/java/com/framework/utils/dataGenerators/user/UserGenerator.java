@@ -1,6 +1,8 @@
-package com.framework.utils.dataGenerators;
+package com.framework.utils.dataGenerators.user;
 
 import com.framework.database.tables.User;
+import com.framework.utils.dataGenerators.faker.CustomFaker;
+import com.framework.utils.dataGenerators.IGenerator;
 
 import java.util.ArrayList;
 import java.util.HashSet;

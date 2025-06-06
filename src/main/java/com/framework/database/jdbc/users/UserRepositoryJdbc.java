@@ -1,47 +1,38 @@
 package com.framework.database.jdbc.users;
 
-import com.framework.api.pojo.users.create.rq.CreateUserPojoRq;
-import com.framework.database.jdbc.UserJdbcRepository;
-import io.qameta.allure.Step;
+import com.framework.database.jdbc.JdbcConnectManager;
+import com.framework.database.jdbc.repositories.Repository;
+import com.framework.database.tables.User;
+import com.framework.utils.logger.TestLogger;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
-public class JdbcUsersActions extends UserJdbcRepository {
+public class UserRepositoryJdbc extends Repository<User> {
+    private static final TestLogger logger = new TestLogger(UserRepositoryJdbc.class);
+    private final JdbcConnectManager jdbcManager;
 
-    private static final String TABLE_NAME = "Users";
-
-    public JdbcUsersActions() throws SQLException {
-        super();
+    public UserRepositoryJdbc() throws SQLException {
+        this.jdbcManager = JdbcConnectManager.getInstance();
+        this.tableName = "users";
     }
 
-    @Step("Создать пользователя в таблице users")
-    public static void createUser(CreateUserPojoRq user) throws SQLException {
-        String sql = "INSERT INTO " + TABLE_NAME + " (name, job) VALUES (?, ?)";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, user.name);
-            stmt.setString(2, user.job);
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            try {
-                connection.rollback();
-            } catch (SQLException rollbackEx) {
-                logger.error("Error during rollback: {}", rollbackEx.getMessage());
-            }
-            logger.error("Failed to create user: {}", e.getMessage());
-            throw e;
-        }
+    private Connection getConnection() throws SQLException {
+        return jdbcManager.getConnection();
     }
 
-    @Step("Получить пользователя из таблицы users")
-    public static CreateUserPojoRq getUser(String name) {
-        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE name = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, name);
+    @Override
+    public User findById(Long id) {
+        String sql = "SELECT * FROM " + tableName + " WHERE id = ?";
+        try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
+            stmt.setLong(1, id);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    return CreateUserPojoRq.builder()
+                    return User.builder()
                             .id(rs.getLong("id"))
                             .name(rs.getString("name"))
                             .job(rs.getString("job"))
@@ -49,103 +40,149 @@ public class JdbcUsersActions extends UserJdbcRepository {
                 }
             }
         } catch (SQLException e) {
-            logger.error("Failed to retrieve user: {}", e.getMessage());
-            throw new RuntimeException(e);
+            logger.error("Не удалось получить пользователя: {}", e.getMessage());
+            throw new RuntimeException("Не удалось получить пользователя", e);
         }
         return null;
     }
 
-    private void deleteUser(String name) {
-        String sql = "DELETE FROM " + TABLE_NAME + " WHERE name = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, name);
+    @Override
+    public User save(User entity) throws SQLException {
+        String sql = "INSERT INTO " + tableName + " (name, job) VALUES (?, ?)";
+        Connection connection = getConnection();
+        try (PreparedStatement stmt = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+            stmt.setString(1, entity.getName());
+            stmt.setString(2, entity.getJob());
             stmt.executeUpdate();
-        } catch (SQLException e) {
 
-            logger.error("Failed to delete user: {}", e.getMessage());
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * Обновляет данные пользователя в базе данных
-     *
-     * @param id          ID пользователя для обновления
-     * @param updatedUser объект с новыми данными пользователя
-     * @return true если обновление успешно, false если пользователь не найден
-     */
-    @Step("Обновить данные пользователя в таблице users")
-    public boolean updateUser(Long id, CreateUserPojoRq updatedUser) {
-        String sql = "UPDATE " + TABLE_NAME + " SET name = ?, job = ? WHERE id = ?";
-
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, updatedUser.name);
-            stmt.setString(2, updatedUser.job);
-            stmt.setLong(3, id);
-
-            int rowsAffected = stmt.executeUpdate();
-            connection.commit();
-
-            if (rowsAffected > 0) {
-                logger.info("Successfully updated user with ID: {}", id);
-                return true;
-            } else {
-                logger.warn("No user found with ID: {}", id.toString());
-                return false;
+            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    entity.setId(generatedKeys.getLong(1));
+                }
             }
+
+            connection.commit();
+            logger.info("Успешно создан пользователь с ID: {}", entity.getId());
+            return entity;
         } catch (SQLException e) {
             try {
                 connection.rollback();
             } catch (SQLException rollbackEx) {
-                logger.error("Error during rollback: {}", rollbackEx.getMessage());
+                logger.error("Ошибка при откате транзакции: {}", rollbackEx.getMessage());
             }
-            logger.error("Error updating user: {}", e.getMessage());
-            throw new RuntimeException("Failed to update user", e);
+            logger.error("Не удалось создать пользователя: {}", e.getMessage());
+            throw e;
         }
     }
-    /**
-     * Очищает таблицу пользователей
-     * @return количество удаленных записей
-     */
-    @Step("Очистить таблицу users")
-    public int clearTable() {
-        String sql = "DELETE FROM " + TABLE_NAME;
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            int rowsAffected = stmt.executeUpdate();
-            connection.commit();
-            logger.info("Successfully cleared users table. Removed {} records", rowsAffected);
-            return rowsAffected;
+    @Override
+    public User update(User entity) {
+        String sql = "UPDATE " + tableName + " SET name = ?, job = ? WHERE id = ?";
+        Connection connection;
+        try {
+            connection = getConnection();
+            try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+                stmt.setString(1, entity.getName());
+                stmt.setString(2, entity.getJob());
+                stmt.setLong(3, entity.getId());
+
+                int rowsAffected = stmt.executeUpdate();
+                connection.commit();
+
+                if (rowsAffected > 0) {
+                    logger.info("Успешно обновлен пользователь с ID: {}", entity.getId());
+                    return findById(entity.getId());
+                } else {
+                    logger.warn("Не найден пользователь с ID: {}", entity.getId().toString());
+                    return null;
+                }
+            }
         } catch (SQLException e) {
             try {
-                connection.rollback();
+                getConnection().rollback();
             } catch (SQLException rollbackEx) {
-                logger.error("Error during rollback: {}", rollbackEx.getMessage());
+                logger.error("Ошибка при откате транзакции: {}", rollbackEx.getMessage());
             }
-            logger.error("Error clearing users table: {}", e.getMessage());
-            throw new RuntimeException("Failed to clear users table", e);
+            logger.error("Ошибка при обновлении пользователя: {}", e.getMessage());
+            throw new RuntimeException("Не удалось обновить пользователя", e);
         }
     }
 
-    /**
-     * Альтернативный метод очистки таблицы с использованием TRUNCATE
-     */
-    @Step("Очистить таблицу users")
-    public void truncateTable() {
-        String sql = "TRUNCATE TABLE " + TABLE_NAME + " RESTART IDENTITY";
+    @Override
+    public void delete(User entity) {
+        String sql = "DELETE FROM " + tableName + " WHERE name = ? AND job = ?";
+        try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
+            stmt.setString(1, entity.getName());
+            stmt.setString(2, entity.getJob());
+            int rowsAffected = stmt.executeUpdate();
+            getConnection().commit();
+            logger.info("Удалено {} пользователей с именем: {} и должностью: {}",
+                    String.valueOf(rowsAffected), entity.getName(), entity.getJob());
+        } catch (SQLException e) {
+            try {
+                getConnection().rollback();
+            } catch (SQLException rollbackEx) {
+                logger.error("Ошибка при откате транзакции: {}", rollbackEx.getMessage());
+            }
+            logger.error("Не удалось удалить пользователя: {}", e.getMessage());
+            throw new RuntimeException("Не удалось удалить пользователя", e);
+        }
+    }
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+    @Override
+    public void deleteById(Long id) {
+        String sql = "DELETE FROM " + tableName + " WHERE id = ?";
+        try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
+            stmt.setLong(1, id);
+            int rowsAffected = stmt.executeUpdate();
+            getConnection().commit();
+            logger.info("Удалено {} пользователей с ID: {}", String.valueOf(rowsAffected), String.valueOf(id));
+        } catch (SQLException e) {
+            try {
+                getConnection().rollback();
+            } catch (SQLException rollbackEx) {
+                logger.error("Ошибка при откате транзакции: {}", rollbackEx.getMessage());
+            }
+            logger.error("Не удалось удалить пользователя: {}", e.getMessage());
+            throw new RuntimeException("Не удалось удалить пользователя", e);
+        }
+    }
+
+    @Override
+    public List<User> findAll() {
+        String sql = "SELECT * FROM " + tableName;
+        List<User> users = new ArrayList<>();
+        try (PreparedStatement stmt = getConnection().prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                users.add(User.builder()
+                        .id(rs.getLong("id"))
+                        .name(rs.getString("name"))
+                        .job(rs.getString("job"))
+                        .build());
+            }
+            return users;
+        } catch (SQLException e) {
+            logger.error("Не удалось получить список пользователей: {}", e.getMessage());
+            throw new RuntimeException("Не удалось получить список пользователей", e);
+        }
+    }
+
+    @Override
+    public void deleteAll() {
+        String sql = "TRUNCATE TABLE " + tableName + " RESTART IDENTITY";
+        try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
             stmt.executeUpdate();
-            connection.commit();
-            logger.info("Successfully truncated users table");
+            getConnection().commit();
+            logger.info("Успешно очищена таблица {}", tableName);
         } catch (SQLException e) {
             try {
-                connection.rollback();
+                getConnection().rollback();
             } catch (SQLException rollbackEx) {
-                logger.error("Error during rollback: {}", rollbackEx.getMessage());
+                logger.error("Ошибка при откате транзакции: {}", rollbackEx.getMessage());
             }
-            logger.error("Error truncating users table: {}", e.getMessage());
-            throw new RuntimeException("Failed to truncate users table", e);
+            logger.error("Не удалось очистить таблицу: {}", e.getMessage());
+            throw new RuntimeException("Не удалось очистить таблицу", e);
         }
     }
 }

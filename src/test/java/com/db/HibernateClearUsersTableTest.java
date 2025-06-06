@@ -1,7 +1,7 @@
 package com.db;
 
 import com.framework.asserts.AssertionsWithAllureLog;
-import com.framework.database.DatabaseHibernateActions;
+import com.framework.database.hibernate.DatabaseHibernateActions;
 import com.testBase.TestBase;
 import io.qameta.allure.Story;
 import org.testng.annotations.Test;

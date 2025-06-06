@@ -1,26 +1,26 @@
-package com.framework.utils.dataGenerators;
+package com.framework.utils.dataGenerators.createUser;
 
 import com.framework.api.pojo.users.create.rq.CreateUserPojoRq;
+import com.framework.utils.dataGenerators.faker.CustomFaker;
 import lombok.experimental.UtilityClass;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  *  * Класс для генерации пользователей для создания.
  */
 @UtilityClass
-public class CreateUserGenerator implements IGenerator<CreateUserPojoRq>{
+public class CreateUserGenerator {
     CustomFaker faker = new CustomFaker();
 
     /**
      * Сгенерировать пользователя для создания.
      * @return - полльзователь.
      */
-    public CreateUserPojoRq generate() {
+    public CreateUserPojoRq generateUser() {
         return CreateUserPojoRq
                 .builder()
                 .job(faker.job().title())

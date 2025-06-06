@@ -1,7 +1,7 @@
 package com.testBase;
 
-import com.framework.database.DatabaseHibernateActions;
-import com.framework.database.DatabaseConfig;
+import com.framework.database.hibernate.DatabaseHibernateActions;
+import com.framework.database.hibernate.DatabaseHibernateHikariConfig;
 import com.framework.listeners.RetryListener;
 import com.framework.listeners.TestListener;
 import com.framework.utils.logger.TestLogger;
@@ -31,7 +31,7 @@ public class TestBase {
     public void beforeSuite(ITestContext context) {
         log.initSuite(context.getSuite().getName());
         try {
-            DatabaseConfig.initDatabase();
+            DatabaseHibernateHikariConfig.initDatabase();
             DatabaseHibernateActions.ensureUsersExist(20);
         } catch (Exception e) {
             log.error("Error during setup", e);
@@ -48,7 +48,7 @@ public class TestBase {
     @AfterSuite(alwaysRun = true)
     public void afterSuite(ITestContext context) {
         log.finishSuite(context);
-        DatabaseConfig.shutdown();
+        DatabaseHibernateHikariConfig.shutdown();
     }
 
     /**

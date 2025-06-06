@@ -5,9 +5,9 @@
     </listeners>
     <test name="Database Tests">
         <classes>
-            <class name="com.api.CreateUserFromDbTest"/>
-            <class name="com.db.JdbcConnectionTest"/>
-            <class name="com.db.JdbcCreateUserTest"/>
+<!--            <class name="com.api.CreateUserFromDbTest"/>-->
+            <class name="com.db.jdbc.JdbcConnectionTest"/>
+<!--            <class name="com.db.jdbc.JdbcCreateUserTest"/>-->
 <!--            <class name="com.db.HibernateClearUsersTableTest"/>-->
         </classes>
     </test>

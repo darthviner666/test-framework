@@ -7,6 +7,7 @@
         <classes>
             <class name="com.api.GetListUsersTest"/>
             <class name="com.api.CreateUserTest"/>
+            <class name="com.api.CreateUserFromDbTest"/>
         </classes>
     </test>
 </suite>

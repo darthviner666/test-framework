@@ -419,4 +419,19 @@ public class TestLogger {
             log.warn(s);
         }
     }
+
+    /**
+     * Логирует предупреждение с сообщением и строкой.
+     * Используется для предупреждений о потенциальных проблемах.
+     *
+     * @param s - Сообщение об ошибке, которое будет записано в лог.
+     * @param string -
+     */
+    public void warn(String s, String string) {
+        log.warn(s, string);
+    }
+
+    public void info(String s, String element, String name, String job) {
+        log.info(s, element, name, job);
+    }
 }

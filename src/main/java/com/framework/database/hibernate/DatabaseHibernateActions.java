@@ -1,7 +1,7 @@
-package com.framework.database;
+package com.framework.database.hibernate;
 
 import com.framework.api.pojo.users.create.rq.CreateUserPojoRq;
-import com.framework.utils.dataGenerators.CreateUserGenerator;
+import com.framework.utils.dataGenerators.createUser.CreateUserGenerator;
 import com.framework.utils.logger.TestLogger;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;

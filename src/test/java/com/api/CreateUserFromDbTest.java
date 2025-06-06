@@ -4,7 +4,7 @@ import com.framework.api.helpers.UserHelper;
 import com.framework.api.pojo.users.create.rq.CreateUserPojoRq;
 import com.framework.api.pojo.users.create.rs.CreateUserPojoRs;
 import com.framework.asserts.AssertionsWithAllureLog;
-import com.framework.database.DatabaseConfig;
+import com.framework.database.hibernate.DatabaseHibernateHikariConfig;
 import com.testBase.TestBase;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
@@ -20,10 +20,12 @@ public class CreateUserFromDbTest extends TestBase {
 
     /**
      * Подготовка тестовых данных из тестовой базы данных.
+     * Удаление полученного пользователя из бд, чтобы избежать
+     * переиспользования тестовых данных.
      */
     @BeforeMethod
     void prepareTestUser() {
-        try (Session session = DatabaseConfig.getSessionFactory().openSession()) {
+        try (Session session = DatabaseHibernateHikariConfig.getSessionFactory().openSession()) {
             testUser = session.createQuery("from CreateUserPojoRq order by RANDOM() limit 1", CreateUserPojoRq.class)
                     .getSingleResult();
             Transaction tx = session.beginTransaction();
@@ -34,7 +36,7 @@ public class CreateUserFromDbTest extends TestBase {
     /**
      * Тест для проверки создания пользователей, которых мы берём из тестовой базы.
      */
-    @Test(description = "Проверка создания пользователей из базы",
+    @Test(description = "Проверка создания пользователей взятого из базы с помощью Hibernate",
             groups = "smoke",
             priority = 1)
     @Story("Положительный сценарий")
