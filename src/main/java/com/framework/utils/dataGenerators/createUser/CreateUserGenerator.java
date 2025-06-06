@@ -13,14 +13,14 @@ import java.util.stream.Collectors;
  *  * Класс для генерации пользователей для создания.
  */
 @UtilityClass
-public class CreateUserGenerator {
+public class CreateUserGenerator implements IGenerator<CreateUserPojoRq>{
     CustomFaker faker = new CustomFaker();
 
     /**
      * Сгенерировать пользователя для создания.
      * @return - полльзователь.
      */
-    public CreateUserPojoRq generateUser() {
+    public CreateUserPojoRq generate() {
         return CreateUserPojoRq
                 .builder()
                 .job(faker.job().title())
@@ -37,11 +37,7 @@ public class CreateUserGenerator {
     }
 
     public List<CreateUserPojoRq> generateUniqueUsers(int count) {
-        Set<CreateUserPojoRq> usersSet = new HashSet<>();
-        while (usersSet.size()<count){
-            usersSet.add(generateUser());
-        }
-        return new ArrayList<>(usersSet);
+        return generateUniqueUsers(count, new ArrayList<>());
     }
 
     public List<CreateUserPojoRq> generateUniqueUsers(int count, List<CreateUserPojoRq> existingUsers) {

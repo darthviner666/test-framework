@@ -2,23 +2,19 @@ package com.framework.database;
 
 import com.framework.api.pojo.users.create.rq.CreateUserPojoRq;
 import com.framework.utils.config.ProjectConfig;
-import com.framework.utils.dataGenerators.CreateUserGenerator;
 import com.framework.utils.logger.TestLogger;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
 
-import java.util.List;
 import java.util.Properties;
 
 import static com.framework.utils.config.ConfigReader.Instance;
 
-public class DatabaseConfig {
-    private static final TestLogger logger = new TestLogger(DatabaseConfig.class);
+public class DatabaseHibernateHikariConfig {
+    private static final TestLogger logger = new TestLogger(DatabaseHibernateHikariConfig.class);
     private static SessionFactory sessionFactory;
     private static StandardServiceRegistry registry;
 

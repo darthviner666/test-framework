@@ -3,7 +3,7 @@
     <listeners>
         <listener class-name="io.qameta.allure.testng.AllureTestNg"/>
     </listeners>
-    <test name="API Tests">
+    <test name="Database Tests">
         <classes>
             <class name="com.api.CreateUserFromDbTest"/>
             <class name="com.db.JdbcConnectionTest"/>

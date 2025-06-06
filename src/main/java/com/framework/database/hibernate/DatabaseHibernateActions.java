@@ -3,6 +3,7 @@ package com.framework.database;
 import com.framework.api.pojo.users.create.rq.CreateUserPojoRq;
 import com.framework.utils.dataGenerators.CreateUserGenerator;
 import com.framework.utils.logger.TestLogger;
+import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -13,8 +14,9 @@ import java.util.List;
 public class DatabaseHibernateActions {
     private static final TestLogger logger = new TestLogger(DatabaseHibernateActions.class);
 
+    @Step("Убедиться что таблица users содержит {usersCount} пользователей")
     public static void ensureUsersExist(int usersCount) {
-        try (Session session = DatabaseConfig.getSessionFactory().openSession()) {
+        try (Session session = DatabaseHibernateHikariConfig.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
             try {
                 Long userCount = session.createQuery("select count(*) from CreateUserPojoRq", Long.class)
@@ -42,16 +44,18 @@ public class DatabaseHibernateActions {
         }
     }
 
+    @Step("Получить список пользователей из таблицы users")
     public static List<CreateUserPojoRq> getUsersList() {
-        try (Session session = DatabaseConfig.getSessionFactory().openSession()) {
+        try (Session session = DatabaseHibernateHikariConfig.getSessionFactory().openSession()) {
             List<CreateUserPojoRq> users = session.createQuery("from CreateUserPojoRq", CreateUserPojoRq.class).list();
             logger.info("Users in database: {}", users);
             return users;
         }
     }
 
+    @Step("Создать пользователя в таблице users")
     public static void createUser(CreateUserPojoRq  user) {
-        try (Session session = DatabaseConfig.getSessionFactory().openSession()) {
+        try (Session session = DatabaseHibernateHikariConfig.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
             try {
                 session.persist(user);
@@ -63,8 +67,9 @@ public class DatabaseHibernateActions {
         }
     }
 
+    @Step("Очистить таблицу users")
     public static void clearUsersTable() {
-        try (Session session = DatabaseConfig.getSessionFactory().openSession()) {
+        try (Session session = DatabaseHibernateHikariConfig.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
             try {
                 session.createQuery("delete from CreateUserPojoRq").executeUpdate();
@@ -78,8 +83,9 @@ public class DatabaseHibernateActions {
         }
     }
 
+    @Step("Получить количество пользователей в таблице users")
     public static int getUsersCount() {
-        try (Session session = DatabaseConfig.getSessionFactory().openSession()) {
+        try (Session session = DatabaseHibernateHikariConfig.getSessionFactory().openSession()) {
             return session.createQuery("select count(*) from CreateUserPojoRq", Long.class)
                     .getSingleResult()
                     .intValue();
