@@ -1,4 +1,4 @@
-package com.hooks;
+package com.e2e.ui.hooks;
 
 import com.codeborne.selenide.Selenide;
 import com.framework.ui.browserFactory.BrowserFactory;

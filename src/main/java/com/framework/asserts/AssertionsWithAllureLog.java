@@ -1,5 +1,6 @@
 package com.framework.asserts;
 
+import com.framework.database.tables.User;
 import com.framework.utils.logger.TestLogger;
 import io.qameta.allure.Allure;
 import io.qameta.allure.Step;
@@ -69,5 +70,29 @@ public class AssertionsWithAllureLog {
         } else {
             log.error("Проверка завершена с ошибкой");
         }
+    }
+
+    /**
+     * Сравнить логичеки на ложь.
+     * @param actual - фактическое.
+     * @param comment - комментарий.
+     */
+    @Step("Сравнить логичеки на ложь {comment}")
+    public static void assertFalse(Boolean actual, String comment) {
+        String message = String.format("Ожидалось: "+ actual.toString());
+        Allure.addAttachment("Детали сравнения", "text/plain", message);
+        log.info("Проверка логического значения: фактическое = {}", actual.toString());
+        assertion.assertFalse(actual, comment);
+        if (!actual) {
+            log.info("Проверка завершена успешно");
+        } else {
+            log.error("Проверка завершена с ошибкой");
+        }
+    }
+    @Step("Проверить на null")
+    public static void assertNotNull(Object object) {
+        log.info("Проверка на null: объект = {}", object);
+        assertion.assertNotNull(object);
+        log.info("Проверка завершена успешно");
     }
 }

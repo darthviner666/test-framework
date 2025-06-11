@@ -18,7 +18,7 @@ public class JdbcConnectManager {
     private JdbcConnectManager() {
         // Защита от рефлексии
         if (instance != null) {
-            throw new IllegalStateException("Already initialized");
+            throw new IllegalStateException("Уже инициализирован");
         }
     }
 
@@ -45,7 +45,7 @@ public class JdbcConnectManager {
                 connectionHolder.set(connection);
             }
         } catch (SQLException e) {
-            logger.error("Failed to get database connection: {}", e.getMessage());
+            logger.error("Не удалось получить соединение с базой данных: {}", e.getMessage());
             throw e;
         }
         return connection;
@@ -62,7 +62,7 @@ public class JdbcConnectManager {
             connection.setAutoCommit(false);
             return connection;
         } catch (SQLException e) {
-            logger.error("Failed to create database connection: {}", e.getMessage());
+            logger.error("Не удалось создать соединение с базой данных: {}", e.getMessage());
             throw e;
         }
     }
@@ -76,7 +76,7 @@ public class JdbcConnectManager {
                     connection.close();
                 }
             } catch (SQLException e) {
-                logger.error("Error closing connection: {}", e.getMessage());
+                logger.error("Ошибка при закрытии соединения: {}", e.getMessage());
             } finally {
                 connectionHolder.remove();
             }

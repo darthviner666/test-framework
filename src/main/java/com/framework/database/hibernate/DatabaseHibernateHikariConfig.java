@@ -1,6 +1,7 @@
 package com.framework.database.hibernate;
 
 import com.framework.api.pojo.users.create.rq.CreateUserPojoRq;
+import com.framework.database.tables.User;
 import com.framework.utils.config.ProjectConfig;
 import com.framework.utils.logger.TestLogger;
 import org.hibernate.SessionFactory;
@@ -43,7 +44,8 @@ public class DatabaseHibernateHikariConfig {
             settings.put("hibernate.hikari.connectionTimeout", "20000");
 
             configuration.setProperties(settings);
-            configuration.addAnnotatedClass(CreateUserPojoRq.class);
+            configuration.addAnnotatedClass(CreateUserPojoRq.class)
+                    .addAnnotatedClass(User.class);
 
             registry = new StandardServiceRegistryBuilder()
                     .applySettings(configuration.getProperties())

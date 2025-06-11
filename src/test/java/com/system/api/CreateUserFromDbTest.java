@@ -1,4 +1,4 @@
-package com.api;
+package com.system.api;
 
 import com.framework.api.helpers.UserHelper;
 import com.framework.api.pojo.users.create.rq.CreateUserPojoRq;

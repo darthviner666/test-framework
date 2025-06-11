@@ -4,30 +4,48 @@ import com.framework.database.jdbc.JdbcConnectManager;
 import com.framework.database.jdbc.repositories.Repository;
 import com.framework.database.tables.User;
 import com.framework.utils.logger.TestLogger;
+import io.qameta.allure.Allure;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class UserRepositoryJdbc extends Repository<User> {
     private static final TestLogger logger = new TestLogger(UserRepositoryJdbc.class);
     private final JdbcConnectManager jdbcManager;
+    private final boolean logSql = true;
 
     public UserRepositoryJdbc() throws SQLException {
         this.jdbcManager = JdbcConnectManager.getInstance();
-        this.tableName = "users";
+        this.tableName = "USERS";
+        createTableIfNotExists();
     }
 
     private Connection getConnection() throws SQLException {
         return jdbcManager.getConnection();
     }
+    
+    private void logSql(String sql, Object... params) {
+        if (logSql) {
+            StringBuilder logMessage = new StringBuilder("SQL: ").append(sql);
+            if (params != null && params.length > 0) {
+                logMessage.append(" | Params: ");
+                for (int i = 0; i < params.length; i++) {
+                    logMessage.append(i + 1).append("=").append(params[i]);
+                    if (i < params.length - 1) {
+                        logMessage.append(", ");
+                    }
+                }
+            }
+            logger.info(logMessage.toString());
+        }
+    }
 
     @Override
     public User findById(Long id) {
         String sql = "SELECT * FROM " + tableName + " WHERE id = ?";
+        logSql(sql, id);
+        Allure.addAttachment("SQL Запрос:", sql);
         try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
             stmt.setLong(1, id);
             try (ResultSet rs = stmt.executeQuery()) {
@@ -49,6 +67,8 @@ public class UserRepositoryJdbc extends Repository<User> {
     @Override
     public User save(User entity) throws SQLException {
         String sql = "INSERT INTO " + tableName + " (name, job) VALUES (?, ?)";
+        logSql(sql, entity.getName(), entity.getJob());
+        Allure.addAttachment("SQL Запрос:", sql);
         Connection connection = getConnection();
         try (PreparedStatement stmt = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, entity.getName());
@@ -78,6 +98,8 @@ public class UserRepositoryJdbc extends Repository<User> {
     @Override
     public User update(User entity) {
         String sql = "UPDATE " + tableName + " SET name = ?, job = ? WHERE id = ?";
+        logSql(sql, entity.getName(), entity.getJob(), entity.getId());
+        Allure.addAttachment("SQL Запрос:", sql);
         Connection connection;
         try {
             connection = getConnection();
@@ -111,6 +133,8 @@ public class UserRepositoryJdbc extends Repository<User> {
     @Override
     public void delete(User entity) {
         String sql = "DELETE FROM " + tableName + " WHERE name = ? AND job = ?";
+        logSql(sql, entity.getName(), entity.getJob());
+        Allure.addAttachment("SQL Запрос:", sql);
         try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
             stmt.setString(1, entity.getName());
             stmt.setString(2, entity.getJob());
@@ -132,6 +156,8 @@ public class UserRepositoryJdbc extends Repository<User> {
     @Override
     public void deleteById(Long id) {
         String sql = "DELETE FROM " + tableName + " WHERE id = ?";
+        logSql(sql, id);
+        Allure.addAttachment("SQL Запрос:", sql);
         try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
             stmt.setLong(1, id);
             int rowsAffected = stmt.executeUpdate();
@@ -151,6 +177,8 @@ public class UserRepositoryJdbc extends Repository<User> {
     @Override
     public List<User> findAll() {
         String sql = "SELECT * FROM " + tableName;
+        Allure.addAttachment("SQL Запрос:", sql);
+        logSql(sql);
         List<User> users = new ArrayList<>();
         try (PreparedStatement stmt = getConnection().prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
@@ -169,8 +197,30 @@ public class UserRepositoryJdbc extends Repository<User> {
     }
 
     @Override
+    public void createTableIfNotExists() {
+        String sql = "CREATE TABLE IF NOT EXISTS " + tableName + "("
+                + "id BIGSERIAL PRIMARY KEY,"
+                + "name VARCHAR(255),"
+                + "job VARCHAR(255)"
+                + ")";
+        logSql(sql);
+        Allure.addAttachment("SQL Запрос:", sql);
+        try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
+            stmt.executeUpdate();
+            getConnection().commit();
+            logger.info("Успешно создана таблица {}", tableName);
+
+        } catch (SQLException e) {
+            logger.error("Не удалось создать таблицу: {}", e.getMessage());
+            throw new RuntimeException("Не удалось создать таблицу", e);
+        }
+    }
+
+    @Override
     public void deleteAll() {
         String sql = "TRUNCATE TABLE " + tableName + " RESTART IDENTITY";
+        logSql(sql);
+        Allure.addAttachment("SQL Запрос:", sql);
         try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
             stmt.executeUpdate();
             getConnection().commit();

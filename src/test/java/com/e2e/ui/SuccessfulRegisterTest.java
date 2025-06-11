@@ -1,4 +1,4 @@
-package com.ui;
+package com.e2e.ui;
 
 import com.testBase.UiTestBase;
 import com.framework.ui.pojo.UserUiPojo;

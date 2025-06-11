@@ -1,4 +1,4 @@
-package com.db;
+package com.integration.db;
 
 import com.framework.asserts.AssertionsWithAllureLog;
 import com.framework.database.hibernate.DatabaseHibernateActions;

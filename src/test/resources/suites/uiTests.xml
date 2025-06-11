@@ -8,7 +8,7 @@
         <parameter name="browser" value="chrome"/>
         <parameter name="browserVersion" value="120.0"/>
         <classes>
-            <class name="com.ui.SuccessfulRegisterTest"/>
+            <class name="com.e2e.ui.SuccessfulRegisterTest"/>
         </classes>
     </test>
 
@@ -17,7 +17,7 @@
         <parameter name="browser" value="firefox"/>
         <parameter name="browserVersion" value="115.0"/>
         <classes>
-            <class name="com.ui.SuccessfulRegisterTest"/>
+            <class name="com.e2e.ui.SuccessfulRegisterTest"/>
         </classes>
     </test>
 
@@ -26,7 +26,7 @@
         <parameter name="browser" value="edge"/>
         <parameter name="browserVersion" value="136.0.3240.76"/>
         <classes>
-            <class name="com.ui.SuccessfulRegisterTest"/>
+            <class name="com.e2e.ui.SuccessfulRegisterTest"/>
         </classes>
     </test>
 </suite>

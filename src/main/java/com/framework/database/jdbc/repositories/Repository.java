@@ -13,4 +13,5 @@ public abstract class Repository <T> {
     public abstract void deleteById(Long id);
     public abstract void deleteAll();
     public abstract List<T> findAll();
+    public abstract void createTableIfNotExists();
 }

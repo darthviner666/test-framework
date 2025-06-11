@@ -1,4 +1,4 @@
-package com.db.jdbc;
+package com.integration.db.jdbc;
 
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;

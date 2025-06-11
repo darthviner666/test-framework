@@ -1,4 +1,4 @@
-package com.cucumber;
+package com.e2e.ui.cucumber;
 
 import io.cucumber.testng.AbstractTestNGCucumberTests;
 import io.cucumber.testng.CucumberOptions;
