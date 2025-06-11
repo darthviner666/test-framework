@@ -14,11 +14,24 @@ import java.util.Properties;
 
 import static com.framework.utils.config.ConfigReader.Instance;
 
+/**
+ * Конфигурация Hibernate с использованием пула соединений HikariCP.
+ * Класс предоставляет методы для инициализации, получения и закрытия фабрики сессий Hibernate.
+ */
 public class DatabaseHibernateHikariConfig {
+    /** Логгер для записи информации о работе с базой данных */
     private static final TestLogger logger = new TestLogger(DatabaseHibernateHikariConfig.class);
+    /** Фабрика сессий Hibernate */
     private static SessionFactory sessionFactory;
+    /** Реестр стандартных сервисов Hibernate */
     private static StandardServiceRegistry registry;
 
+    /**
+     * Инициализирует базу данных, создавая фабрику сессий Hibernate.
+     * Настраивает подключение к базе данных и пул соединений HikariCP.
+     * 
+     * @throws RuntimeException если не удалось создать фабрику сессий
+     */
     public static void initDatabase() {
         try {
             Configuration configuration = new Configuration();
@@ -44,8 +57,7 @@ public class DatabaseHibernateHikariConfig {
             settings.put("hibernate.hikari.connectionTimeout", "20000");
 
             configuration.setProperties(settings);
-            configuration.addAnnotatedClass(CreateUserPojoRq.class)
-                    .addAnnotatedClass(User.class);
+            configuration.addAnnotatedClass(CreateUserPojoRq.class);
 
             registry = new StandardServiceRegistryBuilder()
                     .applySettings(configuration.getProperties())
@@ -54,14 +66,20 @@ public class DatabaseHibernateHikariConfig {
             sessionFactory = configuration.buildSessionFactory(registry);
 
         } catch (Exception e) {
-            logger.error("Failed to create SessionFactory", e);
+            logger.error("Не удалось создать SessionFactory", e);
             if (registry != null) {
                 StandardServiceRegistryBuilder.destroy(registry);
             }
-            throw new RuntimeException("Failed to create SessionFactory", e);
+            throw new RuntimeException("Не удалось создать SessionFactory", e);
         }
     }
 
+    /**
+     * Возвращает фабрику сессий Hibernate.
+     * Если фабрика еще не создана, инициализирует базу данных.
+     * 
+     * @return фабрика сессий Hibernate
+     */
     public static SessionFactory getSessionFactory() {
         if (sessionFactory == null) {
             initDatabase();
@@ -69,6 +87,10 @@ public class DatabaseHibernateHikariConfig {
         return sessionFactory;
     }
 
+    /**
+     * Закрывает фабрику сессий и освобождает ресурсы.
+     * Должен вызываться при завершении работы с базой данных.
+     */
     public static void shutdown() {
         if (sessionFactory != null) {
             sessionFactory.close();

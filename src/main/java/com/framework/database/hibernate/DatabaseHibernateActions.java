@@ -10,10 +10,20 @@ import org.hibernate.Transaction;
 
 import java.util.List;
 
+/**
+ * Класс для выполнения операций с базой данных через Hibernate.
+ * Предоставляет методы для работы с пользователями в базе данных.
+ */
 @Slf4j
 public class DatabaseHibernateActions {
+    /** Логгер для записи информации о работе с базой данных */
     private static final TestLogger logger = new TestLogger(DatabaseHibernateActions.class);
 
+    /**
+     * Проверяет наличие указанного количества пользователей в таблице и при необходимости создает недостающих.
+     * 
+     * @param usersCount требуемое количество пользователей
+     */
     @Step("Убедиться что таблица users содержит {usersCount} пользователей")
     public static void ensureUsersExist(int usersCount) {
         try (Session session = DatabaseHibernateHikariConfig.getSessionFactory().openSession()) {
@@ -22,13 +32,13 @@ public class DatabaseHibernateActions {
                 Long userCount = session.createQuery("select count(*) from CreateUserPojoRq", Long.class)
                         .getSingleResult();
 
-                logger.info("Current users in database: {}", userCount);
+                logger.info("Текущее количество пользователей в базе данных: {}", userCount);
 
                 List<CreateUserPojoRq> existingUsers = getUsersList();
 
                 if (userCount < usersCount) {
                     int usersToGenerate = usersCount - userCount.intValue();
-                    logger.info("Generating {} new users", usersToGenerate);
+                    logger.info("Генерация {} новых пользователей", usersToGenerate);
 
                     List<CreateUserPojoRq> users = CreateUserGenerator.generateUniqueUsers(usersToGenerate, existingUsers);
                     for (CreateUserPojoRq user : users) {
@@ -44,15 +54,25 @@ public class DatabaseHibernateActions {
         }
     }
 
+    /**
+     * Получает список всех пользователей из таблицы.
+     * 
+     * @return список объектов пользователей
+     */
     @Step("Получить список пользователей из таблицы users")
     public static List<CreateUserPojoRq> getUsersList() {
         try (Session session = DatabaseHibernateHikariConfig.getSessionFactory().openSession()) {
             List<CreateUserPojoRq> users = session.createQuery("from CreateUserPojoRq", CreateUserPojoRq.class).list();
-            logger.info("Users in database: {}", users);
+            logger.info("Пользователи в базе данных: {}", users);
             return users;
         }
     }
 
+    /**
+     * Создает нового пользователя в таблице.
+     * 
+     * @param user объект пользователя для создания
+     */
     @Step("Создать пользователя в таблице users")
     public static void createUser(CreateUserPojoRq  user) {
         try (Session session = DatabaseHibernateHikariConfig.getSessionFactory().openSession()) {
@@ -67,6 +87,10 @@ public class DatabaseHibernateActions {
         }
     }
 
+    /**
+     * Удаляет всех пользователей из таблицы.
+     * Используется для очистки тестовых данных.
+     */
     @Step("Очистить таблицу users")
     public static void clearUsersTable() {
         try (Session session = DatabaseHibernateHikariConfig.getSessionFactory().openSession()) {
@@ -83,6 +107,11 @@ public class DatabaseHibernateActions {
         }
     }
 
+    /**
+     * Возвращает количество пользователей в таблице.
+     * 
+     * @return количество пользователей
+     */
     @Step("Получить количество пользователей в таблице users")
     public static int getUsersCount() {
         try (Session session = DatabaseHibernateHikariConfig.getSessionFactory().openSession()) {
