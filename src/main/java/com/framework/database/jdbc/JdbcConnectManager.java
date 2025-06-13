@@ -96,6 +96,7 @@ public class JdbcConnectManager {
                     config.databasePassword()
             );
             connection.setAutoCommit(false);
+            logger.info("База данных подключена");
             return connection;
         } catch (SQLException e) {
             logger.error("Не удалось создать соединение с базой данных: {}", e.getMessage());

@@ -5,26 +5,46 @@ import com.framework.database.jdbc.repositories.Repository;
 import com.framework.database.tables.User;
 import com.framework.utils.logger.TestLogger;
 import io.qameta.allure.Allure;
+import io.qameta.allure.Step;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class UserRepositoryJdbc extends Repository<User> {
+    /** Логгер для записи информации о работе с базой данных */
     private static final TestLogger logger = new TestLogger(UserRepositoryJdbc.class);
+    /** Менеджер соединений с базой данных */
     private final JdbcConnectManager jdbcManager;
+    /** Флаг для включения/отключения логирования SQL-запросов */
     private final boolean logSql = true;
-
+    /**
+     * Создает новый экземпляр репозитория и инициализирует таблицу пользователей.
+     *
+     * @throws SQLException если произошла ошибка при подключении к базе данных
+     */
     public UserRepositoryJdbc() throws SQLException {
         this.jdbcManager = JdbcConnectManager.getInstance();
         this.tableName = "USERS";
         createTableIfNotExists();
     }
 
+    /**
+     * Получает соединение с базой данных.
+     *
+     * @return активное соединение с базой данных
+     * @throws SQLException если не удалось получить соединение
+     */
     private Connection getConnection() throws SQLException {
         return jdbcManager.getConnection();
     }
-    
+
+    /**
+     * Логирует SQL-запрос и его параметры.
+     *
+     * @param sql SQL-запрос для логирования
+     * @param params параметры запроса
+     */
     private void logSql(String sql, Object... params) {
         if (logSql) {
             StringBuilder logMessage = new StringBuilder("SQL: ").append(sql);
@@ -41,7 +61,14 @@ public class UserRepositoryJdbc extends Repository<User> {
         }
     }
 
+    /**
+     * Находит пользователя по идентификатору.
+     *
+     * @param id идентификатор пользователя
+     * @return найденный пользователь или null, если пользователь не найден
+     */
     @Override
+    @Step("Получить пользователя из базы")
     public User findById(Long id) {
         String sql = "SELECT * FROM " + tableName + " WHERE id = ?";
         logSql(sql, id);
@@ -64,7 +91,15 @@ public class UserRepositoryJdbc extends Repository<User> {
         return null;
     }
 
+    /**
+     * Сохраняет нового пользователя в базе данных.
+     *
+     * @param entity пользователь для сохранения
+     * @return сохраненный пользователь с присвоенным идентификатором
+     * @throws SQLException если произошла ошибка при сохранении
+     */
     @Override
+    @Step("Создать пользователя в базе данных")
     public User save(User entity) throws SQLException {
         String sql = "INSERT INTO " + tableName + " (name, job) VALUES (?, ?)";
         logSql(sql, entity.getName(), entity.getJob());
@@ -95,7 +130,14 @@ public class UserRepositoryJdbc extends Repository<User> {
         }
     }
 
+    /**
+     * Обновляет существующего пользователя в базе данных.
+     *
+     * @param entity пользователь для обновления
+     * @return обновленный пользователь или null, если пользователь не найден
+     */
     @Override
+    @Step("Обновить пользователя в базе данных")
     public User update(User entity) {
         String sql = "UPDATE " + tableName + " SET name = ?, job = ? WHERE id = ?";
         logSql(sql, entity.getName(), entity.getJob(), entity.getId());
@@ -130,7 +172,13 @@ public class UserRepositoryJdbc extends Repository<User> {
         }
     }
 
+    /**
+     * Удаляет пользователя из базы данных по имени и должности.
+     *
+     * @param entity пользователь для удаления
+     */
     @Override
+    @Step("Удалить пользователя из базы данных")
     public void delete(User entity) {
         String sql = "DELETE FROM " + tableName + " WHERE name = ? AND job = ?";
         logSql(sql, entity.getName(), entity.getJob());
@@ -153,7 +201,13 @@ public class UserRepositoryJdbc extends Repository<User> {
         }
     }
 
+    /**
+     * Удаляет пользователя из базы данных по идентификатору.
+     *
+     * @param id идентификатор пользователя для удаления
+     */
     @Override
+    @Step("Удалить пользователя из базы данных")
     public void deleteById(Long id) {
         String sql = "DELETE FROM " + tableName + " WHERE id = ?";
         logSql(sql, id);
@@ -174,7 +228,13 @@ public class UserRepositoryJdbc extends Repository<User> {
         }
     }
 
+    /**
+     * Получает список всех пользователей из базы данных.
+     *
+     * @return список всех пользователей
+     */
     @Override
+    @Step("Получить список пользователей из базы данных")
     public List<User> findAll() {
         String sql = "SELECT * FROM " + tableName;
         Allure.addAttachment("SQL Запрос:", sql);
@@ -196,7 +256,11 @@ public class UserRepositoryJdbc extends Repository<User> {
         }
     }
 
+    /**
+     * Создает таблицу пользователей, если она не существует.
+     */
     @Override
+    @Step("Создать таблицу USERS в базе данных")
     public void createTableIfNotExists() {
         String sql = "CREATE TABLE IF NOT EXISTS " + tableName + "("
                 + "id BIGSERIAL PRIMARY KEY,"
@@ -216,7 +280,11 @@ public class UserRepositoryJdbc extends Repository<User> {
         }
     }
 
+    /**
+     * Удаляет всех пользователей из таблицы.
+     */
     @Override
+    @Step("Очистить таблицу USERS")
     public void deleteAll() {
         String sql = "TRUNCATE TABLE " + tableName + " RESTART IDENTITY";
         logSql(sql);
