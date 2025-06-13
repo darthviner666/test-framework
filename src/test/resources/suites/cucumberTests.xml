@@ -2,7 +2,7 @@
 <suite name="Cucumber Suite">
     <test name="Cucumber Tests">
         <classes>
-            <class name="com.cucumber.RunCucumberTest"/>
+            <class name="com.e2e.ui.cucumber.RunCucumberTest"/>
         </classes>
     </test>
 </suite>

@@ -5,8 +5,9 @@
     </listeners>
     <test name="API Tests">
         <classes>
-            <class name="com.api.GetListUsersTest"/>
-            <class name="com.api.CreateUserTest"/>
+            <class name="com.system.api.GetListUsersTest"/>
+            <class name="com.system.api.CreateUserTest"/>
+            <class name="com.system.api.CreateUserFromDbTest"/>
         </classes>
     </test>
 </suite>

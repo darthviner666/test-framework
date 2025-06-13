@@ -8,14 +8,14 @@
         <parameter name="browser" value="chrome"/>
         <parameter name="browserVersion" value="120.0"/>
         <classes>
-            <class name="com.ui.SuccessfulRegisterTest"/>
+            <class name="com.e2e.ui.SuccessfulRegisterTest"/>
         </classes>
     </test>
 
     <test name="API Tests" parallel="classes" thread-count="2">
         <classes>
-            <class name="com.api.GetListUsersTest"/>
-            <class name="com.api.CreateUserTest"/>
+            <class name="com.system.api.GetListUsersTest"/>
+            <class name="com.system.api.CreateUserTest"/>
         </classes>
     </test>
 </suite>

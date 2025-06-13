@@ -207,6 +207,13 @@ public class TestLogger {
         return String.join("\n", lines);
     }
 
+    /**
+     * Логирует скриншот и добавляет его в отчет Allure.
+     * Используется для визуального отображения состояния UI в момент выполнения теста.
+     *
+     * @param description    Описание скриншота
+     * @param screenshotPath Путь к файлу скриншота
+     */
     public void logScreenshot(String description, String screenshotPath) {
         log.info("Скриншот: {} - {}", description, screenshotPath);
         Allure.addAttachment(description, "image/png",
@@ -418,5 +425,29 @@ public class TestLogger {
         } else {
             log.warn(s);
         }
+    }
+
+    /**
+     * Логирует предупреждение с сообщением и строкой.
+     * Используется для предупреждений о потенциальных проблемах.
+     *
+     * @param s - Сообщение об ошибке, которое будет записано в лог.
+     * @param string -
+     */
+    public void warn(String s, String string) {
+        log.warn(s, string);
+    }
+
+    /**
+     * Логирует информационное сообщение с элементом, именем и должностью.
+     * Используется для записи информации о пользователях в тестах.
+     *
+     * @param s       Сообщение, которое будет записано в лог
+     * @param element Элемент, связанный с сообщением
+     * @param name    Имя пользователя
+     * @param job     Должность пользователя
+     */
+    public void info(String s, String element, String name, String job) {
+        log.info(s, element, name, job);
     }
 }

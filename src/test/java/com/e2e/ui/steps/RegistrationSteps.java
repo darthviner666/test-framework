@@ -1,4 +1,4 @@
-package com.steps;
+package com.e2e.ui.steps;
 
 import com.framework.ui.pom.RegisterPage;
 import com.framework.ui.pom.popups.SuccesfulRegisteredPopup;

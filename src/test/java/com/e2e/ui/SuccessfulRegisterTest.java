@@ -1,11 +1,11 @@
-package com.ui;
+package com.e2e.ui;
 
 import com.testBase.UiTestBase;
 import com.framework.ui.pojo.UserUiPojo;
 import com.framework.ui.pom.MainPage;
 import com.framework.ui.pom.RegisterPage;
 import com.framework.ui.pom.popups.SuccesfulRegisteredPopup;
-import com.framework.utils.dataGenerators.UiUserGenerator;
+import com.framework.utils.dataGenerators.uiUser.UiUserGenerator;
 import io.qameta.allure.*;
 import org.testng.annotations.Test;
 

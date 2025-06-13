@@ -1,11 +1,27 @@
 Автотестовый фреймворк для UI и API тестов.
-Команда для запуска: mvn clean test -D=suite_name
+
+Команда для запуска: mvn clean test -Dsuite=suite_name
 Команда для отчёта: allure serve
-Используемые инструменты: Java 11, TestNG, RestAssured, Selenide, Selenoid, Log4j, Lombok, Owner, Allure, Faker, JsonPath, Maven, Cucumber
+
+Используемые инструменты:
+Java 11, TestNG, RestAssured, Selenide, Selenoid, Log4j, Lombok, Owner, Allure, Faker, JsonPath, Maven, Cucumber, JDBC, Hibernate
+
+Что сделано:
+Добавлен UI автотест успешной регистрации на сайте
+Cозданы PageObject'ы страниц и формы регистрации
+Добавлено логирование Selenide
+Добавлено логирование всего в файл и в консоль, прикрепление файла к Allure отчёту
+Добавлены Allure отчёты
+Добавлены API тесты (системные)
+Добавлено логирование REST API запросов
+Добавлено генерация, сохранение, считывание и удаление тестовых данных в Postgres SQL с помощью Hibernate
+Добавлены интеграционные тесты бд с помощью JDBC
+
 Примеры лог файлов находтся в папке logs (генерируются в target/logs)
 Список задач:
 Добавить восстановление кукис в веб драйвере,
-Добавить отдельные xml для CI,
-Настроить Selenoid на облаке,
+Добавить работу с CDP
+Добавить логирование Network и JS ошибок
+Развернуть Jenkins, написать пайплайн
+Настроить Selenoid на облаке
 Добавить видеозапись,
-Добавить хранение тестовых данных с помощью JDBC, Hibernate

@@ -1,11 +1,11 @@
-package com.api;
+package com.system.api;
 
 import com.testBase.TestBase;
 import com.framework.api.helpers.UserHelper;
 import com.framework.api.pojo.users.create.rq.CreateUserPojoRq;
 import com.framework.api.pojo.users.create.rs.CreateUserPojoRs;
 import com.framework.asserts.AssertionsWithAllureLog;
-import com.framework.utils.dataGenerators.CreateUserGenerator;
+import com.framework.utils.dataGenerators.createUser.CreateUserGenerator;
 import com.framework.utils.serialize.JsonSerializer;
 import io.qameta.allure.*;
 import org.testng.annotations.DataProvider;
