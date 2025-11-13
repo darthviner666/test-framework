@@ -1,6 +1,7 @@
 package com.framework.api.restAssured;
 
 import com.framework.api.filters.CustomAllureFilter;
+import com.framework.api.filters.CustomRestAssuredFilter;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.filter.log.LogDetail;
@@ -23,17 +24,25 @@ public class ApiSpecs {
      */
     private static final String BASE_URL = Instance().apiBaseUrl();
     private static final CustomAllureFilter CUSTOM_ALLURE_FILTER = new CustomAllureFilter();
+    private static final CustomRestAssuredFilter CUSTOM_REST_ASSURED_FILTER = new CustomRestAssuredFilter();
     /**
      * Получить стандартные спецификации запроса.
      * @return - спецификации запроса.
      */
     public static RequestSpecification getDefaultRequestSpec() {
+
         return new RequestSpecBuilder()
                 .setBaseUri(BASE_URL)
                 .setContentType(ContentType.JSON)
                 .addFilter(CUSTOM_ALLURE_FILTER)
+                .addFilter(CUSTOM_REST_ASSURED_FILTER)
                 .log(LogDetail.ALL)
-                .build().given();
+                .build()
+                .headers(HeadersBuilder
+                        .defaultHeaders()
+                        .withApiKey()
+                        .build())
+                .given();
     }
 
     /**

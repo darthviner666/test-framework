@@ -2,16 +2,16 @@ package com.framework.api.helpers;
 
 import com.framework.api.restAssured.ApiRequests;
 import com.framework.api.endpoints.Endpoints;
+import com.framework.api.restAssured.ApiSpecs;
 import com.framework.api.restAssured.HeadersBuilder;
 import com.framework.api.pojo.users.create.rq.CreateUserPojoRq;
 import com.framework.api.pojo.users.create.rs.CreateUserPojoRs;
 import com.framework.api.pojo.users.get.rs.GetUserPojoRs;
-import com.framework.asserts.AssertionsWithAllureLog;
+import com.framework.asserts.AssertionsWithLog;
 import com.framework.utils.deserialize.JsonDeserializer;
 import com.framework.utils.logger.TestLogger;
 import io.restassured.http.Method;
 import io.restassured.response.Response;
-import org.apache.logging.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,19 +32,17 @@ public class UserHelper {
      */
     public CreateUserPojoRs createUser(CreateUserPojoRq user) {
         logger.info("Создание пользователя: {}", user);
-        Map<String, String> headers = HeadersBuilder
-                .defaultHeaders()
-                .withHeader("x-api-key","reqres-free-v1")
-                .build();
 
         Response response = ApiRequests
                 .sendRequest("Создать пользователя",
-                        Endpoints.CREATE_USER,
+                        Endpoints.USERS.toString(),
                         Method.POST,
-                        req -> req.headers(headers).body(user));
+                        req -> req.spec(ApiSpecs.getDefaultRequestSpec()).body(user));
 
-        AssertionsWithAllureLog.assertEquals(response.getStatusCode(),201, "Статус код запроса");
+        AssertionsWithLog.assertEquals(response.getStatusCode(),201, "Статус код запроса");
+
         logger.info("Пользователь успешно создан: {}");
+
         return JsonDeserializer.deserialize(response
                 .getBody().asString(), CreateUserPojoRs.class);
     }
@@ -62,19 +60,19 @@ public class UserHelper {
 
         Map<String, String> headers = HeadersBuilder
                 .defaultHeaders()
-                .withHeader("x-api-key","reqres-free-v1")
+                .withApiKey()
                 .build();
 
         Response response = ApiRequests
                 .sendRequest("Получить пользователей",
-                        Endpoints.GET_USERS,
+                        Endpoints.USERS.toString(),
                         Method.GET,
                         req -> req
                                 .headers(headers)
                                 .queryParams(queryParams)
                 );
 
-        AssertionsWithAllureLog
+        AssertionsWithLog
                 .assertEquals(200,
                         response.getStatusCode(),
                         "статус код");
@@ -82,5 +80,25 @@ public class UserHelper {
         return JsonDeserializer.deserialize(response.getBody().asString(),"data", GetUserPojoRs[].class);
     }
 
+    /**
+     * Получить пользователя.
+     * @param id - id пользователя.
+     * @return - пользователь.
+     */
+    public GetUserPojoRs getUser(int id) {
+        Map<String,String> headers = HeadersBuilder
+                .defaultHeaders()
+                .withHeader("x-api-key","reqres-free-v1")
+                .build();
 
+        Response response = ApiRequests
+                .sendRequest("Получить пользователя",
+                        Endpoints.USER.toString(),
+                        Method.GET,
+                        req -> req
+                                .headers(headers)
+                                .pathParam("id",id));
+        logger.info("Пользователь успешно получен");
+        return response.jsonPath().getObject("data", GetUserPojoRs.class);
+    }
 }

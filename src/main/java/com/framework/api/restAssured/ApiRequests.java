@@ -12,6 +12,7 @@ import lombok.experimental.UtilityClass;
 
 import java.util.function.Function;
 
+import static io.restassured.RestAssured.delete;
 import static io.restassured.RestAssured.given;
 
 /**
@@ -38,13 +39,10 @@ public class ApiRequests {
             String endpoint,
             Method httpMethod,
             Function<RequestSpecification, RequestSpecification> requestBuilder) {
-        log.logStep("Отправить API запрос");
+        log.logStep(String.format("Отправить API запрос %s %s", requestDescription, endpoint));
 
         RequestSpecification requestSpec = requestBuilder.apply(given());
-        requestSpec
-                .baseUri(ConfigReader.Instance().apiBaseUrl())
-                .filter(new CustomAllureFilter())
-                .filter(new CustomRestAssuredFilter());
+
         return requestSpec.request(httpMethod, endpoint)
                 .then()
                 .extract().response();
