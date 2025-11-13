@@ -30,13 +30,7 @@ public class TestBase {
     @BeforeSuite(alwaysRun = true)
     public void beforeSuite(ITestContext context) {
         log.initSuite(context.getSuite().getName());
-        try {
-            //DatabaseHibernateHikariConfig.initDatabase();
-            //DatabaseHibernateActions.ensureUsersExist(20);
-        } catch (Exception e) {
-            log.error("Error during setup", e);
-            throw e;
-        }
+
     }
 
     /**
@@ -48,7 +42,6 @@ public class TestBase {
     @AfterSuite(alwaysRun = true)
     public void afterSuite(ITestContext context) {
         log.finishSuite(context);
-        //DatabaseHibernateHikariConfig.shutdown();
     }
 
     /**

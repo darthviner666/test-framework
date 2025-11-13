@@ -206,6 +206,18 @@
             <version>2.19.1</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>org.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
+            <version>4.2.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest</artifactId>
+            <version>2.2</version>
+            <scope>compile</scope>
+        </dependency>
         <!--        <dependency>-->
 <!--            <groupId>io.qameta.allure</groupId>-->
 <!--            <artifactId>allure-cucumber7-jvm</artifactId>-->

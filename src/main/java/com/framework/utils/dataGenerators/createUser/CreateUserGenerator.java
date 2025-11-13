@@ -28,6 +28,11 @@ public class CreateUserGenerator {
                 .build();
     }
 
+    /**
+     * Сгенерировать пользователей.
+     * @param count - количество.
+     * @return - список пользователей.
+     */
     public List<CreateUserPojoRq> generateUsers(int count) {
         List<CreateUserPojoRq> users = new ArrayList<>();
         for (int i = 0; i < count; i++) {
@@ -36,10 +41,21 @@ public class CreateUserGenerator {
         return users;
     }
 
+    /**
+     * Сгенерировать уникальных пользователей.
+     * @param count - количество.
+     * @return - список уникальных пользователей.
+     */
     public List<CreateUserPojoRq> generateUniqueUsers(int count) {
         return generateUniqueUsers(count, new ArrayList<>());
     }
 
+    /**
+     * Сгенерировать лист уникальных пользователей.
+     * @param count - количество.
+     * @param existingUsers - уже существующие пользователи.
+     * @return - список уникальных пользователей.
+     */
     public List<CreateUserPojoRq> generateUniqueUsers(int count, List<CreateUserPojoRq> existingUsers) {
         CreateUserPojoRq user;
         Set<CreateUserPojoRq> usersSet = new HashSet<>();

@@ -18,6 +18,7 @@
             <class name="com.system.api.CreateUserTest"/>
             <class name="com.system.api.GetListResourceWithoutPojo"/>
             <class name="com.system.api.GetUserNotFoundTest"/>
+            <class name="com.system.api.CreateUserFromDbTest"/>
         </classes>
     </test>
 </suite>

@@ -7,6 +7,7 @@ import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.testng.annotations.BeforeMethod;
 
 import java.util.List;
 
@@ -51,6 +52,22 @@ public class DatabaseHibernateActions {
                 transaction.rollback();
                 throw e;
             }
+        }
+    }
+
+    /**
+     * Подготовка тестовых данных из тестовой базы данных.
+     * Удаление полученного пользователя из бд, чтобы избежать
+     * переиспользования тестовых данных.
+     */
+    public static CreateUserPojoRq getTestUser() {
+        try (Session session = DatabaseHibernateHikariConfig.getSessionFactory().openSession()) {
+            CreateUserPojoRq testUser = session.createQuery("from CreateUserPojoRq order by RANDOM() limit 1", CreateUserPojoRq.class)
+                    .getSingleResult();
+            Transaction tx = session.beginTransaction();
+            session.remove(testUser);
+            tx.commit();
+            return testUser;
         }
     }
 
