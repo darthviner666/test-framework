@@ -33,7 +33,6 @@ public class GetUserNotFoundTest extends TestBase {
     public void getUserNotFoundTest(Integer id) {
         given()
                 .spec(ApiSpecs.getDefaultRequestSpec())
-                .headers("x-api-key","reqres-free-v1")
                 .pathParam("id",id)
                 .get(Endpoints.USER.toString())
                 .then()
