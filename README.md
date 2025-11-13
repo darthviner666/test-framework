@@ -1,6 +1,7 @@
 Автотестовый фреймворк для UI и API тестов.
 
 Команда для запуска: mvn clean test -Dsuite=suite_name
+Команда запуска Postgres: docker-compose up -d
 Команда для отчёта: allure serve
 
 Используемые инструменты:

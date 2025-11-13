@@ -1,5 +1,6 @@
 package com.framework.utils.logger;
 
+import com.framework.utils.file.FileUtils;
 import io.qameta.allure.Allure;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -77,8 +78,8 @@ public class TestLogger {
         this.logSuiteFilePath = String.format("target/logs/suite_%s_%s",
                 suiteName,
                 LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")));
-        ThreadContext.put("logFile", logSuiteFilePath);
-        ensureLogDirectoryExists();
+        ThreadContext.put("logFile", logSuiteFilePath+".log");
+        FileUtils.ensureLogDirectoryExists();
         log.info("Начало выполнения тестового набора: {}", suiteName);
     }
 
@@ -89,6 +90,8 @@ public class TestLogger {
      * @param result Результат теста, содержащий информацию о методе.
      */
     public void initTest(ITestResult result) {
+        FileUtils.ensureLogDirectoryExists();
+
         this.testName = result.getMethod().getMethodName();
         this.testStartTime = System.currentTimeMillis();
         this.uniqueid = UUID.randomUUID().toString().substring(0, 6);
@@ -98,9 +101,8 @@ public class TestLogger {
                 uniqueid);
 
         ThreadContext.put("testName", testName);
-        ThreadContext.put("logFile", logTestFilePath);
+        ThreadContext.put("logFile", logTestFilePath+".log");
 
-        ensureLogDirectoryExists();
         logTestStart();
     }
 
@@ -131,18 +133,6 @@ public class TestLogger {
 
         log.info(logMessage); // Пишем в файл и консоль
         //Allure.step(logMessage); // Добавляем шаг в Allure
-    }
-
-    /**
-     * Проверяет наличие директории для логов и создает ее, если она не существует.
-     * Используется для обеспечения наличия места для сохранения логов тестов.
-     */
-    private void ensureLogDirectoryExists() {
-        try {
-            Files.createDirectories(Paths.get("target/logs"));
-        } catch (IOException e) {
-            log.error("Не удалось создать директорию для логов", e);
-        }
     }
 
     /**
@@ -188,12 +178,8 @@ public class TestLogger {
      * @param logPath Путь к файлу логов теста.
      */
     private void attachLogsToAllure(String logPath) {
-        try {
-            String logs = Files.readString(Paths.get(logPath + ".log"));
-            Allure.addAttachment("Полные логи теста", "text/plain", logs);
-        } catch (IOException e) {
-            log.error("Не удалось прочитать логи теста", e);
-        }
+        String logs = FileUtils.readFileIgnoringExceptions(logPath);
+        Allure.addAttachment("Полные логи теста", "text/plain", logs);
     }
 
     /**
@@ -352,7 +338,7 @@ public class TestLogger {
                 "═══════════════════════════════════════════",
                 "✅ ТЕСТОВЫЙ НАБОР ЗАВЕРШЕН: " + context.getSuite().getName(),
                 "⏱ Время выполнения: " + (System.currentTimeMillis() - suiteStartTime) + " мс",
-                "📁 Логи сохранены в: " + ThreadContext.get("logFilePath"),
+                "📁 Логи сохранены в: " + ThreadContext.get("logFile"),
                 "📅 Дата и время завершения: " + LocalDateTime.now().format(dtf),
                 "✅️ Успешных тестов: " + context.getPassedTests().size(),
                 "❗️ Проваленных тестов: " + context.getFailedTests().size(),
@@ -361,7 +347,7 @@ public class TestLogger {
                 "═══════════════════════════════════════════"
         );
         log.info(endMessage);
-        attachLogsToAllure(ThreadContext.get("logFilePath"));
+        attachLogsToAllure(ThreadContext.get("logFile"));
         Allure.addAttachment("Завершение тестового набора", "text/plain", endMessage);
         ThreadContext.clearAll();
     }
