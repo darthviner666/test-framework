@@ -31,7 +31,7 @@ public class AssertionsWithAllureLog {
     @Step("Сравнить на равенство {comment}")
     public static void assertEquals(Object actual, Object expected, String comment) {
         String message = String.format("Ожидалось: '%s', получено: '%s'", expected.toString(), actual.toString());
-        Allure.addAttachment("Детали сравнения", "text/plain", message);
+        Allure.addAttachment(comment + "\n Детали сравнения", "text/plain", message);
         log.info("Сравнение значений: ожидаемое = {}, фактическое = {}", expected.toString(), actual.toString());
         assertion.assertEquals(actual,expected,comment);
         log.info("Сравнение завершено успешно");
