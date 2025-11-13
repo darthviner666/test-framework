@@ -1,17 +1,15 @@
 package com.framework.asserts;
 
-import com.framework.database.tables.User;
 import com.framework.utils.logger.TestLogger;
 import io.qameta.allure.Allure;
 import io.qameta.allure.Step;
-import lombok.experimental.UtilityClass;
 import org.testng.asserts.Assertion;
 
 /**
  * Класс для Assertions с логированием в Allure.
  */
 
-public class AssertionsWithAllureLog {
+public class AssertionsWithLog {
     /**
      * Экземпляр Assertion для выполнения проверок.
      */
@@ -20,7 +18,7 @@ public class AssertionsWithAllureLog {
      * Логгер для логирования событий.
      * Используется для записи информации о сравнении значений.
      */
-    private static final TestLogger log = new TestLogger(AssertionsWithAllureLog.class);
+    private static final TestLogger log = new TestLogger(AssertionsWithLog.class);
 
     /**
      * Сравнить значения на равенство.

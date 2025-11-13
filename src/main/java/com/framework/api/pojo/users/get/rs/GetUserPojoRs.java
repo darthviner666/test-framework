@@ -1,8 +1,9 @@
 package com.framework.api.pojo.users.get.rs;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.framework.api.pojo.base.rs.BasePojoRs;
-import io.qameta.allure.internal.shadowed.jackson.annotation.JsonIgnoreProperties;
-import io.qameta.allure.internal.shadowed.jackson.annotation.JsonProperty;
+
 import lombok.Data;
 
 /**

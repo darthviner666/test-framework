@@ -3,7 +3,7 @@ package com.system.api;
 import com.testBase.TestBase;
 import com.framework.api.helpers.UserHelper;
 import com.framework.api.pojo.users.get.rs.GetUserPojoRs;
-import com.framework.asserts.AssertionsWithAllureLog;
+import com.framework.asserts.AssertionsWithLog;
 import io.qameta.allure.*;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -21,7 +21,7 @@ public class GetListUsersTest extends TestBase {
     }
 
     @Test(description = "Проверка получения пользователей на странице",
-            testName = "Получить пользователей",
+            testName = "Получить пользователя",
             dataProvider = "data",
             groups = "smoke",
             priority = 1)
@@ -37,10 +37,10 @@ public class GetListUsersTest extends TestBase {
         GetUserPojoRs[] users = helper.getUsers(page);
 
         for (GetUserPojoRs user : users) {
-            AssertionsWithAllureLog.assertNotEquals(user.firstName, "", "Имя не пустое");
-            AssertionsWithAllureLog.assertNotEquals(user.lastName, "", "Фамилия не пустая");
+            AssertionsWithLog.assertNotEquals(user.firstName, "", "Имя не пустое");
+            AssertionsWithLog.assertNotEquals(user.lastName, "", "Фамилия не пустая");
             String email = user.firstName.toLowerCase() + "." + user.lastName.toLowerCase();
-            AssertionsWithAllureLog.assertTrue(user.email.startsWith(email), "Email");
+            AssertionsWithLog.assertTrue(user.email.startsWith(email), "Email");
         }
     }
 }

@@ -4,9 +4,8 @@ import com.testBase.TestBase;
 import com.framework.api.helpers.UserHelper;
 import com.framework.api.pojo.users.create.rq.CreateUserPojoRq;
 import com.framework.api.pojo.users.create.rs.CreateUserPojoRs;
-import com.framework.asserts.AssertionsWithAllureLog;
+import com.framework.asserts.AssertionsWithLog;
 import com.framework.utils.dataGenerators.createUser.CreateUserGenerator;
-import com.framework.utils.serialize.JsonSerializer;
 import io.qameta.allure.*;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -43,15 +42,12 @@ public class CreateUserTest extends TestBase {
     @Story("Положительный сценарий")
     @Severity(SeverityLevel.BLOCKER)
     public void createUserTest(CreateUserPojoRq user) {
-        String testName = String.format("Создание пользователя: %s", JsonSerializer.toJson(user));
-        Allure.getLifecycle().updateTestCase(test -> test.setName(testName));
-
         UserHelper helper = new UserHelper();
 
         CreateUserPojoRs userRs = helper.createUser(user);
 
-        AssertionsWithAllureLog.assertEquals(userRs.job, user.job, "Поле job");
-        AssertionsWithAllureLog.assertEquals(userRs.name, user.name, "Поле name");
+        AssertionsWithLog.assertEquals(userRs.job, user.job, "Поле job");
+        AssertionsWithLog.assertEquals(userRs.name, user.name, "Поле name");
     }
 
 }

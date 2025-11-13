@@ -1,6 +1,7 @@
 package com.framework.utils.jsonPretify;
 
 import com.framework.utils.logger.TestLogger;
+import io.qameta.allure.Allure;
 import io.qameta.allure.internal.shadowed.jackson.annotation.JsonInclude;
 import io.qameta.allure.internal.shadowed.jackson.databind.ObjectMapper;
 import io.qameta.allure.internal.shadowed.jackson.databind.SerializationFeature;
@@ -37,6 +38,22 @@ public final class JsonPretifier {
      */
     private JsonPretifier() {
         // Utility class
+    }
+    /**
+     * Метод для форматирования тела запроса/ответа в читаемый вид.
+     * Если форматирование не удалось, возвращает исходное тело.
+     *
+     * @param body тело запроса или ответа
+     * @return отформатированное тело или исходное, если форматирование не удалось
+     */
+    public static String prettifyOrRaw(String body) {
+        if (body == null || body.isEmpty()) return "";
+        try {
+            return pretifyJson(body);
+        } catch (Exception e) {
+            Allure.addAttachment("WARN: prettify failed", e.getMessage());
+            return body;
+        }
     }
     /**
      * Форматировать строку в читаемый json.

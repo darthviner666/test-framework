@@ -48,6 +48,14 @@ public class HeadersBuilder {
     }
 
     /**
+     * Заголовок "x-api-key".
+     * @return - заголовки.
+     */
+    public HeadersBuilder withApiKey() {
+        headers.put("x-api-key","reqres-free-v1");
+        return this;
+    }
+    /**
      * Кастомнй заголовок.
      * @param name - имя заголовка.
      * @param value - значение заголовка.

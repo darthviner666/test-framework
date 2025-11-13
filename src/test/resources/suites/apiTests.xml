@@ -8,6 +8,8 @@
             <class name="com.system.api.GetListUsersTest"/>
             <class name="com.system.api.CreateUserTest"/>
             <class name="com.system.api.CreateUserFromDbTest"/>
+            <class name="com.system.api.GetListResourceWithoutPojo"/>
+            <class name="com.system.api.GetUserNotFoundTest"/>
         </classes>
     </test>
 </suite>

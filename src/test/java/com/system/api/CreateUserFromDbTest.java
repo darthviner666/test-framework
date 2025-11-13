@@ -3,7 +3,7 @@ package com.system.api;
 import com.framework.api.helpers.UserHelper;
 import com.framework.api.pojo.users.create.rq.CreateUserPojoRq;
 import com.framework.api.pojo.users.create.rs.CreateUserPojoRs;
-import com.framework.asserts.AssertionsWithAllureLog;
+import com.framework.asserts.AssertionsWithLog;
 import com.framework.database.hibernate.DatabaseHibernateHikariConfig;
 import com.testBase.TestBase;
 import io.qameta.allure.Severity;
@@ -45,8 +45,8 @@ public class CreateUserFromDbTest extends TestBase {
         UserHelper helper = new UserHelper();
         CreateUserPojoRs userRs = helper.createUser(testUser);
 
-        AssertionsWithAllureLog.assertEquals(userRs.job, userRs.job, "Поле job");
-        AssertionsWithAllureLog.assertEquals(userRs.name, userRs.name, "Поле name");
+        AssertionsWithLog.assertEquals(userRs.job, userRs.job, "Поле job");
+        AssertionsWithLog.assertEquals(userRs.name, userRs.name, "Поле name");
 
     }
 }

@@ -1,6 +1,6 @@
 package com.integration.db;
 
-import com.framework.asserts.AssertionsWithAllureLog;
+import com.framework.asserts.AssertionsWithLog;
 import com.framework.database.hibernate.DatabaseHibernateActions;
 import com.testBase.TestBase;
 import io.qameta.allure.Story;
@@ -15,6 +15,6 @@ public class HibernateClearUsersTableTest extends TestBase {
     public void hibernateClearUsersTableTest() {
         DatabaseHibernateActions.clearUsersTable();
         int usersCount = DatabaseHibernateActions.getUsersCount();
-        AssertionsWithAllureLog.assertEquals(usersCount, 0, "Таблица create_users очищена");
+        AssertionsWithLog.assertEquals(usersCount, 0, "Таблица create_users очищена");
     }
 }

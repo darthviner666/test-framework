@@ -1,6 +1,6 @@
 package com.integration.db.jdbc;
 
-import com.framework.asserts.AssertionsWithAllureLog;
+import com.framework.asserts.AssertionsWithLog;
 import com.framework.database.jdbc.users.UserRepositoryJdbc;
 import com.framework.database.tables.User;
 import com.framework.utils.dataGenerators.user.UserGenerator;
@@ -41,9 +41,9 @@ public class JdbcDbUserTest extends JdbcTestBase {
         try {
             user = userRepositoryJdbc.save(user);
             User foundUser = userRepositoryJdbc.findById(user.getId());
-            AssertionsWithAllureLog.assertNotNull(user);
-            AssertionsWithAllureLog.assertEquals(user.getName(), foundUser.getName(),"Поле: Имя");
-            AssertionsWithAllureLog.assertEquals(user.getJob(), foundUser.getJob(),"Поле: Работа");
+            AssertionsWithLog.assertNotNull(user);
+            AssertionsWithLog.assertEquals(user.getName(), foundUser.getName(),"Поле: Имя");
+            AssertionsWithLog.assertEquals(user.getJob(), foundUser.getJob(),"Поле: Работа");
             userRepositoryJdbc.delete(user);
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -61,9 +61,9 @@ public class JdbcDbUserTest extends JdbcTestBase {
             user = userRepositoryJdbc.save(user);
             userRepositoryJdbc.update(user);
             User foundUser = userRepositoryJdbc.findById(user.getId());
-            AssertionsWithAllureLog.assertNotNull(user);
-            AssertionsWithAllureLog.assertEquals(user.getName(), foundUser.getName(),"Поле: Имя");
-            AssertionsWithAllureLog.assertEquals(user.getJob(), foundUser.getJob(),"Поле: Работа");
+            AssertionsWithLog.assertNotNull(user);
+            AssertionsWithLog.assertEquals(user.getName(), foundUser.getName(),"Поле: Имя");
+            AssertionsWithLog.assertEquals(user.getJob(), foundUser.getJob(),"Поле: Работа");
             userRepositoryJdbc.delete(user);
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -81,7 +81,7 @@ public class JdbcDbUserTest extends JdbcTestBase {
             user = userRepositoryJdbc.save(user);
             userRepositoryJdbc.deleteAll();
             List<User> foundUsers = userRepositoryJdbc.findAll();
-            AssertionsWithAllureLog.assertTrue(foundUsers.isEmpty(),"Таблица не очищена");
+            AssertionsWithLog.assertTrue(foundUsers.isEmpty(),"Таблица не очищена");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
