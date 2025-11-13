@@ -58,18 +58,14 @@ public class UserHelper {
             put("page", page.toString());
         }};
 
-        Map<String, String> headers = HeadersBuilder
-                .defaultHeaders()
-                .withApiKey()
-                .build();
-
         Response response = ApiRequests
                 .sendRequest("Получить пользователей",
                         Endpoints.USERS.toString(),
                         Method.GET,
-                        req -> req
-                                .headers(headers)
-                                .queryParams(queryParams)
+                        req -> req.spec(ApiSpecs
+                                .getDefaultRequestSpec()
+                                .queryParams(queryParams))
+
                 );
 
         AssertionsWithLog
@@ -86,17 +82,12 @@ public class UserHelper {
      * @return - пользователь.
      */
     public GetUserPojoRs getUser(int id) {
-        Map<String,String> headers = HeadersBuilder
-                .defaultHeaders()
-                .withHeader("x-api-key","reqres-free-v1")
-                .build();
-
         Response response = ApiRequests
                 .sendRequest("Получить пользователя",
                         Endpoints.USER.toString(),
                         Method.GET,
-                        req -> req
-                                .headers(headers)
+                        req -> ApiSpecs
+                                .getDefaultRequestSpec()
                                 .pathParam("id",id));
         logger.info("Пользователь успешно получен");
         return response.jsonPath().getObject("data", GetUserPojoRs.class);

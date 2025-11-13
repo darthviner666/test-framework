@@ -3,6 +3,7 @@ package com.framework.utils.deserialize;
 import com.jayway.jsonpath.JsonPath;
 import io.qameta.allure.Allure;
 import io.qameta.allure.internal.shadowed.jackson.databind.ObjectMapper;
+import io.qameta.allure.internal.shadowed.jackson.databind.PropertyNamingStrategies;
 import lombok.experimental.UtilityClass;
 
 /**
@@ -22,6 +23,7 @@ public class JsonDeserializer {
     public static  <T> T deserialize(String json, String path, Class<T> clazz) {
         try {
             ObjectMapper mapper = new ObjectMapper();
+            mapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
            return mapper.readValue(JsonPath.parse(json).read(path).toString(),clazz);
         } catch (Exception e) {
             Allure.addAttachment("FAIL","Failed to deserialize JSON to " + clazz.getSimpleName());
@@ -38,6 +40,7 @@ public class JsonDeserializer {
     public static <T> T deserialize(String json, Class<T> clazz) {
         try {
             ObjectMapper mapper = new ObjectMapper();
+            mapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
             return mapper.readValue(json,clazz);
         } catch (Exception e) {
             Allure.addAttachment("FAIL","Failed to deserialize JSON to " + clazz.getSimpleName());

@@ -21,16 +21,13 @@ public class GetListUsersTest extends TestBase {
     }
 
     @Test(description = "Проверка получения пользователей на странице",
-            testName = "Получить пользователя",
+            testName = "Получить пользователей",
             dataProvider = "data",
             groups = "smoke",
             priority = 1)
     @Story("Положительный сценарий")
     @Severity(SeverityLevel.BLOCKER)
     public void getUsersListOkTest(Integer page) {
-
-        String testName = String.format("Аутентификация пользователей на странице: %s", page.toString());
-        Allure.getLifecycle().updateTestCase(test -> test.setName(testName));
 
         UserHelper helper = new UserHelper();
 

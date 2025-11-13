@@ -74,7 +74,7 @@ public class TestLogger {
 
     public void initSuite(String suiteName) {
         this.suiteStartTime = System.currentTimeMillis();
-        this.logSuiteFilePath = String.format("target/logs/suite_%s_%s.log",
+        this.logSuiteFilePath = String.format("target/logs/suite_%s_%s",
                 suiteName,
                 LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")));
         ThreadContext.put("logFile", logSuiteFilePath);
@@ -115,7 +115,7 @@ public class TestLogger {
         String status = result.isSuccess() ? "ПРОЙДЕН" : "ПРОВАЛЕН";
 
         logTestEnd(status, duration);
-        attachLogsToAllure(logTestFilePath);
+        attachLogsToAllure(ThreadContext.get("logFile"));
         ThreadContext.clearAll();
     }
 
@@ -347,13 +347,12 @@ public class TestLogger {
      * @param context Контекст тестового набора, содержащий информацию о выполненных тестах.
      */
     public void finishSuite(ITestContext context) {
-        ThreadContext.put("logFile", logSuiteFilePath);
         log.info("Завершение тестового набора: {}", context.getSuite().getName());
         String endMessage = formatTestMessage(
                 "═══════════════════════════════════════════",
                 "✅ ТЕСТОВЫЙ НАБОР ЗАВЕРШЕН: " + context.getSuite().getName(),
                 "⏱ Время выполнения: " + (System.currentTimeMillis() - suiteStartTime) + " мс",
-                "📁 Логи сохранены в: " + logSuiteFilePath + ".log",
+                "📁 Логи сохранены в: " + ThreadContext.get("logFilePath"),
                 "📅 Дата и время завершения: " + LocalDateTime.now().format(dtf),
                 "✅️ Успешных тестов: " + context.getPassedTests().size(),
                 "❗️ Проваленных тестов: " + context.getFailedTests().size(),
@@ -362,7 +361,7 @@ public class TestLogger {
                 "═══════════════════════════════════════════"
         );
         log.info(endMessage);
-        attachLogsToAllure(logSuiteFilePath);
+        attachLogsToAllure(ThreadContext.get("logFilePath"));
         Allure.addAttachment("Завершение тестового набора", "text/plain", endMessage);
         ThreadContext.clearAll();
     }
