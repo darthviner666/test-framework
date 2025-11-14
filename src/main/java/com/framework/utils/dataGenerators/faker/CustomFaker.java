@@ -39,8 +39,8 @@ public class CustomFaker extends Faker {
     public static String getPhoneNumber() {
         StringBuilder stringBuilder = new StringBuilder();
         Random random = new Random();
-        int digit = random.nextInt(9);
         for (int i = 0; i < 10; i++) {
+            int digit = random.nextInt(9);
             //Первая цифра номера не должна быть 7 или 8
             if (i==0) {
                 while (digit == 7 || digit == 8) {

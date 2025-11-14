@@ -347,7 +347,7 @@ public class TestLogger {
                 "═══════════════════════════════════════════"
         );
         log.info(endMessage);
-        attachLogsToAllure(ThreadContext.get("logFile"));
+        //attachLogsToAllure(ThreadContext.get("logFile"));
         Allure.addAttachment("Завершение тестового набора", "text/plain", endMessage);
         ThreadContext.clearAll();
     }

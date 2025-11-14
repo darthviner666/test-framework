@@ -30,6 +30,12 @@ public class BrowserFactory {
         Configuration.remote = null;
         Configuration.browserCapabilities = null;
         Configuration.headless = false;
+
+        System.clearProperty("webdriver.chrome.driver");
+        System.clearProperty("webdriver.gecko.driver");
+        System.clearProperty("webdriver.edge.driver");
+        System.clearProperty("browser");
+        System.clearProperty("browserVersion");
     }
     /**
      * Настройка браузеров.
