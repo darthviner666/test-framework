@@ -30,7 +30,7 @@ Caused by: NoSuchElementException: no such element: Unable to locate element: {"
 	at com.codeborne.selenide.impl.SelenideElementProxy.dispatchAndRetry(SelenideElementProxy.java:132) ~[selenide-core-6.19.1.jar:6.19.1]
 	at com.codeborne.selenide.impl.SelenideElementProxy.invoke(SelenideElementProxy.java:84) ~[selenide-core-6.19.1.jar:6.19.1]
 	at jdk.proxy2.$Proxy44.shouldBe(Unknown Source) ~[?:?]
-	at com.framework.ui.pom.MainPage.isLoaded(MainPage.java:49) ~[classes/:?]
+	at com.framework.ui.pom.pages.MainPage.isLoaded(MainPage.java:49) ~[classes/:?]
 	at com.ui.SuccessfulRegisterTest.successfulRegisterTest(SuccessfulRegisterTest.java:28) ~[test-classes/:?]
 	at jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[?:?]
 	at java.lang.reflect.Method.invoke(Method.java:580) ~[?:?]

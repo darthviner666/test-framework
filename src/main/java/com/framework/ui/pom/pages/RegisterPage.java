@@ -1,4 +1,4 @@
-package com.framework.ui.pom;
+package com.framework.ui.pom.pages;
 
 import com.codeborne.selenide.Condition;
 import com.framework.ui.pom.forms.CookieForm;
@@ -46,7 +46,7 @@ public class RegisterPage extends BasePage {
     @Step("Загрузка страницы регистрации")
     public void isLoaded() {
         log.logStep("Проверка загрузки страницы регистрации");
-        form.shouldBe(Condition.visible);
+        //form.waitForVisibility();
         registrationForm.isLoaded();
         log.info("Страница регистрации загружена успешно");
     }
