@@ -20,12 +20,31 @@ public class BrowserFactory {
      * Используется для записи информации о настройке браузеров.
      */
     private static final TestLogger log = new TestLogger(BrowserFactory.class);
+
+    /**
+     * Сброс конфигурации для избежания конфликтов
+     */
+    private static void resetConfiguration() {
+        Configuration.browser = "";
+        Configuration.browserVersion = "";
+        Configuration.remote = null;
+        Configuration.browserCapabilities = null;
+        Configuration.headless = false;
+
+        System.clearProperty("webdriver.chrome.driver");
+        System.clearProperty("webdriver.gecko.driver");
+        System.clearProperty("webdriver.edge.driver");
+        System.clearProperty("browser");
+        System.clearProperty("browserVersion");
+    }
     /**
      * Настройка браузеров.
      * @param browser - браузер.
      * @param browserVersion - версия браузера.
      */
     public static void setupBrowser(@Optional String browser, String browserVersion) {
+        resetConfiguration();
+
         ProjectConfig config = Instance();
         Configuration.webdriverLogsEnabled = true;
 
@@ -35,6 +54,7 @@ public class BrowserFactory {
                 break;
             case "selenoid":
                 setupSelenoid(config, browser, browserVersion);
+                break;
             default:
                 setupLocalBrowser(config ,browser, browserVersion);
         }

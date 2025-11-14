@@ -218,6 +218,11 @@
             <version>2.2</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>io.github.bonigarcia</groupId>
+            <artifactId>webdrivermanager</artifactId>
+            <version>5.6.2</version>
+        </dependency>
         <!--        <dependency>-->
 <!--            <groupId>io.qameta.allure</groupId>-->
 <!--            <artifactId>allure-cucumber7-jvm</artifactId>-->

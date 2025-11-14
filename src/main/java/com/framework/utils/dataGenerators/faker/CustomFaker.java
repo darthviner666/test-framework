@@ -40,7 +40,14 @@ public class CustomFaker extends Faker {
         StringBuilder stringBuilder = new StringBuilder();
         Random random = new Random();
         for (int i = 0; i < 10; i++) {
-            stringBuilder.append(random.nextInt(9));
+            int digit = random.nextInt(9);
+            //Первая цифра номера не должна быть 7 или 8
+            if (i==0) {
+                while (digit == 7 || digit == 8) {
+                    digit = random.nextInt(9);
+                }
+            }
+            stringBuilder.append(digit);
         }
         return stringBuilder.toString();
     }

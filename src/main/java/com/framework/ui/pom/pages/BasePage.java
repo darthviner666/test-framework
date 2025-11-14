@@ -1,6 +1,11 @@
-package com.framework.ui.pom;
+package com.framework.ui.pom.pages;
 
 import com.codeborne.selenide.SelenideElement;
+import com.framework.ui.pom.elements.Form;
+import com.framework.ui.pom.elements.anotations.UiElement;
+import com.framework.ui.pom.elements.anotations.UiElementProcessor;
+
+import java.lang.reflect.AnnotatedArrayType;
 
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.title;
@@ -9,7 +14,13 @@ import static com.codeborne.selenide.Selenide.title;
  * Базовая страница POM.
  */
 public abstract class BasePage {
-    protected SelenideElement form = $(".page__wrapper");
+
+    @UiElement(css = ".page__wrapper", name = "Форма")
+    protected Form form;
+
+    public BasePage() {
+        UiElementProcessor.initPageObject(this);
+    }
 
     /**
      * Получить заголовок.

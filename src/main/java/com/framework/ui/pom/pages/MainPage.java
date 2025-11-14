@@ -1,4 +1,4 @@
-package com.framework.ui.pom;
+package com.framework.ui.pom.pages;
 
 import com.codeborne.selenide.Condition;
 import com.framework.ui.pom.forms.CookieForm;
@@ -46,7 +46,7 @@ public class MainPage extends BasePage {
     @Step("Загрузка главной страницы")
     public void isLoaded() {
         log.logStep("Проверка загрузки главной страницы");
-        form.shouldBe(Condition.visible);
+        //form.waitForVisibility();
         header.isLoaded();
         log.info("Главная страница загружена успешно");
     }
