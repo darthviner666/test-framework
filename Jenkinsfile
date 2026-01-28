@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     tools {
-        jdk 'JDK11'
-        maven 'MAVEN_3'
+        jdk 'jdk11'
+        maven 'Maven3'
     }
 
     stages {
@@ -56,7 +56,8 @@ pipeline {
                     echo ""
 
                     echo "3. Проверка TestNG файлов:"
-                    find . -name "*.xml" -path "*/suites/*" -type f 2>/dev/null || echo "TestNG файлы не найдены"
+                    echo "Доступные suite файлы:"
+                    find . -name "*.xml" -path "*/suites/*" -type f 2>/dev/null | head -10 || echo "TestNG файлы не найдены"
                 '''
             }
         }
@@ -95,7 +96,7 @@ pipeline {
                         if [ ! -f "${suitePath}" ]; then
                             echo "❌ Файл не найден!"
                             echo "Доступные suite файлы:"
-                            find . -name "*.xml" -path "*/suites/*" -type f
+                            find . -name "*.xml" -path "*/suites/*" -type f | head -10
                             exit 1
                         fi
 
@@ -117,7 +118,10 @@ pipeline {
                     // Проверяем наличие отчетов
                     sh '''
                         echo "Поиск отчетов..."
-                        find . -name "testng-results.xml" -type f 2>/dev/null
+                        echo "TestNG результаты:"
+                        find . -name "testng-results.xml" -type f 2>/dev/null | head -5
+                        echo ""
+                        echo "Директория отчетов:"
                         ls -la target/surefire-reports/ 2>/dev/null || echo "Директория отчетов не найдена"
                     '''
 
@@ -146,8 +150,22 @@ pipeline {
             echo "Suite: ${params.TEST_SUITE}"
 
             // Сохраняем артефакты
-            archiveArtifacts artifacts: 'target/surefire-reports/**/*, **/*.log',
+            archiveArtifacts artifacts: 'target/surefire-reports/**/*',
                              allowEmptyArchive: true
+
+            // Сохраняем логи (без проблемного синтаксиса)
+            sh '''
+                echo "Сохранение логов..."
+                echo "Найдено лог файлов:"
+                find . -name "*.log" -type f | wc -l
+                echo ""
+                echo "Проверка последних логов:"
+                for logfile in $(find . -name "*.log" -type f | head -3); do
+                    echo "=== $logfile (последние 10 строк) ==="
+                    tail -10 "$logfile"
+                    echo ""
+                done
+            '''
         }
 
         success {
@@ -157,9 +175,16 @@ pipeline {
         failure {
             echo '❌ Обнаружены ошибки!'
 
+            // Без проблемного синтаксиса find -exec
             sh '''
                 echo "Логи ошибок:"
-                find . -name "*.log" -type f -exec echo "=== {} ===" \; -exec tail -20 {} \;
+                echo "Список лог файлов:"
+                LOG_FILES=$(find . -name "*.log" -type f | head -5)
+                for log in $LOG_FILES; do
+                    echo "=== $log ==="
+                    tail -20 "$log"
+                    echo ""
+                done
             '''
         }
     }
