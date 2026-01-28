@@ -11,7 +11,6 @@ pipeline {
     }
 
     environment {
-        // Настройка переменных окружения
         GIT_REPO = 'https://github.com/darthviner666/test-framework'
         WORKSPACE_DIR = "${env.WORKSPACE}"
         TEST_RESULTS_DIR = "${env.WORKSPACE}/test-output"
@@ -19,7 +18,6 @@ pipeline {
     }
 
     stages {
-        // Этап 1: Получение кода из репозитория
         stage('Checkout') {
             steps {
                 script {
@@ -28,8 +26,8 @@ pipeline {
                         $class: 'GitSCM',
                         branches: [[name: "*/${params.BRANCH_NAME}"]],
                         userRemoteConfigs: [[
-                            url: "${GIT_REPO}",
-                            //credentialsId: 'github-credentials'
+                            url: "${GIT_REPO}"
+                            // credentialsId: 'github-credentials' если нужны
                         ]]
                     ])
                 }
@@ -37,41 +35,39 @@ pipeline {
         }
 
         stage('Environment Check') {
-                            steps {
-                                script {
-                                    echo "=== Проверка окружения ==="
+            steps {
+                script {
+                    echo "=== Проверка окружения ==="
 
-                                    // Проверка Java
-                                    bat """
-                                        echo Java проверка:
-                                        java -version 2>&1 || echo "Java не найдена"
-                                        echo.
-                                    """
+                    // Проверка Java (используем sh для Linux)
+                    sh """
+                        echo "Java проверка:"
+                        java -version 2>&1 || echo "Java не найдена"
+                        echo ""
+                    """
 
-                                    // Проверка Maven/Gradle
-                                    bat """
-                                        echo Maven проверка:
-                                        mvn --version 2>&1 || echo "Maven не найден"
-                                        echo.
+                    // Проверка Maven
+                    sh """
+                        echo "Maven проверка:"
+                        mvn --version 2>&1 || echo "Maven не найден"
+                        echo ""
+                    """
 
-                                    """
+                    // Проверка содержимого репозитория
+                    sh """
+                        echo "Структура проекта:"
+                        find . -name "*.xml" -type f | head -20 || echo "XML файлы не найдены"
+                        echo ""
 
-                                    // Проверка содержимого репозитория
-                                    bat """
-                                        echo Структура проекта:
-                                        dir /s /b *.xml || echo "XML файлы не найдены"
-                                        echo.
+                        echo "Файлы в корне:"
+                        ls -la
+                        echo ""
+                    """
+                }
+            }
+        }
 
-                                        echo Файлы в корне:
-                                        dir
-                                        echo.
-                                    """
-                                }
-                            }
-                        }
-
-        // Этап 2: Очистка и установка зависимостей
-stage('Build') {
+        stage('Build') {
             steps {
                 script {
                     echo 'Сборка проекта...'
@@ -81,32 +77,40 @@ stage('Build') {
 
                     if (!buildFile.isEmpty()) {
                         echo "Обнаружен Maven проект"
+
+                        // Сначала показываем структуру pom.xml
+                        sh """
+                            echo "=== Информация о проекте ==="
+                            echo "pom.xml найден в: ${buildFile[0].path}"
+                            echo ""
+                            echo "Первые 20 строк pom.xml:"
+                            head -20 pom.xml
+                            echo ""
+                        """
+
                         // Попробуем разные варианты сборки
                         try {
-                            bat 'mvn clean compile -DskipTests'
+                            sh 'mvn clean compile -DskipTests'
                         } catch (Exception e1) {
                             echo "Стандартная сборка не удалась: ${e1.message}"
                             echo "Пробуем с обновлением зависимостей..."
                             try {
-                                bat 'mvn clean compile -DskipTests -U'
+                                sh 'mvn clean compile -DskipTests -U'
                             } catch (Exception e2) {
                                 echo "Сборка с обновлением не удалась: ${e2.message}"
                                 echo "Пробуем только компиляцию..."
-                                bat 'mvn compile -DskipTests'
+                                sh 'mvn compile -DskipTests'
                             }
                         }
                     } else {
                         echo "Файлы сборки не обнаружены. Проверяем структуру..."
-                        bat 'dir /s'
+                        sh 'find . -type f -name "*.xml" -o -name "*.java" -o -name "pom.xml" -o -name "build.gradle" | head -30'
                         error "Проект не содержит pom.xml или build.gradle"
                     }
                 }
             }
         }
 
-
-
-        // Этап 3: Запуск тестов TestNG
         stage('Run Tests') {
             steps {
                 script {
@@ -117,36 +121,62 @@ stage('Build') {
 
                     if (testngFiles.isEmpty()) {
                         echo "Файл ${params.TEST_SUITE} не найден. Ищем все testng файлы..."
-                        bat 'dir /s *.xml'
+                        sh 'find . -name "*.xml" -type f | head -20'
+
+                        // Проверяем наличие testng.xml в стандартных местах
+                        sh '''
+                            echo "Проверяем стандартные расположения:"
+                            ls -la src/test/resources/ 2>/dev/null || echo "src/test/resources/ не существует"
+                            ls -la test-suites/ 2>/dev/null || echo "test-suites/ не существует"
+                            find . -path "*/test/*" -name "*.xml" | head -10
+                        '''
                         error "TestNG suite файл не найден"
                     } else {
                         echo "Найден файл: ${testngFiles[0].path}"
 
-                        // Для Maven
-                        bat "mvn clean test -Dsuite=${params.TEST_SUITE}"
+                        // Показываем содержимое testng файла
+                        sh """
+                            echo "=== Содержимое ${params.TEST_SUITE} ==="
+                            cat "${testngFiles[0].path}" | head -30
+                            echo ""
+                        """
+
+                        // Для Maven - правильные опции
+                        sh "mvn clean test -Dsurefire.suiteXmlFiles=${testngFiles[0].path}"
                     }
                 }
             }
         }
 
-
-        // Этап 4: Публикация результатов
         stage('Publish Results') {
             steps {
-                // Публикация результатов TestNG
-                testng(
-                    testResults: 'test-output/testng-results.xml',
-                    escapeTestDesription: false,
-                    escapeExceptionMessages: false
-                )
+                script {
+                    echo "Публикация результатов..."
 
-                // Публикация HTML отчётов (если есть)
-                publishHTML([
-                    reportDir: "${HTML_REPORT_DIR}",
-                    reportFiles: 'emailable-report.html',
-                    reportName: 'TestNG HTML Report',
-                    keepAll: true
-                ])
+                    // Сначала находим отчеты
+                    sh '''
+                        echo "Поиск отчетов TestNG:"
+                        find . -name "testng-results.xml" -type f 2>/dev/null
+                        find . -name "surefire-reports" -type d 2>/dev/null
+                        echo ""
+                    '''
+
+                    // Публикация результатов TestNG
+                    testng(
+                        testResults: '**/testng-results.xml',
+                        escapeTestDesription: false,
+                        escapeExceptionMessages: false
+                    )
+
+                    // Публикация HTML отчётов
+                    publishHTML([
+                        reportDir: '**/surefire-reports',
+                        reportFiles: 'index.html, emailable-report.html',
+                        reportName: 'TestNG HTML Report',
+                        keepAll: true,
+                        alwaysLinkToLastBuild: true
+                    ])
+                }
             }
         }
     }
@@ -154,25 +184,48 @@ stage('Build') {
     post {
         always {
             echo "Завершение пайплайна с статусом: ${currentBuild.currentResult}"
-                        emailext(
-                            to: 'denvviner.work@gmail.com',
-                            subject: "Сборка ${env.JOB_NAME} - ${env.BUILD_NUMBER} успешна",
-                            body: "Успешная сборка: ${env.BUILD_URL}"
-                        )
-            // Очистка workspace при необходимости
-            cleanWs()
+
+            // Архивация важных файлов
+            archiveArtifacts artifacts: '**/target/*.jar, **/surefire-reports/**/*, **/test-output/**/*',
+                             allowEmptyArchive: true
+
+            // Сохраняем логи сборки
+            sh '''
+                echo "=== Сохранение логов ==="
+                ls -la target/surefire-reports/ 2>/dev/null || echo "Нет surefire-reports"
+                ls -la test-output/ 2>/dev/null || echo "Нет test-output"
+            '''
+
+            // Очистка workspace (опционально)
+            // cleanWs()
         }
         success {
-            echo 'Тесты успешно пройдены!'
+            echo '✅ Тесты успешно пройдены!'
+
+            // Отправка email только если настроен почтовый сервер
+            // emailext(
+            //     to: 'denvviner.work@gmail.com',
+            //     subject: "✅ Сборка ${env.JOB_NAME} - ${env.BUILD_NUMBER} успешна",
+            //     body: "Успешная сборка: ${env.BUILD_URL}"
+            // )
         }
         failure {
-            echo 'Обнаружены падения в тестах!'
-            // Отправка уведомления
-            emailext(
-                to: 'denvviner.work@gmail.com',
-                subject: "Сборка ${env.JOB_NAME} - ${env.BUILD_NUMBER} упала",
-                body: "Проверьте сборку: ${env.BUILD_URL}"
-            )
+            echo '❌ Обнаружены падения в тестах!'
+
+            // Сохраняем дополнительные логи при ошибке
+            sh '''
+                echo "=== Детали ошибки ==="
+                find . -name "*.log" -type f | head -5
+                echo "Последние ошибки Maven:"
+                tail -100 maven.log 2>/dev/null || echo "Файл maven.log не найден"
+            '''
+
+            // Отправка email только если настроен почтовый сервер
+            // emailext(
+            //     to: 'denvviner.work@gmail.com',
+            //     subject: "❌ Сборка ${env.JOB_NAME} - ${env.BUILD_NUMBER} упала",
+            //     body: "Проверьте сборку: ${env.BUILD_URL}"
+            // )
         }
     }
 }
