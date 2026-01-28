@@ -1,11 +1,6 @@
 pipeline {
     agent any
 
-    parameters {
-        string(name: 'BRANCH_NAME')
-        string(name: 'TEST_SUITE')
-    }
-
     environment {
         GIT_REPO = 'https://github.com/darthviner666/test-framework'
     }
