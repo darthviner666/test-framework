@@ -72,7 +72,6 @@ pipeline {
                         // Показываем информацию о проекте
                         sh '''
                             echo "=== Информация о Maven проекте ==="
-                            mvn help:effective-pom | grep -A5 -B5 "<groupId>\|<artifactId>\|<version>"
                             echo ""
                         '''
 
