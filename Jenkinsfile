@@ -153,19 +153,6 @@ pipeline {
             archiveArtifacts artifacts: 'target/surefire-reports/**/*',
                              allowEmptyArchive: true
 
-            // Сохраняем логи (без проблемного синтаксиса)
-            sh '''
-                echo "Сохранение логов..."
-                echo "Найдено лог файлов:"
-                find . -name "*.log" -type f | wc -l
-                echo ""
-                echo "Проверка последних логов:"
-                for logfile in $(find . -name "*.log" -type f | head -3); do
-                    echo "=== $logfile (последние 10 строк) ==="
-                    tail -10 "$logfile"
-                    echo ""
-                done
-            '''
         }
 
         success {
