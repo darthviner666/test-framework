@@ -3,7 +3,6 @@ pipeline {
 
     parameters {
         string(name: 'BRANCH_NAME',
-               defaultValue: 'main',
                description: 'Имя ветки GitHub для тестирования')
         string(name: 'TEST_SUITE',
                defaultValue: 'testng.xml',
@@ -16,8 +15,8 @@ pipeline {
 
     tools {
         // Указываем инструменты из Global Tool Configuration
-        maven 'Maven3'  // Имя Maven из настроек Jenkins
-        jdk 'jdk21'     // Имя JDK из настроек Jenkins
+        maven 'MAVEN_3'  // Имя Maven из настроек Jenkins
+        jdk 'JDK11'     // Имя JDK из настроек Jenkins
     }
 
     stages {
