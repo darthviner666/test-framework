@@ -88,50 +88,40 @@ pipeline {
             steps {
                 script {
                     echo "Запуск TestNG suite: ${params.TEST_SUITE}"
-                    
-                    // Поиск testng файлов
+
+                    // Ищем полный путь к файлу
+                    def testSuitePath = ""
+
                     sh """
-                        echo "Поиск файлов TestNG:"
-                        find . -name "*.xml" -type f | grep -i test || echo "TestNG файлы не найдены"
-                        echo ""
-                        
-                        echo "Проверка директории test/resources:"
-                        ls -la src/test/resources/ 2>/dev/null || echo "Директория не существует"
-                        ls -la src/test/resources/suites/ 2>/dev/null || echo "Директория suites не существует"
-                    """
-                    
-                    // Определяем путь к testng файлу
-                    def testngPath = ""
-                    
-                    // Проверяем разные варианты расположения
-                    sh '''
+                        echo "Поиск файла ${params.TEST_SUITE}..."
                         if [ -f "src/test/resources/suites/${params.TEST_SUITE}" ]; then
-                            echo "Файл найден в src/test/resources/suites/"
-                            echo "TESTNG_PATH=src/test/resources/suites/${params.TEST_SUITE}" > testng_path.txt
-                        elif [ -f "src/test/resources/${params.TEST_SUITE}" ]; then
-                            echo "Файл найден в src/test/resources/"
-                            echo "TESTNG_PATH=src/test/resources/${params.TEST_SUITE}" > testng_path.txt
+                            echo "Файл найден: src/test/resources/suites/${params.TEST_SUITE}"
+                            echo "SUITE_PATH=src/test/resources/suites/${params.TEST_SUITE}" > suite_path.txt
                         elif [ -f "${params.TEST_SUITE}" ]; then
-                            echo "Файл найден в корне"
-                            echo "TESTNG_PATH=${params.TEST_SUITE}" > testng_path.txt
+                            echo "Файл найден в корне: ${params.TEST_SUITE}"
+                            echo "SUITE_PATH=${params.TEST_SUITE}" > suite_path.txt
                         else
-                            echo "Файл не найден, используем все тесты"
-                            echo "TESTNG_PATH=all" > testng_path.txt
+                            echo "Файл не найден"
+                            echo "SUITE_PATH=NOT_FOUND" > suite_path.txt
                         fi
-                    '''
-                    
-                    // Читаем путь из файла
-                    testngPath = readFile('testng_path.txt').trim().split('=')[1]
-                    
-                    echo "Путь к TestNG файлу: ${testngPath}"
-                    
-                    if (testngPath == "all") {
-                        // Запускаем все тесты
-                        sh 'mvn test -DskipTests=false'
-                    } else {
-                        // Запускаем конкретный suite
-                        sh "mvn test -Dsurefire.suiteXmlFiles=${testngPath}"
+                    """
+
+                    testSuitePath = readFile('suite_path.txt').trim().split('=')[1]
+
+                    if (testSuitePath == "NOT_FOUND") {
+                        error "Файл ${params.TEST_SUITE} не найден!"
                     }
+
+                    echo "Путь к suite файлу: ${testSuitePath}"
+
+                    // Правильная команда Maven для запуска TestNG suite
+                    sh """
+                        echo "Запускаем тесты из ${testSuitePath}"
+                        mvn test -Dsuite=${testSuitePath}
+                    """
+
+                    // ИЛИ альтернативный вариант
+                    // sh "mvn test -Dtestng.xml=${testSuitePath}"
                 }
             }
         }
