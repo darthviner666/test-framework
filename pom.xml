@@ -27,6 +27,16 @@
         <cucumber.version>7.14.0</cucumber.version>
         <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
         <suite>smokeTests</suite>
+
+        <!-- Default properties -->
+        <browser.name>chrome</browser.name>
+        <run.mode>local</run.mode>
+        <selenide.headless>false</selenide.headless>
+        <selenide.remote>http://localhost:4444/wd/hub</selenide.remote>
+        <enable.vnc>false</enable.vnc>
+        <enable.video>false</enable.video>
+        <selenide.timeout>10000</selenide.timeout>
+        <selenide.browserSize>1920x1080</selenide.browserSize>
     </properties>
 
     <repositories>
@@ -34,201 +44,12 @@
             <id>central</id>
             <name>Maven Central Repository</name>
             <url>https://repo.maven.apache.org/maven2</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
         </repository>
     </repositories>
 
-<!--    <dependencyManagement>-->
-<!--        <dependencies>-->
-<!--            <dependency>-->
-<!--                <groupId>io.cucumber</groupId>-->
-<!--                <artifactId>messages</artifactId>-->
-<!--                <version>22.0.0</version>-->
-<!--            </dependency>-->
-<!--        </dependencies>-->
-<!--    </dependencyManagement>-->
-
     <dependencies>
-        <dependency>
-            <groupId>org.aspectj</groupId>
-            <artifactId>aspectjweaver</artifactId>
-            <version>1.9.19</version> <!-- или новее -->
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.cucumber</groupId>
-            <artifactId>cucumber-gherkin</artifactId>
-            <version>${cucumber.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.aeonbits.owner</groupId>
-            <artifactId>owner</artifactId>
-            <version>${owner.version}</version> <!-- или последнюю версию -->
-        </dependency>
-        <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-            <version>${testng.version}</version>
-        </dependency>
-
-        <!-- Для интеграции с Allure -->
-        <dependency>
-            <groupId>io.qameta.allure</groupId>
-            <artifactId>allure-testng</artifactId>
-            <version>${allure-testng.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.jayway.jsonpath</groupId>
-            <artifactId>json-path</artifactId>
-            <version>${json-path.version}</version>
-        </dependency>
-
-        <!-- Selenide -->
-        <dependency>
-            <groupId>com.codeborne</groupId>
-            <artifactId>selenide</artifactId>
-            <version>${selenide.version}</version>
-        </dependency>
-
-        <!-- Rest Assured -->
-        <dependency>
-            <groupId>io.rest-assured</groupId>
-            <artifactId>rest-assured</artifactId>
-            <version>${rest-assured.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.rest-assured</groupId>
-            <artifactId>json-schema-validator</artifactId>
-            <version>${rest-assured.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.qameta.allure</groupId>
-            <artifactId>allure-selenide</artifactId>
-            <version>${allure.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.qameta.allure</groupId>
-            <artifactId>allure-rest-assured</artifactId>
-            <version>${allure.version}</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/com.github.javafaker/javafaker -->
-        <dependency>
-            <groupId>com.github.javafaker</groupId>
-            <artifactId>javafaker</artifactId>
-            <version>${javafaker.version}</version>
-        </dependency>
-
-        <!-- Lombok -->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>${lombok.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.rest-assured</groupId>
-            <artifactId>rest-assured</artifactId>
-            <version>${rest-assured.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <!-- Log4j2 Core -->
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>${log4j2.version}</version>
-        </dependency>
-
-        <!-- Log4j2 API -->
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
-            <version>${log4j2.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>io.cucumber</groupId>
-            <artifactId>cucumber-java</artifactId>
-            <version>${cucumber.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.cucumber</groupId>
-            <artifactId>cucumber-testng</artifactId>
-            <version>${cucumber.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.cucumber</groupId>
-            <artifactId>cucumber-core</artifactId>
-            <version>${cucumber.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.qameta.allure</groupId>
-            <artifactId>allure-cucumber7-jvm</artifactId>
-            <version>2.24.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.hibernate.orm</groupId>
-            <artifactId>hibernate-core</artifactId>
-            <version>6.2.7.Final</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.hibernate.orm</groupId>
-            <artifactId>hibernate-hikaricp</artifactId>
-            <version>6.2.7.Final</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>42.6.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>1.4.11</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-annotations</artifactId>
-            <version>2.19.1</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.awaitility</groupId>
-            <artifactId>awaitility</artifactId>
-            <version>4.2.0</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest</artifactId>
-            <version>2.2</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.github.bonigarcia</groupId>
-            <artifactId>webdrivermanager</artifactId>
-            <version>5.6.2</version>
-        </dependency>
-        <!--        <dependency>-->
-<!--            <groupId>io.qameta.allure</groupId>-->
-<!--            <artifactId>allure-cucumber7-jvm</artifactId>-->
-<!--            <version>${allure.version}</version>-->
-<!--            <scope>test</scope>-->
-<!--        </dependency>-->
+        <!-- Все зависимости из вашего pom.xml -->
+        <!-- ... -->
     </dependencies>
 
     <build>
@@ -245,6 +66,24 @@
                         <org.slf4j.simpleLogger.defaultLogLevel>info</org.slf4j.simpleLogger.defaultLogLevel>
                         <selenide.logger.level>debug</selenide.logger.level>
                         <org.slf4j.simpleLogger.log.io.qameta.allure>warn</org.slf4j.simpleLogger.log.io.qameta.allure>
+
+                        <!-- Selenide properties -->
+                        <browser>${browser.name}</browser>
+                        <browserSize>${selenide.browserSize}</browserSize>
+                        <timeout>${selenide.timeout}</timeout>
+                        <headless>${selenide.headless}</headless>
+                        <remote>${selenide.remote}</remote>
+
+                        <!-- Selenoid properties -->
+                        <enableVNC>${enable.vnc}</enableVNC>
+                        <enableVideo>${enable.video}</enableVideo>
+                        <videoScreenSize>1920x1080x24</videoScreenSize>
+                        <videoFrameRate>24</videoFrameRate>
+                        <videoName>${suite}.mp4</videoName>
+
+                        <!-- Test properties -->
+                        <run.mode>${run.mode}</run.mode>
+                        <environment>${environment}</environment>
                     </systemPropertyVariables>
                     <suiteXmlFiles>
                         <suiteXmlFile>src/test/resources/suites/${suite}.xml</suiteXmlFile>
@@ -254,6 +93,7 @@
                     <printSummary>true</printSummary>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -262,9 +102,6 @@
                     <source>${java.version}</source>
                     <target>${java.version}</target>
                     <encoding>${project.build.sourceEncoding}</encoding>
-                    <compilerArgs>
-                        <arg>-parameters</arg>
-                    </compilerArgs>
                 </configuration>
             </plugin>
 
@@ -280,38 +117,125 @@
     </build>
 
     <profiles>
+        <!-- Локальные прогоны -->
+        <profile>
+            <id>local-chrome</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <browser.name>chrome</browser.name>
+                <run.mode>local</run.mode>
+                <selenide.headless>false</selenide.headless>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>local-firefox</id>
+            <properties>
+                <browser.name>firefox</browser.name>
+                <run.mode>local</run.mode>
+                <selenide.headless>false</selenide.headless>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>headless-chrome</id>
+            <properties>
+                <browser.name>chrome</browser.name>
+                <run.mode>local</run.mode>
+                <selenide.headless>true</selenide.headless>
+            </properties>
+        </profile>
+
+        <!-- CI профили -->
         <profile>
             <id>ci</id>
             <properties>
                 <selenide.headless>true</selenide.headless>
+                <run.mode>ci</run.mode>
+                <environment>jenkins</environment>
             </properties>
         </profile>
+
+        <!-- Selenoid профили -->
         <profile>
-            <id>chrome</id>
-            <properties>
-                <browser.name>chrome</browser.name>
-            </properties>
-        </profile>
-        <profile>
-            <id>firefox</id>
-            <properties>
-                <browser.name>firefox</browser.name>
-            </properties>
-        </profile>
-        <profile>
-            <id>edge</id>
-            <properties>
-                <browser.name>edge</browser.name>
-            </properties>
-        </profile>
-        <profile>
-            <id>remote-chrome</id>
+            <id>selenoid-chrome</id>
             <properties>
                 <browser.name>chrome</browser.name>
                 <run.mode>remote</run.mode>
+                <selenide.remote>http://localhost:4444/wd/hub</selenide.remote>
                 <enable.vnc>true</enable.vnc>
+                <enable.video>true</enable.video>
+                <selenide.headless>false</selenide.headless>
             </properties>
         </profile>
-    </profiles>
 
+        <profile>
+            <id>selenoid-firefox</id>
+            <properties>
+                <browser.name>firefox</browser.name>
+                <run.mode>remote</run.mode>
+                <selenide.remote>http://localhost:4444/wd/hub</selenide.remote>
+                <enable.vnc>true</enable.vnc>
+                <enable.video>true</enable.video>
+                <selenide.headless>false</selenide.headless>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>selenoid-edge</id>
+            <properties>
+                <browser.name>edge</browser.name>
+                <run.mode>remote</run.mode>
+                <selenide.remote>http://localhost:4444/wd/hub</selenide.remote>
+                <enable.vnc>true</enable.vnc>
+                <enable.video>true</enable.video>
+                <selenide.headless>false</selenide.headless>
+            </properties>
+        </profile>
+
+        <!-- Параллельные тесты -->
+        <profile>
+            <id>parallel</id>
+            <properties>
+                <thread.count>3</thread.count>
+                <suite>parallel</suite>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <parallel>methods</parallel>
+                            <threadCount>${thread.count}</threadCount>
+                            <useUnlimitedThreads>false</useUnlimitedThreads>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- Allure отчеты -->
+        <profile>
+            <id>allure</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.qameta.allure</groupId>
+                        <artifactId>allure-maven</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>report</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

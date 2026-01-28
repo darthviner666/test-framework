@@ -120,7 +120,6 @@ public interface ProjectConfig extends Config {
      */
     @Key("database.url")
     String databaseUrl();
-
     /**
      * Возвращает имя пользователя для подключения к базе данных.
      * 

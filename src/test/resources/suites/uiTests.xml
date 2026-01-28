@@ -1,13 +1,28 @@
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
-<suite name="UI Tests">
-    <listeners>
-        <listener class-name="io.qameta.allure.testng.AllureTestNg"/>
-    </listeners>
+<suite name="Parallel Test Suite" parallel="tests" thread-count="3">
 
-    <!-- Chrome Test -->
-    <test name="Chrome Tests">
+    <!-- Chrome Tests -->
+    <test name="Chrome Tests" >
         <parameter name="browser" value="chrome"/>
-        <parameter name="browserVersion" value="120.0"/>
+        <parameter name="run.mode" value="remote"/>
+        <classes>
+            <class name="com.e2e.ui.SuccessfulRegisterTest"/>
+        </classes>
+    </test>
+
+    <!-- Firefox Tests -->
+    <test name="Firefox Tests" >
+        <parameter name="browser" value="firefox"/>
+        <parameter name="run.mode" value="remote"/>
+        <classes>
+            <class name="com.e2e.ui.SuccessfulRegisterTest"/>
+        </classes>
+    </test>
+
+    <!-- Edge Tests -->
+    <test name="Edge Tests" >
+        <parameter name="browser" value="edge"/>
+        <parameter name="run.mode" value="remote"/>
         <classes>
             <class name="com.e2e.ui.SuccessfulRegisterTest"/>
         </classes>
