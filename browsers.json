@@ -1,0 +1,36 @@
+{
+  "chrome": {
+    "default": "latest",
+    "versions": {
+      "latest": {
+        "image": "selenoid/chrome:latest",
+        "port": "4444",
+        "path": "/",
+        "env": ["ENABLE_VNC=true", "SCREEN_RESOLUTION=1920x1080x24"],
+        "volumes": ["/dev/shm:/dev/shm"]
+      }
+    }
+  },
+  "firefox": {
+    "default": "latest",
+    "versions": {
+      "latest": {
+        "image": "selenoid/firefox:latest",
+        "port": "4444",
+        "path": "/wd/hub",
+        "env": ["ENABLE_VNC=true", "SCREEN_RESOLUTION=1920x1080x24"]
+      }
+    }
+  },
+  "edge": {
+    "default": "latest",
+    "versions": {
+      "latest": {
+        "image": "selenoid/edge:latest",
+        "port": "4444",
+        "path": "/",
+        "env": ["ENABLE_VNC=true", "SCREEN_RESOLUTION=1920x1080x24"]
+      }
+    }
+  }
+}

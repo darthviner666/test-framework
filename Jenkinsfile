@@ -68,7 +68,7 @@ pipeline {
 
                     sh '''
                         echo "Проверка Docker..."
-                        docker --version
+                        docker --version || echo "Docker не установлен"
 
                         echo "Останавливаем старые контейнеры..."
                         docker-compose -f docker-compose-selenoid.yml down 2>/dev/null || true
@@ -102,17 +102,44 @@ pipeline {
             }
         }
 
+        stage('Project Information') {
+            steps {
+                sh '''
+                    echo "=== ИНФОРМАЦИЯ О ПРОЕКТЕ ==="
+                    echo ""
+
+                    echo "1. Проверка pom.xml:"
+                    if [ -f "pom.xml" ]; then
+                        echo "✅ pom.xml найден"
+                        echo "Основная информация:"
+                        # Используем безопасный способ получить информацию о проекте
+                        mvn help:evaluate -Dexpression=project.groupId -q -DforceStdout 2>/dev/null || echo "Не удалось получить groupId"
+                        mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout 2>/dev/null || echo "Не удалось получить artifactId"
+                        mvn help:evaluate -Dexpression=project.version -q -DforceStdout 2>/dev/null || echo "Не удалось получить version"
+                    else
+                        echo "❌ pom.xml не найден!"
+                        exit 1
+                    fi
+                    echo ""
+
+                    echo "2. Проверка TestNG файлов:"
+                    echo "Доступные suite файлы:"
+                    find . -name "*.xml" -path "*/suites/*" -type f 2>/dev/null | head -10 || echo "TestNG файлы не найдены"
+                '''
+            }
+        }
+
         stage('Build Project') {
             steps {
                 sh '''
                     echo "=== СБОРКА ПРОЕКТА ==="
-                    echo "Java:"
+                    echo "Java версия:"
                     java -version
                     echo ""
-                    echo "Maven:"
+                    echo "Maven версия:"
                     mvn --version
                     echo ""
-                    echo "Компиляция..."
+                    echo "Компиляция проекта..."
                     mvn clean compile -DskipTests
                 '''
             }
@@ -154,11 +181,14 @@ pipeline {
                     echo "=== ГЕНЕРАЦИЯ ALLURE ОТЧЕТА ==="
 
                     sh '''
-                        echo "Генерация Allure отчета..."
-                        mvn allure:report -Pallure
-
-                        echo "Архивация отчетов..."
-                        ls -la target/site/allure-maven-plugin/
+                        echo "Сборка Allure результатов..."
+                        if [ -d "target/allure-results" ]; then
+                            echo "Allure результаты найдены"
+                            ls -la target/allure-results/
+                        else
+                            echo "Allure результаты не найдены, собираем..."
+                            mvn allure:report -Pallure 2>/dev/null || echo "Не удалось сгенерировать Allure отчет"
+                        fi
                     '''
 
                     // Публикация Allure отчета
@@ -188,9 +218,20 @@ pipeline {
 
                     // Архивация видео (если есть)
                     sh '''
+                        echo "Поиск артефактов..."
                         if [ -d "video" ]; then
                             echo "Найдены видео записи:"
                             ls -la video/
+                        fi
+
+                        if [ -d "target/surefire-reports" ]; then
+                            echo "Найдены отчеты surefire:"
+                            ls -la target/surefire-reports/
+                        fi
+
+                        if [ -d "logs" ]; then
+                            echo "Найдены логи:"
+                            ls -la logs/
                         fi
                     '''
 
@@ -219,14 +260,26 @@ pipeline {
                     '''
                 }
 
-                // Очистка workspace
-                cleanWs()
+                // Сохраняем информацию о сборке
+                sh '''
+                    echo "Информация о сборке:"
+                    echo "Версия Java:"
+                    java -version 2>&1 | head -1
+                    echo ""
+                    echo "Версия Maven:"
+                    mvn --version 2>&1 | head -1
+                '''
             }
         }
 
         success {
             echo '✅ Сборка успешно завершена!'
-            // Можно добавить уведомления в Slack/Telegram/Email
+
+            // Можно добавить уведомления
+            sh '''
+                echo "Все тесты пройдены успешно!"
+                echo "Allure отчет доступен по ссылке выше"
+            '''
         }
 
         failure {
@@ -235,16 +288,29 @@ pipeline {
             // Сохраняем логи при ошибке
             sh '''
                 echo "=== ЛОГИ ОШИБОК ==="
-                echo "Последние логи Docker:"
-                docker logs $(docker ps -q -f name=selenoid) 2>/dev/null | tail -50 || echo "Docker логи не доступны"
-                echo ""
-                echo "Логи тестов:"
-                find . -name "*.log" -type f | head -5 | xargs -I {} sh -c 'echo "=== {} ===" && tail -30 {}'
+                echo "Поиск лог файлов..."
+                LOG_FILES=$(find . -name "*.log" -type f | head -5)
+                if [ -n "$LOG_FILES" ]; then
+                    for log in $LOG_FILES; do
+                        echo "=== $log (последние 20 строк) ==="
+                        tail -20 "$log"
+                        echo ""
+                    done
+                else
+                    echo "Лог файлы не найдены"
+                fi
+
+                echo "Проверка Docker контейнеров:"
+                docker ps -a 2>/dev/null || echo "Docker не доступен"
             '''
         }
 
         unstable {
             echo '⚠️ Сборка нестабильна (упавшие тесты)'
+
+            sh '''
+                echo "Некоторые тесты упали. Проверьте отчеты выше."
+            '''
         }
     }
 }
@@ -261,12 +327,15 @@ def runTestsForBrowser(browser) {
     sh """
         echo "Активные профили: ${profiles}"
         echo "Запуск suite: ${params.TEST_SUITE}"
+        echo "Браузер: ${browser}"
+        echo "Режим: remote (Selenoid)"
+        echo ""
 
-        mvn test -P${profiles} \\
-            -Dsuite=${params.TEST_SUITE} \\
-            -Dbrowser.name=${browser} \\
-            -Denable.vnc=true \\
-            -Denable.video=true \\
+        mvn test -P${profiles} \
+            -Dsuite=${params.TEST_SUITE} \
+            -Dbrowser.name=${browser} \
+            -Denable.vnc=true \
+            -Denable.video=true \
             -Dselenide.remote=${env.SELENOID_URL}/wd/hub
     """
 }
@@ -286,10 +355,13 @@ def runLocalTests() {
     sh """
         echo "Активные профили: ${profiles}"
         echo "Запуск suite: ${params.TEST_SUITE}"
+        echo "Браузер: ${params.BROWSER}"
+        echo "Режим: local"
+        echo ""
 
-        mvn test -P${profiles} \\
-            -Dsuite=${params.TEST_SUITE} \\
-            -Dbrowser.name=${params.BROWSER} \\
+        mvn test -P${profiles} \
+            -Dsuite=${params.TEST_SUITE} \
+            -Dbrowser.name=${params.BROWSER} \
             -Dselenide.headless=true
     """
 }
