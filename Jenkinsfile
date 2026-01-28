@@ -12,7 +12,7 @@ pipeline {
 
     environment {
         // Настройка переменных окружения
-        GIT_REPO = 'https://github.com/yourusername/your-repo.git'
+        GIT_REPO = 'https://github.com/darthviner666/test-framework'
         WORKSPACE_DIR = "${env.WORKSPACE}"
         TEST_RESULTS_DIR = "${env.WORKSPACE}/test-output"
         HTML_REPORT_DIR = "${env.WORKSPACE}/target/surefire-reports"
