@@ -1,119 +1,110 @@
 pipeline {
     agent any
 
-    environment {
-        GIT_REPO = 'https://github.com/darthviner666/test-framework'
-    }
-
     tools {
-        // Указываем инструменты из Global Tool Configuration
-        maven 'MAVEN_3'  // Имя Maven из настроек Jenkins
-        jdk 'JDK11'     // Имя JDK из настроек Jenkins
+        jdk 'JDK11'
+        maven 'MAVEN_3'
     }
 
     stages {
         stage('Checkout') {
             steps {
-                checkout([
-                    $class: 'GitSCM',
-                    branches: [[name: "*/${params.BRANCH_NAME}"]],
-                    userRemoteConfigs: [[url: "${GIT_REPO}"]]
-                ])
+                git url: 'https://github.com/darthviner666/test-framework',
+                     branch: "${params.BRANCH_NAME}"
             }
         }
 
-        stage('Environment Check') {
+        stage('Environment Info') {
             steps {
-                script {
-                    echo "=== Проверка окружения ==="
+                sh '''
+                    echo "=== ИНФОРМАЦИЯ О СРЕДЕ ==="
+                    echo "Java версия:"
+                    java -version
+                    echo ""
+                    echo "Maven версия:"
+                    mvn --version
+                    echo ""
+                    echo "Текущая директория:"
+                    pwd
+                    ls -la
+                '''
+            }
+        }
 
-                    sh """
-                        echo "Java версия:"
-                        java -version
-                        echo ""
+        stage('Project Info') {
+            steps {
+                sh '''
+                    echo "=== ИНФОРМАЦИЯ О ПРОЕКТЕ ==="
+                    echo ""
 
-                        echo "Maven версия:"
-                        mvn --version
-                        echo ""
+                    echo "1. Проверка pom.xml:"
+                    if [ -f "pom.xml" ]; then
+                        echo "✅ pom.xml найден"
+                        echo "Первые 20 строк:"
+                        head -20 pom.xml
+                    else
+                        echo "❌ pom.xml не найден!"
+                        exit 1
+                    fi
+                    echo ""
 
-                        echo "Структура проекта:"
-                        ls -la
-                        echo ""
+                    echo "2. Информация о Maven проекте:"
+                    echo "Группа, артефакт, версия:"
+                    mvn help:evaluate -Dexpression=project.groupId -q -DforceStdout 2>/dev/null || echo "Не удалось получить groupId"
+                    mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout 2>/dev/null || echo "Не удалось получить artifactId"
+                    mvn help:evaluate -Dexpression=project.version -q -DforceStdout 2>/dev/null || echo "Не удалось получить version"
+                    echo ""
 
-                        echo "XML файлы в проекте:"
-                        find . -name "*.xml" -type f
-                        echo ""
-
-                        echo "Содержимое pom.xml (первые 30 строк):"
-                        head -30 pom.xml
-                    """
-                }
+                    echo "3. Проверка TestNG файлов:"
+                    find . -name "*.xml" -path "*/suites/*" -type f 2>/dev/null || echo "TestNG файлы не найдены"
+                '''
             }
         }
 
         stage('Build') {
             steps {
-                script {
-                    echo 'Сборка проекта...'
+                sh '''
+                    echo "=== КОМПИЛЯЦИЯ ПРОЕКТА ==="
+                    echo ""
 
-                    // Проверяем наличие pom.xml
-                    if (fileExists('pom.xml')) {
-                        echo "Найден pom.xml, запускаем сборку..."
+                    echo "Запуск mvn clean compile..."
+                    mvn clean compile -DskipTests
 
-                        // Показываем информацию о проекте
-                        sh '''
-                            echo "=== Информация о Maven проекте ==="
-                            mvn help:effective-pom | grep -A5 -B5 "<groupId> <artifactId> <version>"
-                            echo ""
-                        '''
-
-                        // Сначала компилируем
-                        sh 'mvn clean compile -DskipTests'
-                    } else {
-                        error "pom.xml не найден! Проект не является Maven проектом."
-                    }
-                }
+                    if [ $? -eq 0 ]; then
+                        echo "✅ Компиляция успешна"
+                    else
+                        echo "❌ Ошибка компиляции"
+                        echo "Пробуем альтернативный вариант..."
+                        mvn compile -DskipTests
+                    fi
+                '''
             }
         }
 
         stage('Run Tests') {
             steps {
                 script {
-                    echo "Запуск TestNG suite: ${params.TEST_SUITE}"
+                    echo "=== ЗАПУСК ТЕСТОВ ==="
+                    echo "TestNG suite: ${params.TEST_SUITE}"
 
-                    // Ищем полный путь к файлу
-                    def testSuitePath = ""
+                    // Проверяем существование файла
+                    def suitePath = "src/test/resources/suites/${params.TEST_SUITE}"
 
                     sh """
-                        echo "Поиск файла ${params.TEST_SUITE}..."
-                        if [ -f "src/test/resources/suites/${params.TEST_SUITE}" ]; then
-                            echo "Файл найден: src/test/resources/suites/${params.TEST_SUITE}"
-                            echo "SUITE_PATH=src/test/resources/suites/${params.TEST_SUITE}" > suite_path.txt
-                        elif [ -f "${params.TEST_SUITE}" ]; then
-                            echo "Файл найден в корне: ${params.TEST_SUITE}"
-                            echo "SUITE_PATH=${params.TEST_SUITE}" > suite_path.txt
-                        else
-                            echo "Файл не найден"
-                            echo "SUITE_PATH=NOT_FOUND" > suite_path.txt
+                        echo "Проверка файла: ${suitePath}"
+                        if [ ! -f "${suitePath}" ]; then
+                            echo "❌ Файл не найден!"
+                            echo "Доступные suite файлы:"
+                            find . -name "*.xml" -path "*/suites/*" -type f
+                            exit 1
                         fi
+
+                        echo "✅ Файл найден, запускаем тесты..."
+                        echo "Команда: mvn test -Dsurefire.suiteXmlFiles=${suitePath}"
+
+                        # Запускаем тесты
+                        mvn test -Dsurefire.suiteXmlFiles="${suitePath}" -DskipTests=false
                     """
-
-                    testSuitePath = readFile('suite_path.txt').trim().split('=')[1]
-
-                    if (testSuitePath == "NOT_FOUND") {
-                        error "Файл ${params.TEST_SUITE} не найден!"
-                    }
-
-                    echo "Путь к suite файлу: ${testSuitePath}"
-
-                    // Правильная команда Maven для запуска TestNG suite
-                    sh """
-                        echo "Запускаем тесты из ${testSuitePath}"
-                        mvn test -Dsuite=${params.TEST_SUITE}
-                    """
-
-                    // ИЛИ альтернативный вариант
-                    // sh "mvn test -Dtestng.xml=${testSuitePath}"
                 }
             }
         }
@@ -121,30 +112,26 @@ pipeline {
         stage('Publish Results') {
             steps {
                 script {
-                    echo "Публикация результатов тестов..."
+                    echo "Публикация результатов..."
 
-                    // Ищем отчеты
+                    // Проверяем наличие отчетов
                     sh '''
-                        echo "Поиск отчетов TestNG:"
-                        find . -name "testng-results.xml" -type f 2>/dev/null | head -5
-                        find . -name "surefire-reports" -type d 2>/dev/null | head -5
-                        echo ""
-
-                        echo "Содержимое target директории:"
-                        ls -la target/ 2>/dev/null || echo "target директория не существует"
+                        echo "Поиск отчетов..."
+                        find . -name "testng-results.xml" -type f 2>/dev/null
+                        ls -la target/surefire-reports/ 2>/dev/null || echo "Директория отчетов не найдена"
                     '''
 
-                    // Публикация результатов TestNG
+                    // Публикуем результаты TestNG
                     testng(
                         testResults: '**/testng-results.xml',
                         escapeTestDesription: false
                     )
 
-                    // Публикация HTML отчетов
+                    // Публикуем HTML отчеты
                     publishHTML([
                         reportDir: 'target/surefire-reports',
                         reportFiles: 'index.html',
-                        reportName: 'TestNG HTML Report',
+                        reportName: "Test Report - ${params.TEST_SUITE}",
                         keepAll: true
                     ])
                 }
@@ -154,38 +141,25 @@ pipeline {
 
     post {
         always {
-            echo "=== Завершение пайплайна ==="
+            echo "=== СБОРКА ЗАВЕРШЕНА ==="
             echo "Статус: ${currentBuild.currentResult}"
-            echo "Номер сборки: ${env.BUILD_NUMBER}"
+            echo "Suite: ${params.TEST_SUITE}"
 
-            // Архивация артефактов
-            archiveArtifacts artifacts: 'target/*.jar, target/surefire-reports/**/*, logs/**/*',
+            // Сохраняем артефакты
+            archiveArtifacts artifacts: 'target/surefire-reports/**/*, **/*.log',
                              allowEmptyArchive: true
-
-            // Сохраняем дополнительные файлы
-            sh '''
-                echo "=== Файлы для отладки ==="
-                ls -la
-                echo ""
-                echo "Логи тестов:"
-                find . -name "*.log" -type f | head -10
-            '''
         }
 
         success {
-            echo '✅ Все этапы выполнены успешно!'
+            echo '✅ Тесты успешно выполнены!'
         }
 
         failure {
-            echo '❌ Обнаружены ошибки в сборке!'
+            echo '❌ Обнаружены ошибки!'
 
-            // Сохраняем логи ошибок - ИСПРАВЛЕННЫЙ ВАРИАНТ
             sh '''
-                echo "=== Логи ошибок ==="
-                find . -name "*.log" -type f -exec echo "=== {} ===" \\; -exec tail -50 {} \\;
-                echo ""
-                echo "Последние ошибки Maven:"
-                tail -100 maven.log 2>/dev/null || echo "Файл maven.log не найден"
+                echo "Логи ошибок:"
+                find . -name "*.log" -type f -exec echo "=== {} ===" \; -exec tail -20 {} \;
             '''
         }
     }
