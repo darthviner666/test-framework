@@ -29,7 +29,7 @@ pipeline {
                         branches: [[name: "*/${params.BRANCH_NAME}"]],
                         userRemoteConfigs: [[
                             url: "${GIT_REPO}",
-                            credentialsId: 'github-credentials'
+                            //credentialsId: 'github-credentials'
                         ]]
                     ])
                 }
