@@ -38,6 +38,8 @@ public class BrowserFactory {
     public static void setupBrowser(@Optional String browser, @Optional String browserVersion) {
         resetConfiguration();
 
+        browser = "chrome";
+
         ProjectConfig config = Instance();
 
         // Если браузер не передан, берем из конфига
