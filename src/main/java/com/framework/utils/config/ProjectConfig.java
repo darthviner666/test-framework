@@ -74,7 +74,7 @@ public interface ProjectConfig extends Config {
      * @return режим запуска
      */
     @Key("run.mode")
-    @DefaultValue("local")
+    @DefaultValue("selenoid")
     String runMode(); // local / remote / grid
 
     /**
