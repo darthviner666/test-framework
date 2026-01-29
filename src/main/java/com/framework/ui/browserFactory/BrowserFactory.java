@@ -5,10 +5,8 @@ import com.codeborne.selenide.FileDownloadMode;
 import com.codeborne.selenide.WebDriverRunner;
 import com.framework.utils.config.ProjectConfig;
 import com.framework.utils.logger.TestLogger;
-import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.firefox.FirefoxOptions;
-import org.openqa.selenium.edge.EdgeOptions;
+import org.openqa.selenium.remote.DesiredCapabilities;
 import org.testng.annotations.Optional;
 
 import static com.framework.utils.config.ConfigReader.Instance;
@@ -20,16 +18,11 @@ public class BrowserFactory {
      * Сброс конфигурации для избежания конфликтов
      */
     private static void resetConfiguration() {
-        Configuration.browser = "";
+        Configuration.browser = "chrome"; // Устанавливаем значение по умолчанию
         Configuration.browserVersion = "";
         Configuration.remote = null;
         Configuration.browserCapabilities = null;
         Configuration.headless = false;
-
-        // Очищаем только системные свойства драйверов
-        System.clearProperty("webdriver.chrome.driver");
-        System.clearProperty("webdriver.gecko.driver");
-        System.clearProperty("webdriver.edge.driver");
     }
 
     /**
@@ -37,8 +30,6 @@ public class BrowserFactory {
      */
     public static void setupBrowser(@Optional String browser, @Optional String browserVersion) {
         resetConfiguration();
-
-        browser = "chrome";
 
         ProjectConfig config = Instance();
 
@@ -63,7 +54,8 @@ public class BrowserFactory {
         String runMode = config.runMode().toLowerCase();
 
         if ("remote".equals(runMode) || "selenoid".equals(runMode)) {
-            setupRemoteBrowser(config, actualBrowser, actualVersion);
+            // Для Selenoid используем специальную конфигурацию
+            setupSelenoidBrowser(config, actualBrowser, actualVersion);
         } else {
             setupLocalBrowser(config, actualBrowser, actualVersion);
         }
@@ -100,26 +92,28 @@ public class BrowserFactory {
     }
 
     /**
-     * Настройка удаленного браузера (Selenoid/Selenium Grid).
+     * Настройка браузера для Selenoid.
+     * ВАЖНО: Для Selenoid используется специальный подход
      */
-    private static void setupRemoteBrowser(ProjectConfig config, String browser, String browserVersion) {
-        log.info("Установка удаленного браузера: {} {}", browser, browserVersion);
+    private static void setupSelenoidBrowser(ProjectConfig config, String browser, String browserVersion) {
+        log.info("Установка браузера для Selenoid: {} {}", browser, browserVersion);
 
-        // Для Selenoid важно установить тип браузера
+        // Для Selenoid ОБЯЗАТЕЛЬНО устанавливаем remote URL
+        Configuration.remote = config.remoteUrl();
+
+        // И browser тоже устанавливаем
         Configuration.browser = browser;
 
         if (browserVersion != null && !browserVersion.isEmpty()) {
             Configuration.browserVersion = browserVersion;
         }
 
-        Configuration.remote = config.remoteUrl();
-
-        // Создаем capabilities
-        MutableCapabilities capabilities = new MutableCapabilities();
-        capabilities.setCapability("browserName", browser);
+        // Создаем DesiredCapabilities для Selenoid
+        DesiredCapabilities capabilities = new DesiredCapabilities();
+        capabilities.setBrowserName(browser);
 
         if (browserVersion != null && !browserVersion.isEmpty()) {
-            capabilities.setCapability("browserVersion", browserVersion);
+            capabilities.setVersion(browserVersion);
         }
 
         // Selenoid capabilities
@@ -128,29 +122,28 @@ public class BrowserFactory {
         capabilities.setCapability("screenResolution", config.browserSize());
         capabilities.setCapability("timeZone", "Europe/Moscow");
 
-        // Браузер-специфичные опции
+        // Для Chrome добавляем ChromeOptions
         if ("chrome".equalsIgnoreCase(browser)) {
             ChromeOptions chromeOptions = new ChromeOptions();
             chromeOptions.addArguments("--no-sandbox");
             chromeOptions.addArguments("--disable-dev-shm-usage");
             chromeOptions.addArguments("--remote-allow-origins=*");
+            chromeOptions.addArguments("--disable-gpu");
+
+
+            // Добавляем ChromeOptions в capabilities
             capabilities.setCapability(ChromeOptions.CAPABILITY, chromeOptions);
-        } else if ("firefox".equalsIgnoreCase(browser)) {
-            FirefoxOptions firefoxOptions = new FirefoxOptions();
-            capabilities.setCapability(FirefoxOptions.FIREFOX_OPTIONS, firefoxOptions);
-        } else if ("edge".equalsIgnoreCase(browser)) {
-            EdgeOptions edgeOptions = new EdgeOptions();
-            capabilities.setCapability("ms:edgeOptions", edgeOptions);
         }
 
+        // Устанавливаем capabilities
         Configuration.browserCapabilities = capabilities;
-
-        // Настройки для удаленного запуска
+        Configuration.headless = false;
+        // Дополнительные настройки для удаленного запуска
         Configuration.fileDownload = FileDownloadMode.FOLDER;
         Configuration.remoteReadTimeout = 300000;
         Configuration.remoteConnectionTimeout = 300000;
 
-        log.info("Удаленный браузер настроен: {} {}, URL: {}",
+        log.info("Selenoid браузер настроен: {} {}, URL: {}",
                 browser, browserVersion, config.remoteUrl());
     }
 
@@ -160,7 +153,9 @@ public class BrowserFactory {
     public static void clearCookies() {
         log.info("Очистка куков");
         WebDriverRunner.clearBrowserCache();
-        WebDriverRunner.getWebDriver().manage().deleteAllCookies();
+        if (WebDriverRunner.hasWebDriverStarted()) {
+            WebDriverRunner.getWebDriver().manage().deleteAllCookies();
+        }
         log.info("Куки очищены");
     }
 }
