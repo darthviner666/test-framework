@@ -59,7 +59,23 @@ public class BrowserFactory {
         ProjectConfig config = Instance();
         String runMode = determineRunMode(config); // Используем новую логику
 
-        // остальной код...
+        switch (runMode) {
+            case "remote":
+            case "selenoid":
+                setupSelenoid(config, browser, browserVersion);
+                break;
+            default:
+                setupLocalBrowser(config, browser, browserVersion);
+        }
+
+
+    Configuration.reportsFolder = "target/allure-results";
+    Configuration.browserSize = config.browserSize();
+    Configuration.timeout = config.timeout();
+    Configuration.baseUrl = config.baseUrl();
+    Configuration.pageLoadStrategy = "eager";
+    Configuration.pageLoadTimeout = 20000;
+        log.info("Настройки браузера установлены. Режим: {}, CI: {}", runMode);
     }
 
     private static boolean isCiEnvironment() {
@@ -73,11 +89,11 @@ public class BrowserFactory {
                 "jenkins".equalsIgnoreCase(runMode);
     }
 
-    /**
-     * Настройка браузеров.
-     * @param browser - браузер.
-     * @param browserVersion - версия браузера.
-     */
+//    /**
+//     * Настройка браузеров.
+//     * @param browser - браузер.
+//     * @param browserVersion - версия браузера.
+//     */
 //    public static void setupBrowser(@Optional String browser, String browserVersion) {
 //        resetConfiguration();
 //
@@ -91,24 +107,8 @@ public class BrowserFactory {
 //        if (isCi) {
 //            log.info("Обнаружено CI окружение, принудительно используем Selenoid");
 //            setupSelenoid(config, browser, browserVersion);
-//        } else {
-//            switch (runMode) {
-//                case "remote":
-//                case "selenoid":
-//                    setupSelenoid(config, browser, browserVersion);
-//                    break;
-//                default:
-//                    setupLocalBrowser(config, browser, browserVersion);
-//            }
-//        }
+//        } else { }
 //
-//        Configuration.reportsFolder = "target/allure-results";
-//        Configuration.browserSize = config.browserSize();
-//        Configuration.timeout = config.timeout();
-//        Configuration.baseUrl = config.baseUrl();
-//        Configuration.pageLoadStrategy = "eager";
-//        Configuration.pageLoadTimeout = 20000;
-//        log.info("Настройки браузера установлены. Режим: {}, CI: {}", runMode, Boolean.valueOf(isCi).toString());
 //    }
 
     /**
