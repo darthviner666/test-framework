@@ -32,6 +32,7 @@
 
         <!-- Default properties -->
         <browser.name>chrome</browser.name>
+        <browser.version></browser.version>
         <run.mode>local</run.mode>
         <selenide.headless>false</selenide.headless>
         <selenide.remote>http://localhost:4444/wd/hub</selenide.remote>
@@ -233,12 +234,17 @@
 
                         <!-- Selenide properties -->
                         <browser>${browser.name}</browser>
+                        <browser.name>${browser.name}</browser.name>
+                        <browser.version>${browser.version}</browser.version>
                         <browserSize>${selenide.browserSize}</browserSize>
                         <timeout>${selenide.timeout}</timeout>
                         <headless>${selenide.headless}</headless>
                         <remote>${selenide.remote}</remote>
 
-                        <!-- Selenoid properties -->
+                        <!-- Selenoid / ProjectConfig properties -->
+                        <remote.url>${selenide.remote}</remote.url>
+                        <enable.vnc>${enable.vnc}</enable.vnc>
+                        <enable.video>${enable.video}</enable.video>
                         <enableVNC>${enable.vnc}</enableVNC>
                         <enableVideo>${enable.video}</enableVideo>
                         <videoScreenSize>1920x1080x24</videoScreenSize>
@@ -304,6 +310,15 @@
         </profile>
 
         <profile>
+            <id>local-edge</id>
+            <properties>
+                <browser.name>edge</browser.name>
+                <run.mode>local</run.mode>
+                <selenide.headless>false</selenide.headless>
+            </properties>
+        </profile>
+
+        <profile>
             <id>headless-chrome</id>
             <properties>
                 <browser.name>chrome</browser.name>
@@ -359,12 +374,11 @@
             </properties>
         </profile>
 
-        <!-- Параллельные тесты -->
+        <!-- Параллельные тесты (suite задается через -Dsuite=) -->
         <profile>
             <id>parallel</id>
             <properties>
                 <thread.count>3</thread.count>
-                <suite>parallel</suite>
             </properties>
             <build>
                 <plugins>

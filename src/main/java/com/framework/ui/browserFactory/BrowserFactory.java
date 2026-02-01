@@ -50,13 +50,13 @@ public class BrowserFactory {
         Configuration.pageLoadStrategy = "eager";
         Configuration.pageLoadTimeout = 20000;
 
-        // Определяем режим запуска
-        String runMode = config.runMode().toLowerCase();
+        // Определяем режим запуска: remote/selenoid -> Selenoid, local/ci -> local Selenide
+        String runMode = (config.runMode() != null ? config.runMode() : "local").toLowerCase();
 
         if ("remote".equals(runMode) || "selenoid".equals(runMode)) {
-            // Для Selenoid используем специальную конфигурацию
             setupSelenoidBrowser(config, actualBrowser, actualVersion);
         } else {
+            // local, ci, или любой другой режим - локальный Selenide
             setupLocalBrowser(config, actualBrowser, actualVersion);
         }
 

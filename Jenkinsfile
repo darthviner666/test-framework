@@ -14,7 +14,7 @@ pipeline {
         )
         choice(
             name: 'TEST_SUITE',
-            choices: ['smokeTests.xml', 'apiTests.xml', 'uiTests.xml', 'dbTests.xml', 'cucumberTests.xml'],
+            choices: ['smokeTests', 'apiTests', 'uiTests', 'uiTestsParallel', 'dbTests', 'cucumberTests'],
             description: 'TestNG XML suite'
         )
         choice(
@@ -150,23 +150,25 @@ pipeline {
                 script {
                     echo "=== ЗАПУСК ТЕСТОВ ==="
 
-                    // Определяем активные профили
-                    def activeProfiles = ['ci']
+                    def isUiSuite = (params.TEST_SUITE == 'uiTests' || params.TEST_SUITE == 'uiTestsParallel')
+                    def suiteToRun = params.TEST_SUITE
+
+                    // Для UI параллельных тестов: BROWSER=all -> uiTestsParallel, иначе -> uiTests
+                    if (isUiSuite && params.PARALLEL && params.RUN_MODE == 'selenoid') {
+                        suiteToRun = (params.BROWSER == 'all') ? 'uiTestsParallel' : 'uiTests'
+                    }
 
                     if (params.RUN_MODE == 'selenoid') {
-                        if (params.BROWSER == 'all') {
-                            // Запускаем все браузеры последовательно
+                        if (params.BROWSER == 'all' && suiteToRun != 'uiTestsParallel') {
                             def browsers = ['chrome', 'firefox', 'edge']
                             for (browser in browsers) {
-                                runTestsForBrowser(browser)
+                                runTestsForBrowser(browser, suiteToRun)
                             }
                         } else {
-                            // Запускаем один браузер
-                            runTestsForBrowser(params.BROWSER)
+                            runTestsForBrowser(params.BROWSER, suiteToRun)
                         }
                     } else {
-                        // Локальный запуск
-                        runLocalTests()
+                        runLocalTests(suiteToRun)
                     }
                 }
             }
@@ -315,53 +317,65 @@ pipeline {
     }
 }
 
-// Метод для запуска тестов для конкретного браузера
-def runTestsForBrowser(browser) {
-    echo "Запуск тестов для браузера: ${browser}"
+// Метод для запуска тестов для конкретного браузера (Jenkins + Selenoid)
+def runTestsForBrowser(browser, suite) {
+    echo "Запуск тестов для браузера: ${browser}, suite: ${suite}"
 
-    def profiles = "ci,selenoid-${browser}"
+    // uiTestsParallel содержит все браузеры в suite, используем selenoid-chrome как базовый
+    def browserProfile = (browser == 'all' && suite == 'uiTestsParallel') ? 'chrome' : browser
+    def profiles = "ci,selenoid-${browserProfile}"
     if (params.PARALLEL) {
         profiles += ",parallel"
     }
 
     sh """
         echo "Активные профили: ${profiles}"
-        echo "Запуск suite: ${params.TEST_SUITE}"
+        echo "Запуск suite: ${suite}"
         echo "Браузер: ${browser}"
         echo "Режим: remote (Selenoid)"
         echo ""
 
         mvn test -P${profiles} \
-            -Dsuite=${params.TEST_SUITE} \
+            -Dsuite=${suite} \
             -Dbrowser.name=${browser} \
+            -Drun.mode=remote \
+            -Dremote.url=${env.SELENOID_URL}/wd/hub \
+            -Dselenide.remote=${env.SELENOID_URL}/wd/hub \
             -Denable.vnc=true \
-            -Denable.video=true \
-            -Dselenide.remote=${env.SELENOID_URL}/wd/hub
+            -Denable.video=true
     """
 }
 
-// Метод для локального запуска тестов
-def runLocalTests() {
-    echo "Локальный запуск тестов"
+// Метод для локального запуска тестов (local Selenide, не Selenoid)
+def runLocalTests(suite) {
+    echo "Локальный запуск тестов, suite: ${suite}"
 
     def profiles = "ci"
     if (params.BROWSER != 'all') {
         profiles += ",local-${params.BROWSER}"
+    } else {
+        profiles += ",local-chrome"
     }
     if (params.PARALLEL) {
         profiles += ",parallel"
     }
 
+    def suiteToRun = suite
+    if (suite == 'uiTestsParallel' && params.BROWSER != 'all') {
+        suiteToRun = 'uiTests'
+    }
+
     sh """
         echo "Активные профили: ${profiles}"
-        echo "Запуск suite: ${params.TEST_SUITE}"
+        echo "Запуск suite: ${suiteToRun}"
         echo "Браузер: ${params.BROWSER}"
-        echo "Режим: local"
+        echo "Режим: local Selenide"
         echo ""
 
         mvn test -P${profiles} \
-            -Dsuite=${params.TEST_SUITE} \
+            -Dsuite=${suiteToRun} \
             -Dbrowser.name=${params.BROWSER} \
+            -Drun.mode=local \
             -Dselenide.headless=true
     """
 }

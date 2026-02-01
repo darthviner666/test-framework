@@ -1,31 +1,36 @@
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
-<suite name="Parallel Test Suite" parallel="tests" thread-count="3">
+<!--
+  UI Parallel Tests - runs same tests on chrome, firefox, edge in parallel.
+  run.mode is set via Maven -Drun.mode= (remote for Selenoid, local for local Selenide).
+  Use from Jenkins: RUN_MODE=selenoid, PARALLEL=true, BROWSER=all.
+  Use locally: mvn test -Pci,local-chrome,parallel -Dsuite=uiTestsParallel -Drun.mode=local
+-->
+<suite name="Parallel UI Test Suite" parallel="tests" thread-count="3">
+    <listeners>
+        <listener class-name="io.qameta.allure.testng.AllureTestNg"/>
+    </listeners>
 
-    <!-- Chrome Tests -->
-    <test name="Chrome Tests" >
+    <test name="Chrome Tests">
         <parameter name="browser" value="chrome"/>
-        <parameter name="run.mode" value="remote"/>
+        <parameter name="browserVersion" value=""/>
         <classes>
             <class name="com.e2e.ui.SuccessfulRegisterTest"/>
         </classes>
     </test>
 
-    <!-- Firefox Tests -->
-    <test name="Firefox Tests" >
+    <test name="Firefox Tests">
         <parameter name="browser" value="firefox"/>
-        <parameter name="run.mode" value="remote"/>
+        <parameter name="browserVersion" value=""/>
         <classes>
             <class name="com.e2e.ui.SuccessfulRegisterTest"/>
         </classes>
     </test>
 
-    <!-- Edge Tests -->
-    <test name="Edge Tests" >
+    <test name="Edge Tests">
         <parameter name="browser" value="edge"/>
-        <parameter name="run.mode" value="remote"/>
+        <parameter name="browserVersion" value=""/>
         <classes>
             <class name="com.e2e.ui.SuccessfulRegisterTest"/>
         </classes>
     </test>
-
 </suite>
