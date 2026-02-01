@@ -7,6 +7,11 @@ pipeline {
     }
 
     parameters {
+        string(
+            name: 'BRANCH_NAME',
+            defaultValue: 'jenkins',
+            description: 'Имя ветки GIT'
+        )
         choice(
             name: 'BROWSER',
             choices: ['chrome', 'firefox', 'edge', 'all'],
@@ -35,12 +40,20 @@ pipeline {
     }
 
     environment {
-        // Selenoid configuration
-        SELENOID_URL = 'http://localhost:4444'
-        // CI configuration
-        CI = 'true'
-        BUILD_TAG = "${env.JOB_NAME}-${env.BUILD_NUMBER}"
-    }
+    // Автоматически определяем адрес хоста
+    HOST_ADDRESS = sh(script: '''
+        # Проверяем доступность host.docker.internal (Docker Desktop)
+        if ping -c 1 host.docker.internal &> /dev/null; then
+            echo "host.docker.internal"
+        else
+            # Или используем gateway по умолчанию
+            echo "172.17.0.1"
+        fi
+    ''', returnStdout: true).trim()
+    
+    SELENOID_URL = "http://${env.HOST_ADDRESS}:4444"
+    SELENOID_UI_URL = "http://${env.HOST_ADDRESS}:8082"
+}
 
     stages {
         stage('Prepare Environment') {
@@ -54,30 +67,18 @@ pipeline {
                     echo "  Test Suite: ${params.TEST_SUITE}"
                     echo "  Run Mode: ${params.RUN_MODE}"
                     echo "  Parallel: ${params.PARALLEL}"
+                    echo "  Selenoid URL: ${env.SELENOID_URL}"
                 }
             }
         }
 
-        stage('Start Selenoid') {
+        stage('Check Selenoid Status') {
             when {
                 expression { params.RUN_MODE == 'selenoid' }
             }
             steps {
                 script {
-                    echo "=== ЗАПУСК SELENOID ==="
-
                     sh '''
-                        echo "Проверка Docker..."
-                        docker --version || echo "Docker не установлен"
-
-                        echo "Останавливаем старые контейнеры..."
-                        docker-compose -f docker-compose-selenoid.yml down 2>/dev/null || true
-
-                        echo "Запуск Selenoid..."
-                        docker-compose -f docker-compose-selenoid.yml up -d
-
-                        echo "Ожидание запуска Selenoid..."
-                        sleep 10
 
                         echo "Проверка статуса Selenoid..."
                         curl -s ${SELENOID_URL}/status || echo "Selenoid не отвечает"
@@ -90,7 +91,7 @@ pipeline {
             steps {
                 checkout([
                     $class: 'GitSCM',
-                    branches: [[name: '*/main']],
+                    branches: [[name: params.BRANCH_NAME]],
                     userRemoteConfigs: [[
                         url: 'https://github.com/darthviner666/test-framework'
                     ]],
@@ -150,16 +151,15 @@ pipeline {
                 script {
                     echo "=== ЗАПУСК ТЕСТОВ ==="
 
-                    def isUiSuite = (params.TEST_SUITE == 'uiTests' || params.TEST_SUITE == 'uiTestsParallel')
                     def suiteToRun = params.TEST_SUITE
 
                     // Для UI параллельных тестов: BROWSER=all -> uiTestsParallel, иначе -> uiTests
-                    if (isUiSuite && params.PARALLEL && params.RUN_MODE == 'selenoid') {
+                    if (params.PARALLEL && params.RUN_MODE == 'selenoid') {
                         suiteToRun = (params.BROWSER == 'all') ? 'uiTestsParallel' : 'uiTests'
                     }
 
                     if (params.RUN_MODE == 'selenoid') {
-                        if (params.BROWSER == 'all' && suiteToRun != 'uiTestsParallel') {
+                        if (params.BROWSER == 'all' && !params.PARALLEL) {
                             def browsers = ['chrome', 'firefox', 'edge']
                             for (browser in browsers) {
                                 runTestsForBrowser(browser, suiteToRun)
@@ -174,44 +174,7 @@ pipeline {
             }
         }
 
-        stage('Generate Allure Report') {
-            when {
-                expression { params.GENERATE_ALLURE }
-            }
-            steps {
-                script {
-                    echo "=== ГЕНЕРАЦИЯ ALLURE ОТЧЕТА ==="
-
-                    sh '''
-                        echo "Сборка Allure результатов..."
-                        if [ -d "target/allure-results" ]; then
-                            echo "Allure результаты найдены"
-                            ls -la target/allure-results/
-                        else
-                            echo "Allure результаты не найдены, собираем..."
-                            mvn allure:report -Pallure 2>/dev/null || echo "Не удалось сгенерировать Allure отчет"
-                        fi
-                    '''
-
-                    // Публикация Allure отчета
-                    allure([
-                        includeProperties: false,
-                        jdk: '',
-                        properties: [],
-                        reportBuildPolicy: 'ALWAYS',
-                        results: [[path: 'target/allure-results']]
-                    ])
-
-                    // Публикация HTML отчета
-                    publishHTML([
-                        reportDir: 'target/site/allure-maven-plugin',
-                        reportFiles: 'index.html',
-                        reportName: 'Allure Report',
-                        keepAll: true
-                    ])
-                }
-            }
-        }
+        
 
         stage('Archive Artifacts') {
             steps {
@@ -271,6 +234,36 @@ pipeline {
                     echo "Версия Maven:"
                     mvn --version 2>&1 | head -1
                 '''
+
+                echo "=== ГЕНЕРАЦИЯ ALLURE ОТЧЕТА ==="
+
+                    sh '''
+                        echo "Сборка Allure результатов..."
+                        if [ -d "target/allure-results" ]; then
+                            echo "Allure результаты найдены"
+                            ls -la target/allure-results/
+                        else
+                            echo "Allure результаты не найдены, собираем..."
+                            mvn allure:report -Pallure 2>/dev/null || echo "Не удалось сгенерировать Allure отчет"
+                        fi
+                    '''
+
+                    // Публикация Allure отчета
+                    allure([
+                        includeProperties: false,
+                        jdk: '',
+                        properties: [],
+                        reportBuildPolicy: 'ALWAYS',
+                        results: [[path: 'target/allure-results']]
+                    ])
+
+                    // Публикация HTML отчета
+                    publishHTML([
+                        reportDir: 'target/site/allure-maven-plugin',
+                        reportFiles: 'index.html',
+                        reportName: 'Allure Report',
+                        keepAll: true
+                    ])
             }
         }
 

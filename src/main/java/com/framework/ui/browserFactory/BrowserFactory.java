@@ -5,9 +5,14 @@ import com.codeborne.selenide.FileDownloadMode;
 import com.codeborne.selenide.WebDriverRunner;
 import com.framework.utils.config.ProjectConfig;
 import com.framework.utils.logger.TestLogger;
+import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.edge.EdgeOptions;
+import org.openqa.selenium.firefox.FirefoxOptions;
 import org.testng.annotations.Optional;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.framework.utils.config.ConfigReader.Instance;
 
@@ -50,8 +55,8 @@ public class BrowserFactory {
         Configuration.pageLoadStrategy = "eager";
         Configuration.pageLoadTimeout = 20000;
 
-        // Определяем режим запуска: remote/selenoid -> Selenoid, local/ci -> local Selenide
-        String runMode = (config.runMode() != null ? config.runMode() : "local").toLowerCase();
+        // Определяем режим запуска
+        String runMode = config.runMode().toLowerCase();
 
         if ("remote".equals(runMode) || "selenoid".equals(runMode)) {
             setupSelenoidBrowser(config, actualBrowser, actualVersion);
@@ -108,43 +113,51 @@ public class BrowserFactory {
             Configuration.browserVersion = browserVersion;
         }
 
-        // Создаем DesiredCapabilities для Selenoid
-        DesiredCapabilities capabilities = new DesiredCapabilities();
-        capabilities.setBrowserName(browser);
+        // Selenoid options в W3C-формате (selenoid:options) — убирает deprecation warning
+        Map<String, Object> selenoidOptions = new HashMap<>();
+        selenoidOptions.put("enableVNC", config.enableVnc());
+        selenoidOptions.put("enableVideo", config.enableVideo());
+        selenoidOptions.put("screenResolution", config.browserSize());
+        selenoidOptions.put("timeZone", "Europe/Moscow");
 
-        if (browserVersion != null && !browserVersion.isEmpty()) {
-            capabilities.setVersion(browserVersion);
-        }
+        MutableCapabilities capabilities = createBrowserOptions(browser, browserVersion);
+        capabilities.setCapability("selenoid:options", selenoidOptions);
 
-        // Selenoid capabilities
-        capabilities.setCapability("enableVNC", config.enableVnc());
-        capabilities.setCapability("enableVideo", config.enableVideo());
-        capabilities.setCapability("screenResolution", config.browserSize());
-        capabilities.setCapability("timeZone", "Europe/Moscow");
-
-        // Для Chrome добавляем ChromeOptions
-        if ("chrome".equalsIgnoreCase(browser)) {
-            ChromeOptions chromeOptions = new ChromeOptions();
-            chromeOptions.addArguments("--no-sandbox");
-            chromeOptions.addArguments("--disable-dev-shm-usage");
-            chromeOptions.addArguments("--remote-allow-origins=*");
-            chromeOptions.addArguments("--disable-gpu");
-
-
-            // Добавляем ChromeOptions в capabilities
-            capabilities.setCapability(ChromeOptions.CAPABILITY, chromeOptions);
-        }
-
-        // Устанавливаем capabilities
         Configuration.browserCapabilities = capabilities;
         Configuration.headless = false;
         // Дополнительные настройки для удаленного запуска
         Configuration.fileDownload = FileDownloadMode.FOLDER;
         Configuration.remoteReadTimeout = 300000;
         Configuration.remoteConnectionTimeout = 300000;
+        Configuration.baseUrl = config.baseUrl();
 
         log.info("Selenoid браузер настроен: {} {}, URL: {}",
                 browser, browserVersion, config.remoteUrl());
+    }
+
+    private static MutableCapabilities createBrowserOptions(String browser, String browserVersion) {
+        if ("chrome".equalsIgnoreCase(browser)) {
+            ChromeOptions options = new ChromeOptions();
+            options.addArguments("--no-sandbox", "--disable-dev-shm-usage", "--remote-allow-origins=*", "--disable-gpu");
+            if (browserVersion != null && !browserVersion.isEmpty()) {
+                options.setBrowserVersion(browserVersion);
+            }
+            return options;
+        } else if ("firefox".equalsIgnoreCase(browser)) {
+            FirefoxOptions options = new FirefoxOptions();
+            if (browserVersion != null && !browserVersion.isEmpty()) {
+                options.setBrowserVersion(browserVersion);
+            }
+            return options;
+        } else if ("edge".equalsIgnoreCase(browser)) {
+            EdgeOptions options = new EdgeOptions();
+            if (browserVersion != null && !browserVersion.isEmpty()) {
+                options.setBrowserVersion(browserVersion);
+            }
+            return options;
+        } else {
+            return new ChromeOptions();
+        }
     }
 
     /**

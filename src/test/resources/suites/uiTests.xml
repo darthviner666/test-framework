@@ -3,7 +3,7 @@
   UI Tests - single browser. Browser from -Dbrowser.name (Jenkins param).
   Use locally: mvn test -Pci,local-chrome -Dsuite=uiTests -Drun.mode=local
 -->
-<suite name="UI Tests" parallel="methods" thread-count="3">
+<suite name="UI Tests">
     <listeners>
         <listener class-name="io.qameta.allure.testng.AllureTestNg"/>
     </listeners>
