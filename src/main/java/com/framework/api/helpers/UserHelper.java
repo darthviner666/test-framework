@@ -3,7 +3,6 @@ package com.framework.api.helpers;
 import com.framework.api.restAssured.ApiRequests;
 import com.framework.api.endpoints.Endpoints;
 import com.framework.api.restAssured.ApiSpecs;
-import com.framework.api.restAssured.HeadersBuilder;
 import com.framework.api.pojo.users.create.rq.CreateUserPojoRq;
 import com.framework.api.pojo.users.create.rs.CreateUserPojoRs;
 import com.framework.api.pojo.users.get.rs.GetUserPojoRs;
@@ -37,7 +36,7 @@ public class UserHelper {
                 .sendRequest("Создать пользователя",
                         Endpoints.USERS.toString(),
                         Method.POST,
-                        req -> req.spec(ApiSpecs.getDefaultRequestSpec()).body(user));
+                        req -> req.spec(ApiSpecs.getRequestSpecWithApiKey()).body(user));
 
         AssertionsWithLog.assertEquals(response.getStatusCode(),201, "Статус код запроса");
 
@@ -63,7 +62,7 @@ public class UserHelper {
                         Endpoints.USERS.toString(),
                         Method.GET,
                         req -> req.spec(ApiSpecs
-                                .getDefaultRequestSpec()
+                                .getRequestSpecWithApiKey()
                                 .queryParams(queryParams))
 
                 );

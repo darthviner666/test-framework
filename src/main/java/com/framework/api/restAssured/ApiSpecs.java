@@ -23,6 +23,7 @@ public class ApiSpecs {
      * Читаем из properties BASE_URL.
      */
     private static final String BASE_URL = Instance().apiBaseUrl();
+    private static final String API_KEY = Instance().apiKey();
     private static final CustomAllureFilter CUSTOM_ALLURE_FILTER = new CustomAllureFilter();
     private static final CustomRestAssuredFilter CUSTOM_REST_ASSURED_FILTER = new CustomRestAssuredFilter();
     /**
@@ -40,7 +41,6 @@ public class ApiSpecs {
                 .build()
                 .headers(HeadersBuilder
                         .defaultHeaders()
-                        .withApiKey()
                         .build())
                 .given();
     }
@@ -66,6 +66,17 @@ public class ApiSpecs {
         return new RequestSpecBuilder()
                 .addRequestSpecification(getDefaultRequestSpec())
                 .addHeader("Authorization", "Bearer " + token)
+                .build();
+    }
+
+    /**
+     * Получить стандартные спецификации запроса с авторизацией через API key.
+     * @return - спецификации запроса.
+     */
+    public static RequestSpecification getRequestSpecWithApiKey() {
+        return new RequestSpecBuilder()
+                .addRequestSpecification(getDefaultRequestSpec())
+                .addHeader("x-api-key", API_KEY)
                 .build();
     }
 

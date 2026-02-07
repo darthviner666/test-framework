@@ -36,6 +36,13 @@ public interface ProjectConfig extends Config {
     String apiBaseUrl();
 
     /**
+     * API токен
+     *
+     * @return API токен
+     */
+    @Config.Key("api.key")
+    String apiKey();
+    /**
      * Определяет, запускать ли браузер в режиме без графического интерфейса.
      * 
      * @return true, если браузер должен запускаться в headless режиме

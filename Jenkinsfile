@@ -17,9 +17,9 @@ pipeline {
             choices: ['chrome', 'firefox', 'edge', 'all'],
             description: 'Браузер для тестирования'
         )
-        choice(
+        string(
             name: 'TEST_SUITE',
-            choices: ['smokeTests', 'apiTests', 'uiTests', 'uiTestsParallel', 'dbTests', 'cucumberTests'],
+            defaultValue: 'uiTests',
             description: 'TestNG XML suite'
         )
         choice(
@@ -111,14 +111,13 @@ pipeline {
 
                     echo "1. Проверка pom.xml:"
                     if [ -f "pom.xml" ]; then
-                        echo "✅ pom.xml найден"
+                        echo "pom.xml найден"
                         echo "Основная информация:"
-                        # Используем безопасный способ получить информацию о проекте
                         mvn help:evaluate -Dexpression=project.groupId -q -DforceStdout 2>/dev/null || echo "Не удалось получить groupId"
                         mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout 2>/dev/null || echo "Не удалось получить artifactId"
                         mvn help:evaluate -Dexpression=project.version -q -DforceStdout 2>/dev/null || echo "Не удалось получить version"
                     else
-                        echo "❌ pom.xml не найден!"
+                        echo "pom.xml не найден!"
                         exit 1
                     fi
                     echo ""
