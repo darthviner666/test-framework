@@ -1,0 +1,81 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/colors-response.schema.json",
+  "title": "Colors API Response",
+  "description": "Схема для ответа API цветов",
+  "type": "object",
+  "required": ["page", "per_page", "total", "total_pages", "data", "support"],
+  "properties": {
+    "page": {
+      "type": "integer",
+      "description": "Текущая страница",
+      "minimum": 1
+    },
+    "per_page": {
+      "type": "integer",
+      "description": "Количество элементов на странице",
+      "minimum": 1
+    },
+    "total": {
+      "type": "integer",
+      "description": "Общее количество элементов",
+      "minimum": 0
+    },
+    "total_pages": {
+      "type": "integer",
+      "description": "Общее количество страниц",
+      "minimum": 0
+    },
+    "data": {
+      "type": "array",
+      "description": "Массив цветов",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "year", "color", "pantone_value"],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "ID цвета",
+            "minimum": 1
+          },
+          "name": {
+            "type": "string",
+            "description": "Название цвета",
+            "minLength": 1
+          },
+          "year": {
+            "type": "integer",
+            "description": "Год цвета",
+            "minimum": 2000
+          },
+          "color": {
+            "type": "string",
+            "description": "HEX код цвета",
+            "pattern": "^#[0-9A-Fa-f]{6}$"
+          },
+          "pantone_value": {
+            "type": "string",
+            "description": "Значение Pantone",
+            "pattern": "^\\d{1,2}-\\d{4}$"
+          }
+        }
+      }
+    },
+    "support": {
+      "type": "object",
+      "description": "Информация о поддержке",
+      "required": ["url", "text"],
+      "properties": {
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL поддержки"
+        },
+        "text": {
+          "type": "string",
+          "description": "Текст поддержки"
+        }
+      }
+    }
+  }
+}

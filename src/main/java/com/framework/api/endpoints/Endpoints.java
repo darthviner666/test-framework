@@ -11,7 +11,9 @@ public enum Endpoints {
 
     USER("/api/users/{id}"),
 
-    RESOURCE("/api/unknown");
+    RESOURCE("/api/unknown"),
+
+    RESOURCES("/api/products");
 
     private String url;
 
