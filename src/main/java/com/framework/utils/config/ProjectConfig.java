@@ -36,6 +36,13 @@ public interface ProjectConfig extends Config {
     String apiBaseUrl();
 
     /**
+     * API токен
+     *
+     * @return API токен
+     */
+    @Config.Key("api.key")
+    String apiKey();
+    /**
      * Определяет, запускать ли браузер в режиме без графического интерфейса.
      * 
      * @return true, если браузер должен запускаться в headless режиме
@@ -74,7 +81,7 @@ public interface ProjectConfig extends Config {
      * @return режим запуска
      */
     @Key("run.mode")
-    @DefaultValue("local")
+    @DefaultValue("selenoid")
     String runMode(); // local / remote / grid
 
     /**
@@ -120,7 +127,6 @@ public interface ProjectConfig extends Config {
      */
     @Key("database.url")
     String databaseUrl();
-
     /**
      * Возвращает имя пользователя для подключения к базе данных.
      * 

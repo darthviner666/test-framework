@@ -25,8 +25,11 @@ public class UiTestBase extends TestBase {
 
     @BeforeMethod
     @Parameters({"browser", "browserVersion"})
-    public void setup(@Optional("chrome") String browser, @Optional("120.0") String browserVersion) {
-        BrowserFactory.setupBrowser(browser, browserVersion);
+    public void setup(@Optional("chrome") String browser, @Optional("") String browserVersion) {
+        // Jenkins/Maven -Dbrowser.name overrides suite parameter
+        String actualBrowser = System.getProperty("browser.name", browser);
+        String actualVersion = System.getProperty("browser.version", browserVersion != null ? browserVersion : "");
+        BrowserFactory.setupBrowser(actualBrowser, actualVersion);
         open("");
     }
 

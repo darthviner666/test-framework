@@ -8,6 +8,7 @@ import io.qameta.allure.Step;
 import io.restassured.http.Method;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import io.restassured.specification.ResponseSpecification;
 import lombok.experimental.UtilityClass;
 
 import java.util.function.Function;
@@ -45,6 +46,30 @@ public class ApiRequests {
 
         return requestSpec.request(httpMethod, endpoint)
                 .then()
+                .extract().response();
+    }
+
+    /**
+     * Отправка API запроса.
+     * @param requestDescription - описание запроса.
+     * @param endpoint - эндпоинт.
+     * @param httpMethod - HTTP метод.
+     * @param requestSpecification - спецификации запроса
+     * @param responseSpecs - спецификации ответа.
+     * @return - ответ.
+     */
+    @Step("API: {httpMethod} {endpoint} : {requestDescription}")
+    public Response sendRequest(
+            String requestDescription,
+            String endpoint,
+            Method httpMethod,
+            RequestSpecification requestSpecification,
+            ResponseSpecification responseSpecs) {
+        log.logStep(String.format("Отправить API запрос %s %s", requestDescription, endpoint));
+
+        return given().spec(requestSpecification).request(httpMethod, endpoint)
+                .then()
+                .spec(responseSpecs)
                 .extract().response();
     }
 
