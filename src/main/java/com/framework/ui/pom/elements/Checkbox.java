@@ -12,10 +12,4 @@ public class Checkbox extends BaseUiElement {
         super(element, "Чекбокс " + name);
     }
 
-    @Override
-    @Step("Клик по чекбоксу {name}")
-    public BaseUiElement click() {
-        this.element.click();
-        return this;
-    }
 }

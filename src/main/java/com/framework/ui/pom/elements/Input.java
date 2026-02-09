@@ -16,8 +16,9 @@ public class Input extends BaseUiElement {
      * Установить значение в поле ввода.
      * @param value - значение
      */
-    @Step(value = "Ввести {value} в поле {name}")
+    @Step(value = "Ввести '{value}' в '{this.name}'")
     public BaseUiElement setValue(String value) {
+        LOGGER.logStep(String.format("Ввести %s в %s", value, this.name));
         this.element.setValue(value);
         return this;
     }

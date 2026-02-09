@@ -14,7 +14,7 @@ public class CustomFaker extends Faker {
      * @return - email.
      */
     public static String email() {
-        String email = Faker.instance().name().firstName().toLowerCase() + "." + Faker.instance().name().lastName().toLowerCase() + "@email.com";
+        String email = Faker.instance().name().firstName().toLowerCase() + "." + Faker.instance().name().lastName().toLowerCase() + "@mail.ru";
         return email;
     }
     /**
