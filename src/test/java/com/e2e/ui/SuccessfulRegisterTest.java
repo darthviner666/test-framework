@@ -26,6 +26,9 @@ public class SuccessfulRegisterTest extends UiTestBase {
     @Story("Позитивный сценарий")
     @Severity(SeverityLevel.BLOCKER)
     public void successfulRegisterTest() {
+        UserUiPojo user = UiUserGenerator.generateUser();
+
+
         MainPage mainPage = new MainPage();
         mainPage.isLoaded();
         mainPage.getCookieForm().isLoaded();
@@ -35,7 +38,6 @@ public class SuccessfulRegisterTest extends UiTestBase {
         RegisterPage registerPage = new RegisterPage();
         registerPage.isLoaded();
 
-        UserUiPojo user = UiUserGenerator.generateUser();
 
         registerPage.getRegistrationForm().nameInput.setValue(user.name);
         registerPage.getRegistrationForm().emailInput.setValue(user.email);
